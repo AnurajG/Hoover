@@ -11,6 +11,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hoover.customviews.SaveAsyncTask;
+import com.hoover.util.Hoov;
+
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,17 +28,17 @@ public class HomeActivity extends Activity {
 	private static final String OAUTH_ACCESS_TOKEN_PARAM ="oauth2_access_token";
 	private static final String QUESTION_MARK = "?";
 	private static final String EQUALS = "=";
-	
+
 	private TextView welcomeText;
 	private ProgressDialog pd;
 	private String token;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
 		welcomeText = (TextView) findViewById(R.id.activity_profile_welcome_text);
-		
+
 		//Request basic profile of the user
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		String accessToken = preferences.getString("accessToken", null);
@@ -45,20 +48,20 @@ public class HomeActivity extends Activity {
 			new GetProfileRequestAsyncTask().execute(profileUrl);
 		}
 	}
-	
+
 	private static final String getProfileUrl(String accessToken){
 		return PROFILE_URL
 				+QUESTION_MARK
 				+OAUTH_ACCESS_TOKEN_PARAM+EQUALS+accessToken;
 	}
-	
+
 	private class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
 
 		@Override
 		protected void onPreExecute(){
 			pd = ProgressDialog.show(HomeActivity.this, "", "Loading..",true);
 		}
-		
+
 		@Override
 		protected JSONObject doInBackground(String... urls) {
 			if(urls.length>0){
@@ -73,7 +76,7 @@ public class HomeActivity extends Activity {
 						if(response.getStatusLine().getStatusCode()==200){
 							String result = EntityUtils.toString(response.getEntity());
 							//Convert the string result to a JSON Object
-							JSONObject fulldata,basicdata;
+							JSONObject basicdata;
 							basicdata= new JSONObject(result);
 							return basicdata;
 						}
@@ -86,7 +89,7 @@ public class HomeActivity extends Activity {
 			}
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(JSONObject data){
 			if(pd!=null && pd.isShowing()){
@@ -94,14 +97,23 @@ public class HomeActivity extends Activity {
 			}
 			if(data!=null){
 				try {
-					String welcomeTextString = String.format("Welcome %1$s %2$s, You are a %3$s.Your live in  %4$s",data.getString("firstName"),data.getString("lastName"),data.getString("headline"),data.getJSONObject("location").getString("name"));
+					Hoov h=new Hoov();
+					h.id=data.getString("id");
+					h.company=data.getString("headline");
+					h.city="bangalore";
+					h.hoov="xxx";
+
+					SaveAsyncTask tsk = new SaveAsyncTask();
+					tsk.execute(h);
+
+					String welcomeTextString = String.format("Welcome %1$s %2$s, You are a %3$s.You live in  %4$s",data.getString("firstName"),data.getString("lastName"),data.getString("headline"),data.getJSONObject("location").getString("name"));
 					welcomeText.setText(welcomeTextString);
 				} catch (JSONException e) {
 					Log.e("Authorize","Error Parsing json "+e.getLocalizedMessage());	
 				}
 			}
 		}
-		
-		
+
+
 	};
 }
