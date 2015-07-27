@@ -231,7 +231,7 @@ public class MainActivity extends Activity{
 		protected void onPostExecute(Boolean status){
 			if(status){
 				//If everything went Ok, change to another activity.
-				Intent startProfileActivity = new Intent(MainActivity.this, HomeActivity.class);
+				Intent startProfileActivity = new Intent(MainActivity.this, Login.class);
 				MainActivity.this.startActivity(startProfileActivity);
 			}
 		}

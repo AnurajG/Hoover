@@ -3,7 +3,11 @@
 
     <string name="app_name">HOOVER</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Lets Hoov!!!</string>
+    <string name="hello_world">Lets see what the people in your company are gossiping abt ;-)</string>
     <string name="title_activity_first">HOOVER</string>
+    <string name="title_activity_home">HOOVER-HOME</string>
+    <string name="hoov_button_title">Hoov!</string>
+    <string name="hoov_edit_text">What\'s in your mind</string>
+    <string name="hoov_edit_button_title">Hoov!</string>
 
 </resources>
