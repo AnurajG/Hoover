@@ -101,10 +101,10 @@ public class Login extends Activity {
 				try {
 					User u=new User();
 					u.id=data.getString("id");
-					u.company=data.getString("headline");
+					u.company=data.getString("headline").split("at")[1].trim();
 					u.city=data.getJSONObject("location").getString("name");
 					
-					Intent i = new Intent(Login.this, HoovActivity.class);
+					Intent i = new Intent(Login.this, HomeActivity.class);
 					
 					
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
