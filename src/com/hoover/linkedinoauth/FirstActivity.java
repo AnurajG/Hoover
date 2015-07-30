@@ -26,7 +26,6 @@ import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
 
 public class FirstActivity extends Activity {
-	Button sign_in;
 	private ProgressDialog pd;
 	public void getUser(String id){
 		try{
@@ -63,18 +62,11 @@ public class FirstActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_first);
-		sign_in=(Button) findViewById(R.id.btn_sign);
-		sign_in.setOnClickListener(new OnClickListener() {                       
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-				String uuid = tManager.getDeviceId();
+		TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		String uuid = tManager.getDeviceId();
 
-				GetUserAsyncTask tsk= new GetUserAsyncTask();
-				tsk.execute(uuid);
-			}           
-		});  
+		GetUserAsyncTask tsk= new GetUserAsyncTask();
+		tsk.execute(uuid);
 
 
 	}

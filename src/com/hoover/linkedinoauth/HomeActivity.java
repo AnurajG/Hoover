@@ -198,7 +198,7 @@ public class HomeActivity extends ListActivity{
 					else if(curr_epoch-epoch > 60)
 						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
 					else
-						hc.hoovDate=""+(curr_epoch-epoch)+"s";	
+						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
 					user.add(hc);
 				}
 

@@ -2,21 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="#CDA4EA"
     tools:context="com.hoover.linkedinoauth.FirstActivity" >
-
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:hint="@string/hoov_edit_text"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="126dp"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
 
     <Button
         android:id="@+id/button1"
@@ -26,5 +13,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
         android:text="@string/hoov_edit_button_title" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="68dp"
+        android:textColor="#925FAE"
+        android:background="#FFFFFF"
+        android:ems="100"
+        android:hint="@string/hoov_edit_text" />
 
 </RelativeLayout>
