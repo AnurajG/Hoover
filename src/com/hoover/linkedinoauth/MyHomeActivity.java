@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
@@ -17,14 +18,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,8 +32,9 @@ import com.goebl.david.Webb;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovQueryBuilder;
+import com.hoover.util.MyHoovFetchParams;
 
-public class HomeActivity extends ListActivity{
+public class MyHomeActivity extends ListActivity{
 
 	HoovListAdapter hAdapter;
 	private ProgressDialog pd;
@@ -42,36 +42,17 @@ public class HomeActivity extends ListActivity{
 	String city;
 	String company;
 
-	Button hoov_in;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_home);
-		/*AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		setContentView(R.layout.activity_myhome);
 
-		Intent alarmIntent = new Intent(this, SaveHoovService.class);
-		PendingIntent pending = PendingIntent.getService(this, 0, alarmIntent, 0);
-		final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 		
-		alarm.cancel(pending);
-		long interval = 30000;//milliseconds
-		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);*/
-
 		hAdapter=new HoovListAdapter();
 		setListAdapter(hAdapter);
 		refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
 		//refreshLayout.setOnRefreshListener(this);
-		hoov_in=(Button) findViewById(R.id.hoov_in);
-		hoov_in.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
-				startActivity(intent); 
-
-			} 
-
-		});
+		
 
 		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
@@ -81,56 +62,34 @@ public class HomeActivity extends ListActivity{
 				setListAdapter(hAdapter);
 				if (refreshLayout.isRefreshing()) {
 					refreshLayout.setRefreshing(false);
-				}
+		        }
 			}
 		});
 	}
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    // Inflate the menu items for use in the action bar
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.profile_view_actions, menu);
-	    return super.onCreateOptionsMenu(menu);
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
-	    switch (item.getItemId()) {
-	        case R.id.action_myprofile:
-	        	Intent intent = new Intent(HomeActivity.this,MyHomeActivity.class);
-				startActivity(intent); 
-	            return true;
-	        case R.id.action_settings:
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
-	}
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		HoovChapter selectedHoov = new HoovChapter();
-		selectedHoov = hAdapter.hoovChapterList.get(position);
-		Intent myIntent = new Intent(HomeActivity.this, HoovDetailsActivity.class);
-		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
-		myIntent.putExtra("text",selectedHoov.hoovText);
-		myIntent.putExtra("date",selectedHoov.hoovDate);
-		Toast.makeText(getBaseContext(), selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        HoovChapter selectedHoov = new HoovChapter();
+        selectedHoov = hAdapter.hoovChapterList.get(position);
+        Intent myIntent = new Intent(MyHomeActivity.this, HoovDetailsActivity.class);
+        myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
+        myIntent.putExtra("text",selectedHoov.hoovText);
+        myIntent.putExtra("date",selectedHoov.hoovDate);
+        Toast.makeText(getBaseContext(), selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
+        
+        startActivity(myIntent);
 
-		startActivity(myIntent);
-
-	}
-
+    }
+	
 	public List<HoovChapter> getDataForListView()
 	{
 		List<HoovChapter> hoovChaptersList = new ArrayList<HoovChapter>();
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		String userComapny = preferences.getString("userCompany", null);
-		String userCity = preferences.getString("userCity", null);
+		String userId = preferences.getString("userId", null);
 
 		GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
-		HoovFetchParams params=new HoovFetchParams();
-		params.city=userCity;
-		params.comapny=userComapny;
+		MyHoovFetchParams params=new MyHoovFetchParams();
+		params.userId=userId;
+		
 		try {
 			hoovChaptersList=gtask.execute(params).get();
 		} catch (InterruptedException e) {
@@ -139,13 +98,34 @@ public class HomeActivity extends ListActivity{
 			e.printStackTrace();
 		}
 
+		SharedPreferences preferences2 = MyHomeActivity.this.getSharedPreferences("hoov_tmp", 0);
+		String hoovArray = preferences2.getString("hoovArray", null);
+		if(hoovArray!=null){
+			try {
+				JSONArray array=new JSONArray(hoovArray);
+				for(int i = 0;i<array.length();i++){
+					HoovChapter hc=new HoovChapter();
+					hc.hoovText=array.getJSONObject(i).getString("hoovText");
+					hc.hoovDate="";
+					hc.posted=false;
+					hc.mongoHoovId="-1";
+					
+					hoovChaptersList.add(hc);
+				}
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
 		return hoovChaptersList;
 
 	}
 	public class HoovListAdapter extends BaseAdapter{
 
-		String company;
-		String city;
+		String userId;
 		List<HoovChapter> hoovChapterList = getDataForListView();
 		@Override
 		public int getCount() {
@@ -168,13 +148,20 @@ public class HomeActivity extends ListActivity{
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			if(arg1==null){
-				LayoutInflater inflater = (LayoutInflater)HomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				arg1 = inflater.inflate(R.layout.hoov_list, arg2,false);
+				LayoutInflater inflater = (LayoutInflater)MyHomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				arg1 = inflater.inflate(R.layout.my_hoov_list, arg2,false);
 			}
-			TextView h_text = (TextView)arg1.findViewById(R.id.hoov_text);
-			TextView h_date = (TextView)arg1.findViewById(R.id.hoov_date);
+			TextView h_text = (TextView)arg1.findViewById(R.id.my_hoov_text);
+			TextView h_date = (TextView)arg1.findViewById(R.id.my_hoov_date);
 
+			ImageView h_status = (ImageView)arg1.findViewById(R.id.my_hoov_status);
+			
 			HoovChapter chapter = hoovChapterList.get(arg0);
+			
+			if(chapter.posted)
+				h_status.setImageResource(R.drawable.blue_tick);
+			else
+				h_status.setImageResource(R.drawable.loading);
 
 			h_text.setText(chapter.hoovText);
 			h_date.setText(chapter.hoovDate);
@@ -184,24 +171,23 @@ public class HomeActivity extends ListActivity{
 
 	}
 
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void, List<HoovChapter>> {
+	public class GetHoovsAsyncTask extends AsyncTask<MyHoovFetchParams, Void, List<HoovChapter>> {
 		@Override
 		protected void onPreExecute(){
-			pd = ProgressDialog.show(HomeActivity.this, "", "Fetching hoovs..",true);
+			pd = ProgressDialog.show(MyHomeActivity.this, "", "Fetching hoovs..",true);
 		}
 
 
 		@Override
-		protected List<HoovChapter> doInBackground(HoovFetchParams... params) {
+		protected List<HoovChapter> doInBackground(MyHoovFetchParams... params) {
 			List<HoovChapter> user=new ArrayList<HoovChapter>();
 			try 
 			{			
-				HoovFetchParams u = params[0];
+				MyHoovFetchParams u = params[0];
 
 				HoovQueryBuilder qb = new HoovQueryBuilder();						
 				JSONObject q = new JSONObject();
-				q.put("document.company",u.comapny);
-				q.put("document.city",u.city);
+				q.put("document.id",u.userId);
 
 				JSONObject f = new JSONObject();
 				f.put("document.hoov",1);
@@ -230,7 +216,8 @@ public class HomeActivity extends ListActivity{
 					else if(curr_epoch-epoch > 60)
 						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
 					else
-						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";
+					hc.posted=true;
 					user.add(hc);
 				}
 

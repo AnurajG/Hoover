@@ -1,6 +1,9 @@
 package com.hoover.util;
 
-import com.hoover.util.Hoov;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 
 public class HoovQueryBuilder {
 
@@ -64,10 +67,22 @@ public class HoovQueryBuilder {
 	 */
 	public String createContact(Hoov hoov)
 	{
+		ObjectWriter ow = new ObjectMapper().writer();
+		try {
+			String json = ow.writeValueAsString(hoov);
+			return "{\"document\" :"+json+", \"safe\" : true}";
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return String
-				.format("{\"document\" : {\"id\": \"%s\", "
-						+ "\"company\": \"%s\", \"city\": \"%s\", "
-						+ "\"hoov\": \"%s\"}, \"safe\" : true}",
+				.format("{\"document\" : {" +
+							"\"id\": \"%s\", " +
+							"\"company\": \"%s\"," +
+							" \"city\": \"%s\", " +
+							"\"hoov\": \"%s\"" +
+						"}, " +
+						"\"safe\" : true}",
 						hoov.id, hoov.company, hoov.city, hoov.hoov);
 	}
 

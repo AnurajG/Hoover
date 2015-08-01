@@ -110,6 +110,8 @@ public class FirstActivity extends Activity {
 					JSONArray array=new JSONArray(output);
 					JSONObject obj = (JSONObject)array.get(0);
 					JSONObject doc = obj.getJSONObject("document");
+					JSONObject _id = obj.getJSONObject("_id");
+					user.mongoId=_id.getString("$oid");
 					user.id=doc.getString("id");
 					user.company=doc.getString("company");
 					user.city=doc.getString("city");
@@ -135,6 +137,7 @@ public class FirstActivity extends Activity {
 			}else{
 				SharedPreferences preferences = FirstActivity.this.getSharedPreferences("user_info", 0);
 				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString("userMongoId", data.mongoId);
 				editor.putString("userId", data.id);
 				editor.putString("userCompany", data.company);
 				editor.putString("userCity", data.city);

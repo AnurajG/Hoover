@@ -6,6 +6,8 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -22,8 +24,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.hoover.customviews.SaveUserAsyncTask;
 import com.hoover.util.User;
+import com.hoover.util.UserQueryBuilder;
 public class Login extends Activity {
 	//private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~";
 	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location)";
@@ -55,6 +57,66 @@ public class Login extends Activity {
 		return PROFILE_URL
 				+QUESTION_MARK
 				+OAUTH_ACCESS_TOKEN_PARAM+EQUALS+accessToken;
+	}
+
+	public class SaveUserAsyncTask extends AsyncTask<User, Void, String>{
+
+		@Override
+		protected String doInBackground(User... arg0) {
+			try 
+			{			
+				User u = arg0[0];
+
+				UserQueryBuilder qb = new UserQueryBuilder();						
+
+				HttpClient httpClient = new DefaultHttpClient();
+				HttpPost request = new HttpPost(qb.buildContactsSaveURL());
+
+				StringEntity params =new StringEntity(qb.createContact(u));
+				request.addHeader("content-type", "application/json");
+				request.setEntity(params);
+				HttpResponse response = httpClient.execute(request);
+
+				if(response.getStatusLine().getStatusCode()<205){
+					String jsonString = EntityUtils.toString(response.getEntity());
+					return jsonString;
+				}
+				else{
+					return null;
+				}
+			} catch (Exception e) {
+				//e.getCause();
+				String val = e.getMessage();
+				return null;
+			}		
+		}
+		@Override
+		protected void onPostExecute(String output){
+			if(output!=null){
+
+
+				try {
+					JSONObject obj = new JSONObject(output);
+					JSONObject doc = obj.getJSONObject("document");
+					JSONObject _id = obj.getJSONObject("_id");
+					SharedPreferences preferences = Login.this.getSharedPreferences("user_info", 0);
+					SharedPreferences.Editor editor = preferences.edit();
+					editor.putString("userMongoId", _id.getString("$oid"));
+					editor.putString("userId", doc.getString("id"));
+					editor.putString("userCompany", doc.getString("company"));
+					editor.putString("userCity", doc.getString("city"));
+					editor.putString("userDeviceId", doc.getString("deviceId"));
+					editor.commit();
+
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+
+			}
+		}
 	}
 
 	private class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
@@ -103,14 +165,14 @@ public class Login extends Activity {
 					u.id=data.getString("id");
 					u.company=data.getString("headline").split("at")[1].trim();
 					u.city=data.getJSONObject("location").getString("name");
-					
+
 					Intent i = new Intent(Login.this, HomeActivity.class);
-					
-					
+
+
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 					String uuid = tManager.getDeviceId();
 					u.deviceId=uuid;
-					
+
 					SharedPreferences preferences = Login.this.getSharedPreferences("user_info", 0);
 					SharedPreferences.Editor editor = preferences.edit();
 					editor.putString("userId", u.id);
@@ -121,9 +183,9 @@ public class Login extends Activity {
 
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
-					
+
 					startActivity(i);
-					
+
 					//h.hoov="xxx";
 
 					/*SaveAsyncTask tsk = new SaveAsyncTask();

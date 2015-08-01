@@ -9,5 +9,7 @@
     <string name="hoov_button_title">Hoov!</string>
     <string name="hoov_edit_text">What\'s in your mind</string>
     <string name="hoov_edit_button_title">Hoov!</string>
+    <string name="action_myprofile_view">My Hoovs!</string>
+    
 
 </resources>

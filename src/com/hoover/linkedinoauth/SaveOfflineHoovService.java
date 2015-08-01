@@ -1,0 +1,130 @@
+package com.hoover.linkedinoauth;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Map.Entry;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.IntentService;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+
+import com.hoover.util.Hoov;
+import com.hoover.util.HoovQueryBuilder;
+
+public class SaveOfflineHoovService extends IntentService {
+	private String userId;
+	private String userCompany;
+	private String userCity;
+	
+	private ArrayList<Integer> success=new ArrayList<Integer>();
+	public SaveOfflineHoovService() {
+		super(SaveOfflineHoovService.class.getName());
+	}
+	
+	public class x {
+		public Integer key;
+		public String text;
+	};
+
+	@Override
+	protected void onHandleIntent(Intent workIntent) {
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		userCompany = preferences.getString("userCompany", null);
+		userCity = preferences.getString("userCity", null);
+		userId = preferences.getString("userId", null);
+
+		SharedPreferences preferences2 = SaveOfflineHoovService.this.getSharedPreferences("hoov_tmp", 0);
+		String hoovArray = preferences2.getString("hoovArray", null);
+		if(hoovArray!=null){
+
+			try {
+				JSONArray array=new JSONArray(hoovArray);
+				for(int i=0;i<array.length();i++){
+					JSONObject obj = (JSONObject)array.get(i);
+					
+					x en=new x();
+					en.key=i;
+					en.text=obj.getString("hoovText");
+					Hoov h=new Hoov();
+					h.id=userId;
+					h.company=userCompany;
+					h.city=userCity;
+					h.hoov=en.text;
+
+					HoovQueryBuilder qb = new HoovQueryBuilder();						
+
+					HttpClient httpClient = new DefaultHttpClient();
+					HttpPost request = new HttpPost(qb.buildContactsSaveURL());
+
+					StringEntity params;
+					try {
+						params = new StringEntity(qb.createContact(h));
+						request.addHeader("content-type", "application/json");
+						request.setEntity(params);
+						HttpResponse response = httpClient.execute(request);
+						if(response.getStatusLine().getStatusCode()<205){
+							success.add(en.key);
+						}
+						else{
+							System.out.println("");
+						}
+
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				for(Integer k:success){
+					array.remove(k);
+				}
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.remove("hoovArray");
+				editor.putString("hoovArray", array.toString());
+				editor.commit();
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+
+		}
+
+	}
+	/*class AttemptHoovSubmit extends AsyncTask<x, String, Integer> {
+
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+		//String hoov = hoovText.getText().toString();
+		@Override
+		protected Integer doInBackground(x... arg0) {
+
+			
+
+		}
+
+		protected void onPostExecute(Integer key) {
+			//this intent is used to open other activity wich contains another webView
+			success.add(key);
+		}
+
+	}*/
+}

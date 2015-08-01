@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -46,6 +47,25 @@
             android:name=".HoovDetailsActivity"
             android:label="@string/title_activity_home" >
         </activity>
+         <activity
+            android:name=".MyHomeActivity"
+            android:label="@string/action_myprofile_view" >
+        </activity>
+        <service
+            android:name=".SaveHoovService"
+            android:label="@string/title_activity_home" >
+        </service>
+        <service
+            android:name=".SaveOfflineHoovService"
+            android:label="@string/title_activity_home" >
+        </service>
+        <receiver
+            android:name=".NetworkChangeReceiver"
+            android:label="@string/title_activity_home" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
