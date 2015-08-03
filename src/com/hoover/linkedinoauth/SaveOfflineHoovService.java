@@ -91,13 +91,15 @@ public class SaveOfflineHoovService extends IntentService {
 						e.printStackTrace();
 					}
 				}
-				
-				for(Integer k:success){
-					array.remove(k);
+				JSONArray array2=new JSONArray();
+				for(int i=0;i<array.length();i++){
+					if(!success.contains(i)){
+						array2.put(array.getJSONObject(i));
+					}
 				}
-				SharedPreferences.Editor editor = preferences.edit();
+				SharedPreferences.Editor editor = preferences2.edit();
 				editor.remove("hoovArray");
-				editor.putString("hoovArray", array.toString());
+				editor.putString("hoovArray", array2.toString());
 				editor.commit();
 
 			} catch (JSONException e) {
