@@ -42,3 +42,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 *.class
+bin/R.txt
+gen/com/hoover/linkedinoauth/R.java
