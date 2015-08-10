@@ -27,6 +27,9 @@ import com.hoover.util.UserQueryBuilder;
 
 public class FirstActivity extends Activity {
 	private ProgressDialog pd;
+	private String userCompany;
+	private String userCity;
+	private String userId;
 	public void getUser(String id){
 		try{
 			UserQueryBuilder qb = new UserQueryBuilder();						
@@ -65,8 +68,20 @@ public class FirstActivity extends Activity {
 		TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		String uuid = tManager.getDeviceId();
 
-		GetUserAsyncTask tsk= new GetUserAsyncTask();
-		tsk.execute(uuid);
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		userCompany = preferences.getString("userCompany", null);
+		userCity = preferences.getString("userCity", null);
+		userId = preferences.getString("userId", null);
+
+		if(userId==null || userCity == null || userCompany == null){
+			GetUserAsyncTask tsk= new GetUserAsyncTask();
+			tsk.execute(uuid);
+		}else{
+			Intent intent = new Intent(FirstActivity.this,HomeActivity.class);
+			startActivity(intent); 
+		}
+
+
 
 
 	}

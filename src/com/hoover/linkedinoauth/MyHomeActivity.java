@@ -47,13 +47,10 @@ public class MyHomeActivity extends ListActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_myhome);
 
-		
+
 		hAdapter=new HoovListAdapter();
 		setListAdapter(hAdapter);
 		refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-		//refreshLayout.setOnRefreshListener(this);
-		
-
 		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 
@@ -62,41 +59,59 @@ public class MyHomeActivity extends ListActivity{
 				setListAdapter(hAdapter);
 				if (refreshLayout.isRefreshing()) {
 					refreshLayout.setRefreshing(false);
-		        }
+				}
 			}
 		});
+		PopulateAdapterAsyncTask tsk = new PopulateAdapterAsyncTask();
+		Void v = null;
+		tsk.execute(v);
 	}
 	@Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        HoovChapter selectedHoov = new HoovChapter();
-        selectedHoov = hAdapter.hoovChapterList.get(position);
-        Intent myIntent = new Intent(MyHomeActivity.this, HoovDetailsActivity.class);
-        myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
-        myIntent.putExtra("text",selectedHoov.hoovText);
-        myIntent.putExtra("date",selectedHoov.hoovDate);
-        Toast.makeText(getBaseContext(), selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
-        
-        startActivity(myIntent);
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		HoovChapter selectedHoov = new HoovChapter();
+		selectedHoov = hAdapter.hoovChapterList.get(position);
+		Intent myIntent = new Intent(MyHomeActivity.this, HoovDetailsActivity.class);
+		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
+		myIntent.putExtra("text",selectedHoov.hoovText);
+		myIntent.putExtra("date",selectedHoov.hoovDate);
+		Toast.makeText(getBaseContext(), selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
-    }
-	
+		startActivity(myIntent);
+
+	}
+
+	public class PopulateAdapterAsyncTask extends AsyncTask<Void, Void, Boolean>{
+		@Override
+		protected void onPreExecute(){
+			pd = ProgressDialog.show(MyHomeActivity.this, "", "Fetching Profile..",true);
+		}
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			hAdapter.hoovChapterList=getDataForListView();
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean b){
+			if(pd!=null && pd.isShowing()){
+				pd.dismiss();
+			}
+			hAdapter.notifyDataSetChanged();
+			super.onPostExecute(b);
+		}
+	}
+
 	public List<HoovChapter> getDataForListView()
 	{
 		List<HoovChapter> hoovChaptersList = new ArrayList<HoovChapter>();
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		String userId = preferences.getString("userId", null);
 
-		GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
+		//GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
 		MyHoovFetchParams params=new MyHoovFetchParams();
 		params.userId=userId;
-		
-		try {
-			hoovChaptersList=gtask.execute(params).get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+
+		hoovChaptersList=fetchAllHoovs(params);
 
 		SharedPreferences preferences2 = MyHomeActivity.this.getSharedPreferences("hoov_tmp", 0);
 		String hoovArray = preferences2.getString("hoovArray", null);
@@ -109,24 +124,25 @@ public class MyHomeActivity extends ListActivity{
 					hc.hoovDate="";
 					hc.posted=false;
 					hc.mongoHoovId="-1";
-					
+
 					hoovChaptersList.add(hc);
 				}
-				
+
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
-		
-		
+
+
 		return hoovChaptersList;
 
 	}
 	public class HoovListAdapter extends BaseAdapter{
 
 		String userId;
-		List<HoovChapter> hoovChapterList = getDataForListView();
+		//List<HoovChapter> hoovChapterList = getDataForListView();
+		List<HoovChapter> hoovChapterList=new ArrayList<HoovChapter>();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -155,9 +171,9 @@ public class MyHomeActivity extends ListActivity{
 			TextView h_date = (TextView)arg1.findViewById(R.id.my_hoov_date);
 
 			ImageView h_status = (ImageView)arg1.findViewById(R.id.my_hoov_status);
-			
+
 			HoovChapter chapter = hoovChapterList.get(arg0);
-			
+
 			if(chapter.posted)
 				h_status.setImageResource(R.drawable.blue_tick);
 			else
@@ -171,73 +187,56 @@ public class MyHomeActivity extends ListActivity{
 
 	}
 
-	public class GetHoovsAsyncTask extends AsyncTask<MyHoovFetchParams, Void, List<HoovChapter>> {
-		@Override
-		protected void onPreExecute(){
-			pd = ProgressDialog.show(MyHomeActivity.this, "", "Fetching hoovs..",true);
-		}
+	public List<HoovChapter> fetchAllHoovs(MyHoovFetchParams params){
 
+		List<HoovChapter> user=new ArrayList<HoovChapter>();
+		try 
+		{			
+			MyHoovFetchParams u = params;
 
-		@Override
-		protected List<HoovChapter> doInBackground(MyHoovFetchParams... params) {
-			List<HoovChapter> user=new ArrayList<HoovChapter>();
-			try 
-			{			
-				MyHoovFetchParams u = params[0];
+			HoovQueryBuilder qb = new HoovQueryBuilder();						
+			JSONObject q = new JSONObject();
+			q.put("document.id",u.userId);
 
-				HoovQueryBuilder qb = new HoovQueryBuilder();						
-				JSONObject q = new JSONObject();
-				q.put("document.id",u.userId);
-
-				JSONObject f = new JSONObject();
-				f.put("document.hoov",1);
+			JSONObject f = new JSONObject();
+			f.put("document.hoov",1);
 
 
 
-				Webb webb = Webb.create();
-				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
-						.param("q", q.toString())
-						.param("f", f.toString())
-						.ensureSuccess().asJsonArray().getBody();
-				for(int i=0;i<array.length();i++){
-					HoovChapter hc=new HoovChapter();
-					JSONObject obj = (JSONObject)array.get(i);
-					JSONObject doc = obj.getJSONObject("document");
-					JSONObject ids = obj.getJSONObject("_id");
-					hc.hoovText=doc.getString("hoov");
-					hc.mongoHoovId=ids.getString("$oid");
-					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
-					Long epoch=tmp;
-					Long curr_epoch = System.currentTimeMillis()/1000;
-					if(curr_epoch-epoch > 86400 )
-						hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
-					else if(curr_epoch-epoch > 3600)
-						hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
-					else if(curr_epoch-epoch > 60)
-						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
-					else
-						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";
-					hc.posted=true;
-					user.add(hc);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
+			Webb webb = Webb.create();
+			JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
+					.param("q", q.toString())
+					.param("f", f.toString())
+					.ensureSuccess().asJsonArray().getBody();
+			for(int i=0;i<array.length();i++){
+				HoovChapter hc=new HoovChapter();
+				JSONObject obj = (JSONObject)array.get(i);
+				JSONObject doc = obj.getJSONObject("document");
+				JSONObject ids = obj.getJSONObject("_id");
+				hc.hoovText=doc.getString("hoov");
+				hc.mongoHoovId=ids.getString("$oid");
+				long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
+				Long epoch=tmp;
+				Long curr_epoch = System.currentTimeMillis()/1000;
+				if(curr_epoch-epoch > 86400 )
+					hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
+				else if(curr_epoch-epoch > 3600)
+					hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
+				else if(curr_epoch-epoch > 60)
+					hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
+				else
+					hc.hoovDate=""+(curr_epoch-epoch+60)+"s";
+				hc.posted=true;
+				user.add(hc);
 			}
-			return user;	
-		}
 
-		@Override
-		protected void onPostExecute(List<HoovChapter>  data){
-			if(pd!=null && pd.isShowing()){
-				pd.dismiss();
-			}
-			super.onPostExecute(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
+		return user;	
 
 	}
-
 
 
 }
