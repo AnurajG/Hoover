@@ -1647,12 +1647,16 @@ containing a value of this type.
         public static final int abc_textfield_search_material=0x7f020032;
         public static final int background=0x7f020033;
         public static final int blue_tick=0x7f020034;
-        public static final int foter1=0x7f020035;
-        public static final int ic_launcher=0x7f020036;
-        public static final int linkedin_signin=0x7f020037;
-        public static final int loading=0x7f020038;
-        public static final int profile_img=0x7f020039;
-        public static final int seal=0x7f02003a;
+        public static final int down=0x7f020035;
+        public static final int foter1=0x7f020036;
+        public static final int greenup=0x7f020037;
+        public static final int ic_launcher=0x7f020038;
+        public static final int linkedin_signin=0x7f020039;
+        public static final int loading=0x7f02003a;
+        public static final int profile_img=0x7f02003b;
+        public static final int reddown=0x7f02003c;
+        public static final int seal=0x7f02003d;
+        public static final int up=0x7f02003e;
     }
     public static final class id {
         public static final int action_bar=0x7f090031;
@@ -1668,8 +1672,8 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f09002e;
         public static final int action_mode_bar_stub=0x7f09002d;
         public static final int action_mode_close_button=0x7f090020;
-        public static final int action_myprofile=0x7f09004f;
-        public static final int action_settings=0x7f09004e;
+        public static final int action_myprofile=0x7f090053;
+        public static final int action_settings=0x7f090052;
         public static final int activity_chooser_view_content=0x7f090021;
         public static final int activity_profile_welcome_text=0x7f090048;
         public static final int always=0x7f090014;
@@ -1690,8 +1694,12 @@ containing a value of this type.
         public static final int home=0x7f090000;
         public static final int homeAsUp=0x7f09000e;
         public static final int hoov_date=0x7f09004a;
+        public static final int hoov_down_button=0x7f09004c;
+        public static final int hoov_down_count=0x7f09004e;
         public static final int hoov_in=0x7f090041;
         public static final int hoov_text=0x7f090049;
+        public static final int hoov_up_button=0x7f09004b;
+        public static final int hoov_up_count=0x7f09004d;
         public static final int hoovdateView2=0x7f090045;
         public static final int hoovtextView=0x7f090044;
         public static final int icon=0x7f090026;
@@ -1701,9 +1709,9 @@ containing a value of this type.
         public static final int listMode=0x7f09000a;
         public static final int list_item=0x7f090025;
         public static final int middle=0x7f09001d;
-        public static final int my_hoov_date=0x7f09004c;
-        public static final int my_hoov_status=0x7f09004d;
-        public static final int my_hoov_text=0x7f09004b;
+        public static final int my_hoov_date=0x7f090050;
+        public static final int my_hoov_status=0x7f090051;
+        public static final int my_hoov_text=0x7f09004f;
         public static final int never=0x7f090017;
         public static final int none=0x7f09000f;
         public static final int normal=0x7f09000b;
@@ -1863,8 +1871,10 @@ containing a value of this type.
         public static final int app_name=0x7f0a0010;
         public static final int hello_world=0x7f0a0012;
         public static final int hoov_button_title=0x7f0a0015;
+        public static final int hoov_down_button_title=0x7f0a001a;
         public static final int hoov_edit_button_title=0x7f0a0017;
         public static final int hoov_edit_text=0x7f0a0016;
+        public static final int hoov_up_button_title=0x7f0a0019;
         public static final int title_activity_first=0x7f0a0013;
         public static final int title_activity_home=0x7f0a0014;
     }

@@ -1,18 +1,29 @@
 package com.hoover.linkedinoauth;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,13 +34,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.goebl.david.Response;
 import com.goebl.david.Webb;
+import com.goebl.david.WebbException;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovQueryBuilder;
@@ -52,7 +67,7 @@ public class HomeActivity extends ListActivity{
 		Intent alarmIntent = new Intent(this, SaveHoovService.class);
 		PendingIntent pending = PendingIntent.getService(this, 0, alarmIntent, 0);
 		final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-		
+
 		alarm.cancel(pending);
 		long interval = 30000;//milliseconds
 		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);*/
@@ -87,24 +102,24 @@ public class HomeActivity extends ListActivity{
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    // Inflate the menu items for use in the action bar
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.profile_view_actions, menu);
-	    return super.onCreateOptionsMenu(menu);
+		// Inflate the menu items for use in the action bar
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.profile_view_actions, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
-	    switch (item.getItemId()) {
-	        case R.id.action_myprofile:
-	        	Intent intent = new Intent(HomeActivity.this,MyHomeActivity.class);
-				startActivity(intent); 
-	            return true;
-	        case R.id.action_settings:
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+		case R.id.action_myprofile:
+			Intent intent = new Intent(HomeActivity.this,MyHomeActivity.class);
+			startActivity(intent); 
+			return true;
+		case R.id.action_settings:
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -118,6 +133,49 @@ public class HomeActivity extends ListActivity{
 
 		startActivity(myIntent);
 
+	}
+
+	public void myUPClickHandler(View v) {
+		RelativeLayout rl=(RelativeLayout)v.getParent();
+		final int position = getListView().getPositionForView(rl);
+		HoovChapter selectedHoov = new HoovChapter();
+		selectedHoov = hAdapter.hoovChapterList.get(position);
+		String hoovId=selectedHoov.mongoHoovId;
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		String userId = preferences.getString("userId", null);
+		TextView h_down_count = (TextView)rl.findViewById(R.id.hoov_down_count);
+		int currDownCount=Integer.parseInt((String)h_down_count.getText());
+		
+		int finalDownCount=hAdapter.updateUpCountView(position, v);
+		Intent intent = new Intent(this, SaveLikeDislikeService.class);
+		intent.putExtra(SaveLikeDislikeService.userId,userId);
+	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
+	    intent.putExtra(SaveLikeDislikeService.insertUp,true);
+	    if(finalDownCount<currDownCount)
+	    	intent.putExtra(SaveLikeDislikeService.deleteDown,true);
+	    startService(intent);
+	    System.out.println("yeah");
+	}
+	public void myDOWNClickHandler(View v) {
+		RelativeLayout rl=(RelativeLayout)v.getParent();
+		final int position = getListView().getPositionForView(rl);
+		HoovChapter selectedHoov = new HoovChapter();
+		selectedHoov = hAdapter.hoovChapterList.get(position);
+		String hoovId=selectedHoov.mongoHoovId;
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		String userId = preferences.getString("userId", null);
+		TextView h_up_count = (TextView)rl.findViewById(R.id.hoov_up_count);
+		int currUpCount=Integer.parseInt((String)h_up_count.getText());
+		
+		int finalUpCount=hAdapter.updateDownCountView(position, v);
+		Intent intent = new Intent(this, SaveLikeDislikeService.class);
+	    intent.putExtra(SaveLikeDislikeService.userId,userId);
+	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
+	    intent.putExtra(SaveLikeDislikeService.insertDown,true);
+	    if(finalUpCount<currUpCount)
+	    	intent.putExtra(SaveLikeDislikeService.deleteUp,true);
+	    startService(intent);	
+	    System.out.println("yeah");
 	}
 
 	public List<HoovChapter> getDataForListView()
@@ -142,11 +200,21 @@ public class HomeActivity extends ListActivity{
 		return hoovChaptersList;
 
 	}
+	public String getUserId()
+	{
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		String userId = preferences.getString("userId", null);
+		
+		return userId;
+
+	}
 	public class HoovListAdapter extends BaseAdapter{
 
 		String company;
 		String city;
 		List<HoovChapter> hoovChapterList = getDataForListView();
+		String userID=getUserId();
+		
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -173,18 +241,77 @@ public class HomeActivity extends ListActivity{
 			}
 			TextView h_text = (TextView)arg1.findViewById(R.id.hoov_text);
 			TextView h_date = (TextView)arg1.findViewById(R.id.hoov_date);
-
+			TextView h_up_count = (TextView)arg1.findViewById(R.id.hoov_up_count);
+			TextView h_down_count = (TextView)arg1.findViewById(R.id.hoov_down_count);
+			Button h_up_button=(Button)arg1.findViewById(R.id.hoov_up_button);
+			Button h_down_button=(Button)arg1.findViewById(R.id.hoov_down_button);
 			HoovChapter chapter = hoovChapterList.get(arg0);
-
+			
+			if(chapter.hoov_up_ids.contains(userID)){
+				h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
+				h_up_button.setEnabled(false);
+			}else if(chapter.hoov_down_ids.contains(userID)){
+				h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
+				h_down_button.setEnabled(false);
+			}
+				
 			h_text.setText(chapter.hoovText);
 			h_date.setText(chapter.hoovDate);
-
+			h_up_count.setText(String.valueOf(chapter.hoov_up_ids.size()));
+			h_down_count.setText(String.valueOf(chapter.hoov_down_ids.size()));
 			return arg1;
+		}
+		public int updateUpCountView(int arg0, View arg1) {
+			View p=(View) arg1.getParent();
+			TextView h_up_count = (TextView)p.findViewById(R.id.hoov_up_count);
+			TextView h_down_count = (TextView)p.findViewById(R.id.hoov_down_count);
+			
+			Button h_up_button = (Button)p.findViewById(R.id.hoov_up_button);
+			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
+			
+			String curr_up_value=(String)h_up_count.getText();
+			int final_up_value=Integer.parseInt(curr_up_value) + 1;
+			h_up_count.setText(String.valueOf(final_up_value));
+			
+			String curr_down_value=(String)h_down_count.getText();
+			int final_down_value=Integer.parseInt(curr_down_value);
+			if(!h_down_button.isEnabled()){
+				final_down_value= final_down_value- 1;
+				h_down_count.setText(String.valueOf(final_down_value));
+				h_down_button.setEnabled(true);
+				h_down_button.setBackground(getResources().getDrawable(R.drawable.down));
+			}
+			h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
+			h_up_button.setEnabled(false);
+			
+			return final_down_value;
+		}
+		public int updateDownCountView(int arg0, View arg1) {
+			View p=(View) arg1.getParent();
+			TextView h_down_count = (TextView)p.findViewById(R.id.hoov_down_count);
+			TextView h_up_count = (TextView)p.findViewById(R.id.hoov_up_count);
+			
+			Button h_up_button = (Button)p.findViewById(R.id.hoov_up_button);
+			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
+			
+			String curr_down_value=(String)h_down_count.getText();
+			int final_down_value=Integer.parseInt(curr_down_value) + 1;
+			h_down_count.setText(String.valueOf(final_down_value));
+			String curr_up_value=(String)h_up_count.getText();
+			int final_up_value=Integer.parseInt(curr_up_value);
+			if(!h_up_button.isEnabled()){
+				final_up_value=final_up_value - 1;
+				h_up_count.setText(String.valueOf(final_up_value));
+				h_up_button.setEnabled(true);
+				h_up_button.setBackground(getResources().getDrawable(R.drawable.up));
+			}
+			h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
+			h_down_button.setEnabled(false);
+			return final_up_value;
 		}
 
 	}
-
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void, List<HoovChapter>> {
+		public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void, List<HoovChapter>> {
 		@Override
 		protected void onPreExecute(){
 			pd = ProgressDialog.show(HomeActivity.this, "", "Fetching hoovs..",true);
@@ -203,23 +330,44 @@ public class HomeActivity extends ListActivity{
 				q.put("document.company",u.comapny);
 				q.put("document.city",u.city);
 
-				JSONObject f = new JSONObject();
+				/*JSONObject f = new JSONObject();
 				f.put("document.hoov",1);
+				
+				JSONObject g = new JSONObject();
+				g.put("document.id",1);*/
+				
 
 
 
 				Webb webb = Webb.create();
 				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
-						.param("q", q.toString())
-						.param("f", f.toString())
-						.ensureSuccess().asJsonArray().getBody();
+						.param("q", q.toString()).ensureSuccess().asJsonArray().getBody();
+						/*.param("f", f.toString())
+						.param("g", g.toString())*/
+						
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
 					JSONObject obj = (JSONObject)array.get(i);
 					JSONObject doc = obj.getJSONObject("document");
 					JSONObject ids = obj.getJSONObject("_id");
+					JSONArray ups = doc.getJSONArray("hoovUpIds");
+					JSONArray downs = doc.getJSONArray("hoovDownIds");
 					hc.hoovText=doc.getString("hoov");
 					hc.mongoHoovId=ids.getString("$oid");
+					hc.hoov_up_ids=new ArrayList<String>();
+					hc.hoov_down_ids =new ArrayList<String>();
+					if (ups != null) { 
+						int len = ups.length();
+						for (int j=0;j<len;j++){ 
+							hc.hoov_up_ids.add(ups.get(j).toString());
+						} 
+					} 
+					if (downs != null) { 
+						int len = downs.length();
+						for (int j=0;j<len;j++){ 
+							hc.hoov_down_ids.add(downs.get(j).toString());
+						} 
+					} 
 					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
 					Long epoch=tmp;
 					Long curr_epoch = System.currentTimeMillis()/1000;

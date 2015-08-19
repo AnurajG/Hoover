@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -63,7 +64,9 @@ public class SaveOfflineHoovService extends IntentService {
 					h.company=userCompany;
 					h.city=userCity;
 					h.hoov=en.text;
-
+					h.hoovUpIds =new ArrayList<String>();
+					h.hoovDownIds=new ArrayList<String>();
+					
 					HoovQueryBuilder qb = new HoovQueryBuilder();						
 
 					HttpClient httpClient = new DefaultHttpClient();

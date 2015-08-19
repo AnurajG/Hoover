@@ -56,6 +56,9 @@
             android:label="@string/title_activity_home" >
         </service>
         <service
+            android:name=".SaveLikeDislikeService">
+         </service>
+        <service
             android:name=".SaveOfflineHoovService"
             android:label="@string/title_activity_home" >
         </service>
