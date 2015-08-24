@@ -48,6 +48,7 @@ import com.goebl.david.WebbException;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovQueryBuilder;
+import com.hoover.util.NetworkUtil;
 
 public class HomeActivity extends ListActivity{
 
@@ -72,33 +73,40 @@ public class HomeActivity extends ListActivity{
 		long interval = 30000;//milliseconds
 		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);*/
 
-		hAdapter=new HoovListAdapter();
-		setListAdapter(hAdapter);
-		refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-		//refreshLayout.setOnRefreshListener(this);
-		hoov_in=(Button) findViewById(R.id.hoov_in);
-		hoov_in.setOnClickListener(new OnClickListener() {
+		Integer status = NetworkUtil.getConnectivityStatus(this);
 
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
-				startActivity(intent); 
+		if(status==NetworkUtil.TYPE_NOT_CONNECTED){
+			Intent noNetIntent = new Intent(this, NoNetConnectivity.class);
+			this.startService(noNetIntent);
+		}else{
+			hAdapter=new HoovListAdapter();
+			setListAdapter(hAdapter);
+			refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+			//refreshLayout.setOnRefreshListener(this);
+			hoov_in=(Button) findViewById(R.id.hoov_in);
+			hoov_in.setOnClickListener(new OnClickListener() {
 
-			} 
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
+					startActivity(intent); 
 
-		});
+				} 
 
-		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
+			});
 
-			public void onRefresh() {
-				hAdapter=new HoovListAdapter();
-				setListAdapter(hAdapter);
-				if (refreshLayout.isRefreshing()) {
-					refreshLayout.setRefreshing(false);
+			refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+
+				public void onRefresh() {
+					hAdapter=new HoovListAdapter();
+					setListAdapter(hAdapter);
+					if (refreshLayout.isRefreshing()) {
+						refreshLayout.setRefreshing(false);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -337,14 +345,25 @@ public class HomeActivity extends ListActivity{
 				g.put("document.id",1);*/
 				
 
+				JSONObject s = new JSONObject();
+				s.put("_id", "-1");
+				
+				//s={"priority": 1
 
 
 				Webb webb = Webb.create();
 				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
+<<<<<<< HEAD
 						.param("q", q.toString()).ensureSuccess().asJsonArray().getBody();
 						/*.param("f", f.toString())
 						.param("g", g.toString())*/
 						
+=======
+						.param("q", q.toString())
+						.param("f", f.toString())
+						.param("s", f.toString())
+						.ensureSuccess().asJsonArray().getBody();
+>>>>>>> e08cc1ed209425f46591a91665f9c9901c2e3deb
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
 					JSONObject obj = (JSONObject)array.get(i);
