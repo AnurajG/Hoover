@@ -353,17 +353,11 @@ public class HomeActivity extends ListActivity{
 
 				Webb webb = Webb.create();
 				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
-<<<<<<< HEAD
 						.param("q", q.toString()).ensureSuccess().asJsonArray().getBody();
 						/*.param("f", f.toString())
 						.param("g", g.toString())*/
 						
-=======
-						.param("q", q.toString())
-						.param("f", f.toString())
-						.param("s", f.toString())
-						.ensureSuccess().asJsonArray().getBody();
->>>>>>> e08cc1ed209425f46591a91665f9c9901c2e3deb
+
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
 					JSONObject obj = (JSONObject)array.get(i);
