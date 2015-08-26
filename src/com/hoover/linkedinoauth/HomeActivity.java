@@ -7,7 +7,9 @@ import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -35,6 +37,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -52,61 +56,53 @@ import com.hoover.util.NetworkUtil;
 
 public class HomeActivity extends ListActivity{
 
-	HoovListAdapter hAdapter;
-	private ProgressDialog pd;
 	private SwipeRefreshLayout refreshLayout;
 	String city;
 	String company;
-
 	Button hoov_in;
+	ListView listview;
+	ProgressDialog mProgressDialog;
+	HoovListAdapter adapter;
+	private int limit = 8;
+	private List<HoovChapter> HoovChapterlist_t = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		/*AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-		Intent alarmIntent = new Intent(this, SaveHoovService.class);
-		PendingIntent pending = PendingIntent.getService(this, 0, alarmIntent, 0);
-		final AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-
-		alarm.cancel(pending);
-		long interval = 30000;//milliseconds
-		alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);*/
-
-		Integer status = NetworkUtil.getConnectivityStatus(this);
+		//============================?
+		/*Integer status = NetworkUtil.getConnectivityStatus(this);
 
 		if(status==NetworkUtil.TYPE_NOT_CONNECTED){
 			Intent noNetIntent = new Intent(this, NoNetConnectivity.class);
 			this.startService(noNetIntent);
-		}else{
-			hAdapter=new HoovListAdapter();
-			setListAdapter(hAdapter);
-			refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-			//refreshLayout.setOnRefreshListener(this);
-			hoov_in=(Button) findViewById(R.id.hoov_in);
-			hoov_in.setOnClickListener(new OnClickListener() {
+		}else*/
+		
+		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
+		String userComapny = preferences.getString("userCompany", null);
+		String userCity = preferences.getString("userCity", null);
 
-				@Override
-				public void onClick(View arg0) {
-					Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
-					startActivity(intent); 
-
-				} 
-
-			});
-
-			refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-
-				public void onRefresh() {
-					hAdapter=new HoovListAdapter();
-					setListAdapter(hAdapter);
-					if (refreshLayout.isRefreshing()) {
-						refreshLayout.setRefreshing(false);
-					}
+		final HoovFetchParams params=new HoovFetchParams();
+		params.city=userCity;
+		params.comapny=userComapny;
+		new GetHoovsAsyncTask().execute(params);
+		refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+		hoov_in=(Button) findViewById(R.id.hoov_in);
+		hoov_in.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
+				startActivity(intent); 
+			} 
+		});
+		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				new GetHoovsAsyncTask().doInBackground(params);
+				if (refreshLayout.isRefreshing()) {
+					refreshLayout.setRefreshing(false);
 				}
-			});
-		}
+			}
+		});
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,7 +128,7 @@ public class HomeActivity extends ListActivity{
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		HoovChapter selectedHoov = new HoovChapter();
-		selectedHoov = hAdapter.hoovChapterList.get(position);
+		selectedHoov = adapter.hoovChapterList.get(position);
 		Intent myIntent = new Intent(HomeActivity.this, HoovDetailsActivity.class);
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
@@ -147,14 +143,14 @@ public class HomeActivity extends ListActivity{
 		RelativeLayout rl=(RelativeLayout)v.getParent();
 		final int position = getListView().getPositionForView(rl);
 		HoovChapter selectedHoov = new HoovChapter();
-		selectedHoov = hAdapter.hoovChapterList.get(position);
+		selectedHoov = adapter.hoovChapterList.get(position);
 		String hoovId=selectedHoov.mongoHoovId;
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		String userId = preferences.getString("userId", null);
 		TextView h_down_count = (TextView)rl.findViewById(R.id.hoov_down_count);
 		int currDownCount=Integer.parseInt((String)h_down_count.getText());
 		
-		int finalDownCount=hAdapter.updateUpCountView(position, v);
+		int finalDownCount=adapter.updateUpCountView(position, v);
 		Intent intent = new Intent(this, SaveLikeDislikeService.class);
 		intent.putExtra(SaveLikeDislikeService.userId,userId);
 	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
@@ -168,14 +164,14 @@ public class HomeActivity extends ListActivity{
 		RelativeLayout rl=(RelativeLayout)v.getParent();
 		final int position = getListView().getPositionForView(rl);
 		HoovChapter selectedHoov = new HoovChapter();
-		selectedHoov = hAdapter.hoovChapterList.get(position);
+		selectedHoov = adapter.hoovChapterList.get(position);
 		String hoovId=selectedHoov.mongoHoovId;
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		String userId = preferences.getString("userId", null);
 		TextView h_up_count = (TextView)rl.findViewById(R.id.hoov_up_count);
 		int currUpCount=Integer.parseInt((String)h_up_count.getText());
 		
-		int finalUpCount=hAdapter.updateDownCountView(position, v);
+		int finalUpCount=adapter.updateDownCountView(position, v);
 		Intent intent = new Intent(this, SaveLikeDislikeService.class);
 	    intent.putExtra(SaveLikeDislikeService.userId,userId);
 	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
@@ -183,30 +179,6 @@ public class HomeActivity extends ListActivity{
 	    if(finalUpCount<currUpCount)
 	    	intent.putExtra(SaveLikeDislikeService.deleteUp,true);
 	    startService(intent);	
-	    System.out.println("yeah");
-	}
-
-	public List<HoovChapter> getDataForListView()
-	{
-		List<HoovChapter> hoovChaptersList = new ArrayList<HoovChapter>();
-		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		String userComapny = preferences.getString("userCompany", null);
-		String userCity = preferences.getString("userCity", null);
-
-		GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
-		HoovFetchParams params=new HoovFetchParams();
-		params.city=userCity;
-		params.comapny=userComapny;
-		try {
-			hoovChaptersList=gtask.execute(params).get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-
-		return hoovChaptersList;
-
 	}
 	public String getUserId()
 	{
@@ -220,8 +192,17 @@ public class HomeActivity extends ListActivity{
 
 		String company;
 		String city;
-		List<HoovChapter> hoovChapterList = getDataForListView();
+		List<HoovChapter> hoovChapterList =null;
 		String userID=getUserId();
+		Context mcontext;
+		LayoutInflater inflater;
+		protected int count;
+		
+		public HoovListAdapter(Context con,List<HoovChapter> hoovChapterList) {
+			mcontext=con;
+			inflater = LayoutInflater.from(mcontext);
+			this.hoovChapterList = hoovChapterList;
+		}
 		
 		@Override
 		public int getCount() {
@@ -244,8 +225,7 @@ public class HomeActivity extends ListActivity{
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			if(arg1==null){
-				LayoutInflater inflater = (LayoutInflater)HomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				arg1 = inflater.inflate(R.layout.hoov_list, arg2,false);
+				arg1 = inflater.inflate(R.layout.hoov_list,null);
 			}
 			TextView h_text = (TextView)arg1.findViewById(R.id.hoov_text);
 			TextView h_date = (TextView)arg1.findViewById(R.id.hoov_date);
@@ -319,45 +299,50 @@ public class HomeActivity extends ListActivity{
 		}
 
 	}
-		public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void, List<HoovChapter>> {
+	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void,HoovFetchParams> {
 		@Override
 		protected void onPreExecute(){
-			pd = ProgressDialog.show(HomeActivity.this, "", "Fetching hoovs..",true);
+			super.onPreExecute();
+			mProgressDialog = new ProgressDialog(HomeActivity.this);
+			mProgressDialog.setTitle("Load Hoovs.....");
+			mProgressDialog.setMessage("Loading...");
+			mProgressDialog.setIndeterminate(false);
+			mProgressDialog.show();
 		}
 
 
 		@Override
-		protected List<HoovChapter> doInBackground(HoovFetchParams... params) {
-			List<HoovChapter> user=new ArrayList<HoovChapter>();
+		protected HoovFetchParams doInBackground(HoovFetchParams... params) {
+			HoovChapterlist_t=new ArrayList<HoovChapter>();
 			try 
 			{			
 				HoovFetchParams u = params[0];
-
-				HoovQueryBuilder qb = new HoovQueryBuilder();						
+				JSONArray array;
+				JSONObject p = new JSONObject();
+				p.put("document.company",u.comapny);
+				p.put("document.city",u.city);
 				JSONObject q = new JSONObject();
-				q.put("document.company",u.comapny);
-				q.put("document.city",u.city);
-
-				/*JSONObject f = new JSONObject();
-				f.put("document.hoov",1);
+				q.put("_id", -1);
+				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
+				URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+				URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+				url = uri.toURL();
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				Random random = new Random();
+				conn.setRequestMethod("GET");
+				conn.setRequestProperty("Content-Type", "application/json");
+				conn.setRequestProperty("Accept", "application/json");
 				
-				JSONObject g = new JSONObject();
-				g.put("document.id",1);*/
+				int s=conn.getResponseCode();
+					
+				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+				StringBuilder responseStrBuilder = new StringBuilder();
+
+				String inputStr;
+				while ((inputStr = streamReader.readLine()) != null)
+					responseStrBuilder.append(inputStr);
 				
-
-				JSONObject s = new JSONObject();
-				s.put("_id", "-1");
-				
-				//s={"priority": 1
-
-
-				Webb webb = Webb.create();
-				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
-						.param("q", q.toString()).ensureSuccess().asJsonArray().getBody();
-						/*.param("f", f.toString())
-						.param("g", g.toString())*/
-						
-
+				array = new JSONArray(responseStrBuilder.toString());
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
 					JSONObject obj = (JSONObject)array.get(i);
@@ -392,26 +377,161 @@ public class HomeActivity extends ListActivity{
 						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
 					else
 						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
-					user.add(hc);
+					HoovChapterlist_t.add(hc);
 				}
 
+			} 
+			catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
-				return null;
 			}
-			return user;	
+			return params[0];	
 		}
 
 		@Override
-		protected void onPostExecute(List<HoovChapter>  data){
-			if(pd!=null && pd.isShowing()){
-				pd.dismiss();
+		protected void onPostExecute(final HoovFetchParams  data){
+			listview = (ListView) findViewById(android.R.id.list);
+			adapter = new HoovListAdapter(HomeActivity.this,HoovChapterlist_t);
+			setListAdapter(adapter);
+			mProgressDialog.dismiss();
+			listview.setOnScrollListener(new OnScrollListener() {
+ 
+				@Override
+				public void onScrollStateChanged(AbsListView view,
+						int scrollState) { // TODO Auto-generated method stub
+					int threshold = 1;
+					int count = listview.getCount();
+ 
+					if (scrollState == SCROLL_STATE_IDLE) {
+						if (listview.getLastVisiblePosition() >= count
+								- threshold) {
+							// Execute LoadMoreDataTask AsyncTask
+							new LoadMoreDataTask().execute(data);
+						}
+					}
+				}
+ 
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem,
+						int visibleItemCount, int totalItemCount) {
+					// TODO Auto-generated method stub
+ 
+				}
+ 
+			});
+		
+		}
+		private class LoadMoreDataTask extends AsyncTask<HoovFetchParams, Void, Void> {
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				mProgressDialog.setTitle("Load More Hoovs.....");
+				mProgressDialog.setMessage("Loading more...");
+				mProgressDialog.setIndeterminate(false);
+				mProgressDialog.show();
 			}
-			super.onPostExecute(data);
+ 
+			@Override
+			protected Void doInBackground(HoovFetchParams... params) {
+				// Create the array
+
+				HoovChapterlist_t=new ArrayList<HoovChapter>();
+				try 
+				{			
+					HoovFetchParams u = params[0];
+					JSONArray array;
+					JSONObject p = new JSONObject();
+					p.put("document.company",u.comapny);
+					p.put("document.city",u.city);
+					limit=limit+8;
+					JSONObject q = new JSONObject();
+					q.put("_id", -1);
+					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
+					URL url = new URL(url_str);
+					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+					url = uri.toURL();
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					Random random = new Random();
+					conn.setRequestMethod("GET");
+					conn.setRequestProperty("Content-Type", "application/json");
+					conn.setRequestProperty("Accept", "application/json");
+					
+					int s=conn.getResponseCode();
+						
+					BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+					StringBuilder responseStrBuilder = new StringBuilder();
+
+					String inputStr;
+					while ((inputStr = streamReader.readLine()) != null)
+						responseStrBuilder.append(inputStr);
+					
+					array = new JSONArray(responseStrBuilder.toString());
+					for(int i=0;i<array.length();i++){
+						HoovChapter hc=new HoovChapter();
+						JSONObject obj = (JSONObject)array.get(i);
+						JSONObject doc = obj.getJSONObject("document");
+						JSONObject ids = obj.getJSONObject("_id");
+						JSONArray ups = doc.getJSONArray("hoovUpIds");
+						JSONArray downs = doc.getJSONArray("hoovDownIds");
+						hc.hoovText=doc.getString("hoov");
+						hc.mongoHoovId=ids.getString("$oid");
+						hc.hoov_up_ids=new ArrayList<String>();
+						hc.hoov_down_ids =new ArrayList<String>();
+						if (ups != null) { 
+							int len = ups.length();
+							for (int j=0;j<len;j++){ 
+								hc.hoov_up_ids.add(ups.get(j).toString());
+							} 
+						} 
+						if (downs != null) { 
+							int len = downs.length();
+							for (int j=0;j<len;j++){ 
+								hc.hoov_down_ids.add(downs.get(j).toString());
+							} 
+						} 
+						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
+						Long epoch=tmp;
+						Long curr_epoch = System.currentTimeMillis()/1000;
+						if(curr_epoch-epoch > 86400 )
+							hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
+						else if(curr_epoch-epoch > 3600)
+							hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
+						else if(curr_epoch-epoch > 60)
+							hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
+						else
+							hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+						HoovChapterlist_t.add(hc);
+					}
+
+				} 
+				catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+				return null;	
+			
+			}
+ 
+			@Override
+			protected void onPostExecute(Void result) {
+				int position = listview.getLastVisiblePosition();
+				adapter = new HoovListAdapter(HomeActivity.this,HoovChapterlist_t);
+				listview.setAdapter(adapter);
+				listview.setSelectionFromTop(position, 0);
+				mProgressDialog.dismiss();
+			}
 		}
 
 	}
-
-
-
 }
