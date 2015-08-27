@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.json.simple.parser.JSONParser;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,12 +17,10 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
+//import org.json.simple.parser.JSONParser;
 
 public class FirstActivity extends Activity {
 	private ProgressDialog pd;
@@ -77,7 +74,7 @@ public class FirstActivity extends Activity {
 			GetUserAsyncTask tsk= new GetUserAsyncTask();
 			tsk.execute(uuid);
 		}else{
-			Intent intent = new Intent(FirstActivity.this,HomeActivity.class);
+			Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
 			startActivity(intent); 
 		}
 
@@ -160,7 +157,7 @@ public class FirstActivity extends Activity {
 				editor.commit();
 
 				//this intent is used to open other activity wich contains another webView
-				Intent intent = new Intent(FirstActivity.this,HomeActivity.class);
+				Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
 				startActivity(intent); 
 			}
 

@@ -3,7 +3,6 @@ package com.hoover.linkedinoauth;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.goebl.david.Webb;
+import com.goebl.david.WebbException;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovQueryBuilder;
@@ -84,14 +84,18 @@ public class HomeActivity extends ListActivity{
 				@Override
 
 				public void onRefresh() {
-					hAdapter=new HoovListAdapter();
-					setListAdapter(hAdapter);
+					PopulateAdapterAsyncTask tsk = new PopulateAdapterAsyncTask();
+					Void v = null;
+					tsk.execute(v);
 					if (refreshLayout.isRefreshing()) {
 						refreshLayout.setRefreshing(false);
 					}
 				}
 			});
 		}
+		PopulateAdapterAsyncTask tsk = new PopulateAdapterAsyncTask();
+		Void v = null;
+		tsk.execute(v);
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,7 +131,26 @@ public class HomeActivity extends ListActivity{
 		startActivity(myIntent);
 
 	}
+	public class PopulateAdapterAsyncTask extends AsyncTask<Void, Void, Boolean>{
+		@Override
+		protected void onPreExecute(){
+			pd = ProgressDialog.show(HomeActivity.this, "", "Fetching Hoovs..",true);
+		}
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			hAdapter.hoovChapterList=getDataForListView();
+			return true;
+		}
 
+		@Override
+		protected void onPostExecute(Boolean b){
+			if(pd!=null && pd.isShowing()){
+				pd.dismiss();
+			}
+			hAdapter.notifyDataSetChanged();
+			super.onPostExecute(b);
+		}
+	}
 	public List<HoovChapter> getDataForListView()
 	{
 		List<HoovChapter> hoovChaptersList = new ArrayList<HoovChapter>();
@@ -135,17 +158,11 @@ public class HomeActivity extends ListActivity{
 		String userComapny = preferences.getString("userCompany", null);
 		String userCity = preferences.getString("userCity", null);
 
-		GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
+		//GetHoovsAsyncTask gtask=new GetHoovsAsyncTask();
 		HoovFetchParams params=new HoovFetchParams();
 		params.city=userCity;
 		params.comapny=userComapny;
-		try {
-			hoovChaptersList=gtask.execute(params).get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+		hoovChaptersList=fetchAllHoovs(params);
 
 		return hoovChaptersList;
 
@@ -154,7 +171,7 @@ public class HomeActivity extends ListActivity{
 
 		String company;
 		String city;
-		List<HoovChapter> hoovChapterList = getDataForListView();
+		List<HoovChapter> hoovChapterList = new ArrayList<HoovChapter>();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -192,35 +209,29 @@ public class HomeActivity extends ListActivity{
 
 	}
 
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void, List<HoovChapter>> {
-		@Override
-		protected void onPreExecute(){
-			pd = ProgressDialog.show(HomeActivity.this, "", "Fetching hoovs..",true);
-		}
+	public List<HoovChapter> fetchAllHoovs(HoovFetchParams params) {
+
+		List<HoovChapter> user=new ArrayList<HoovChapter>();
+		try 
+		{			
+			HoovFetchParams u = params;
+
+			HoovQueryBuilder qb = new HoovQueryBuilder();						
+			JSONObject q = new JSONObject();
+			q.put("document.company",u.comapny);
+			q.put("document.city",u.city);
+
+			JSONObject f = new JSONObject();
+			f.put("document.hoov",1);
+
+			JSONObject s = new JSONObject();
+			s.put("_id", "-1");
+
+			//s={"priority": 1
 
 
-		@Override
-		protected List<HoovChapter> doInBackground(HoovFetchParams... params) {
-			List<HoovChapter> user=new ArrayList<HoovChapter>();
-			try 
-			{			
-				HoovFetchParams u = params[0];
-
-				HoovQueryBuilder qb = new HoovQueryBuilder();						
-				JSONObject q = new JSONObject();
-				q.put("document.company",u.comapny);
-				q.put("document.city",u.city);
-
-				JSONObject f = new JSONObject();
-				f.put("document.hoov",1);
-
-				JSONObject s = new JSONObject();
-				s.put("_id", "-1");
-				
-				//s={"priority": 1
-
-
-				Webb webb = Webb.create();
+			Webb webb = Webb.create();
+			try{
 				JSONArray array=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov").param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
 						.param("q", q.toString())
 						.param("f", f.toString())
@@ -246,23 +257,20 @@ public class HomeActivity extends ListActivity{
 						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
 					user.add(hc);
 				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
+			}catch (WebbException we){
+				we.printStackTrace();
 			}
-			return user;	
-		}
 
-		@Override
-		protected void onPostExecute(List<HoovChapter>  data){
-			if(pd!=null && pd.isShowing()){
-				pd.dismiss();
-			}
-			super.onPostExecute(data);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
+		return user;	
+
 
 	}
+
 
 
 

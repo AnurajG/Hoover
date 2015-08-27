@@ -10,6 +10,7 @@ public class Hoov {
 	public String hoov;
 	public ArrayList<String> hoovUpIds;
 	public ArrayList<String> hoovDownIds;
+	public String path;
 	
 	
 }
