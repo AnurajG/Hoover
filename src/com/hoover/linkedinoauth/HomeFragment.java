@@ -15,8 +15,10 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,7 +48,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	String userId;
 	private Context context;
 	Button hoov_in;
-	//ListView listview;
+	boolean noMoreDataToLoad=false;
 	ProgressDialog mProgressDialog;
 	HoovListAdapter adapter;
 	private int limit = 8;
@@ -413,7 +415,19 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					int count = getListView().getCount();
 
 					if (scrollState == SCROLL_STATE_IDLE) {
-						if (getListView().getLastVisiblePosition() >= count
+						if(noMoreDataToLoad){
+							AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+							alertDialog.setTitle("Alert");
+							alertDialog.setMessage("No more hoovs to show");
+							alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+							    new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) {
+							            dialog.dismiss();
+							        }
+							    });
+							alertDialog.show();
+							
+						}else if (getListView().getLastVisiblePosition() >= count
 								- threshold) {
 							// Execute LoadMoreDataTask AsyncTask
 							new LoadMoreDataTask().execute(data);
@@ -476,6 +490,9 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						responseStrBuilder.append(inputStr);
 
 					array = new JSONArray(responseStrBuilder.toString());
+					if(array.length()<limit){
+						noMoreDataToLoad=true;
+					}
 					for(int i=0;i<array.length();i++){
 						HoovChapter hc=new HoovChapter();
 						JSONObject obj = (JSONObject)array.get(i);
