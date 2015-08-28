@@ -36,7 +36,7 @@
             android:label="@string/title_activity_first" >
         </activity>
          <activity
-            android:name=".HomeActivity"
+            android:name=".HomeFragment"
             android:label="@string/title_activity_home" >
         </activity>
         <activity

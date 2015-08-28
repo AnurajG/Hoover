@@ -22,6 +22,7 @@ public class HomeActivityNew extends FragmentActivity{
 	FragmentManager fm;
 	String userComapny;
 	String userCity;
+	String userId;
 	HomePageAdapter pageAdapter;
 	Button hoov_in;
 	SlidingTabLayout tabs;
@@ -55,6 +56,7 @@ public class HomeActivityNew extends FragmentActivity{
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		userComapny = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
+		userId = preferences.getString("userId", null);
 
 		setContentView(R.layout.activity_home_new);
 
@@ -106,8 +108,8 @@ public class HomeActivityNew extends FragmentActivity{
 
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
-		fList.add(HomeFragment.newInstance("Fragment 1",this,userComapny,userCity));
-		fList.add(HomeTopFragment.newInstance("Fragment 2",this,userComapny,userCity)); 
+		fList.add(HomeFragment.newInstance("Fragment 1",this,userComapny,userCity,userId));
+		fList.add(HomeTopFragment.newInstance("Fragment 2",this,userComapny,userCity,userId)); 
 		return fList;
 
 	}
