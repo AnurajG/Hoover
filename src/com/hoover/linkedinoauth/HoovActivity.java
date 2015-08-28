@@ -89,7 +89,7 @@ public class HoovActivity extends Activity implements OnClickListener{
 			//mServiceIntent.putExtra("hoovText", hoovText.getText().toString());
 			getApplicationContext().startService(mServiceIntent);
 
-			Intent intent = new Intent(HoovActivity.this,HomeFragment.class);
+			Intent intent = new Intent(HoovActivity.this,HomeActivityNew.class);
 			startActivity(intent); 
 			return null;
 		}

@@ -52,7 +52,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	private int limit = 8;
 	private List<HoovChapter> HoovChapterlist_t = null;
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
-	
+
 	public static final HomeFragment newInstance(String message,Context context, String comp, String cit,String id) {
 		HomeFragment f = new HomeFragment(context,comp,cit,id);
 		Bundle bdl = new Bundle(1);
@@ -68,8 +68,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		this.city=cit;
 		this.userId=id;
 	}
-	
-	
+
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view;
@@ -111,8 +111,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		});
 		return view;
 	}
-	
-	
+
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		HoovChapter selectedHoov = new HoovChapter();
@@ -137,16 +137,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		//String userId = preferences.getString("userId", null);
 		TextView h_down_count = (TextView)rl.findViewById(R.id.hoov_down_count);
 		int currDownCount=Integer.parseInt((String)h_down_count.getText());
-		
+
 		int finalDownCount=adapter.updateUpCountView(position, v);
 		Intent intent = new Intent(getActivity(), SaveLikeDislikeService.class);
 		intent.putExtra(SaveLikeDislikeService.userId,userId);
-	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
-	    intent.putExtra(SaveLikeDislikeService.insertUp,true);
-	    if(finalDownCount<currDownCount)
-	    	intent.putExtra(SaveLikeDislikeService.deleteDown,true);
-	    getActivity().startService(intent);
-	    System.out.println("yeah");
+		intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
+		intent.putExtra(SaveLikeDislikeService.insertUp,true);
+		if(finalDownCount<currDownCount)
+			intent.putExtra(SaveLikeDislikeService.deleteDown,true);
+		getActivity().startService(intent);
+		System.out.println("yeah");
 	}
 	public void myDOWNClickHandler(View v) {
 		RelativeLayout rl=(RelativeLayout)v.getParent();
@@ -158,21 +158,21 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		//String userId = preferences.getString("userId", null);
 		TextView h_up_count = (TextView)rl.findViewById(R.id.hoov_up_count);
 		int currUpCount=Integer.parseInt((String)h_up_count.getText());
-		
+
 		int finalUpCount=adapter.updateDownCountView(position, v);
 		Intent intent = new Intent(getActivity(), SaveLikeDislikeService.class);
-	    intent.putExtra(SaveLikeDislikeService.userId,userId);
-	    intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
-	    intent.putExtra(SaveLikeDislikeService.insertDown,true);
-	    if(finalUpCount<currUpCount)
-	    	intent.putExtra(SaveLikeDislikeService.deleteUp,true);
-	    getActivity().startService(intent);	
+		intent.putExtra(SaveLikeDislikeService.userId,userId);
+		intent.putExtra(SaveLikeDislikeService.hoovId,hoovId);
+		intent.putExtra(SaveLikeDislikeService.insertDown,true);
+		if(finalUpCount<currUpCount)
+			intent.putExtra(SaveLikeDislikeService.deleteUp,true);
+		getActivity().startService(intent);	
 	}
 	public String getUserId()
 	{
 		//SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		//String userId = preferences.getString("userId", null);
-		
+
 		return userId;
 
 	}
@@ -185,13 +185,13 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		Context mcontext;
 		LayoutInflater inflater;
 		protected int count;
-		
+
 		public HoovListAdapter(Context con,List<HoovChapter> hoovChapterList) {
 			mcontext=con;
 			inflater = LayoutInflater.from(mcontext);
 			this.hoovChapterList = hoovChapterList;
 		}
-		
+
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -221,8 +221,25 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			TextView h_down_count = (TextView)arg1.findViewById(R.id.hoov_down_count);
 			Button h_up_button=(Button)arg1.findViewById(R.id.hoov_up_button);
 			Button h_down_button=(Button)arg1.findViewById(R.id.hoov_down_button);
-			HoovChapter chapter = hoovChapterList.get(arg0);
+
+
+			View.OnClickListener upHandler = new View.OnClickListener() {
+				public void onClick(View v) {
+					myUPClickHandler(v);
+				}
+			};
+
+			View.OnClickListener downHandler = new View.OnClickListener() {
+				public void onClick(View v) {
+					myDOWNClickHandler(v);
+				}
+			};
+
+			h_up_button.setOnClickListener(upHandler);
+			h_down_button.setOnClickListener(downHandler);
 			
+			HoovChapter chapter = hoovChapterList.get(arg0);
+
 			if(chapter.hoov_up_ids.contains(userID)){
 				h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
 				h_up_button.setEnabled(false);
@@ -230,7 +247,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
 				h_down_button.setEnabled(false);
 			}
-				
+
 			h_text.setText(chapter.hoovText);
 			h_date.setText(chapter.hoovDate);
 			h_up_count.setText(String.valueOf(chapter.hoov_up_ids.size()));
@@ -241,14 +258,14 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			View p=(View) arg1.getParent();
 			TextView h_up_count = (TextView)p.findViewById(R.id.hoov_up_count);
 			TextView h_down_count = (TextView)p.findViewById(R.id.hoov_down_count);
-			
+
 			Button h_up_button = (Button)p.findViewById(R.id.hoov_up_button);
 			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
-			
+
 			String curr_up_value=(String)h_up_count.getText();
 			int final_up_value=Integer.parseInt(curr_up_value) + 1;
 			h_up_count.setText(String.valueOf(final_up_value));
-			
+
 			String curr_down_value=(String)h_down_count.getText();
 			int final_down_value=Integer.parseInt(curr_down_value);
 			if(!h_down_button.isEnabled()){
@@ -259,17 +276,17 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			}
 			h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
 			h_up_button.setEnabled(false);
-			
+
 			return final_down_value;
 		}
 		public int updateDownCountView(int arg0, View arg1) {
 			View p=(View) arg1.getParent();
 			TextView h_down_count = (TextView)p.findViewById(R.id.hoov_down_count);
 			TextView h_up_count = (TextView)p.findViewById(R.id.hoov_up_count);
-			
+
 			Button h_up_button = (Button)p.findViewById(R.id.hoov_up_button);
 			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
-			
+
 			String curr_down_value=(String)h_down_count.getText();
 			int final_down_value=Integer.parseInt(curr_down_value) + 1;
 			h_down_count.setText(String.valueOf(final_down_value));
@@ -320,16 +337,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				conn.setRequestMethod("GET");
 				conn.setRequestProperty("Content-Type", "application/json");
 				conn.setRequestProperty("Accept", "application/json");
-				
+
 				int s=conn.getResponseCode();
-					
+
 				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
 				StringBuilder responseStrBuilder = new StringBuilder();
 
 				String inputStr;
 				while ((inputStr = streamReader.readLine()) != null)
 					responseStrBuilder.append(inputStr);
-				
+
 				array = new JSONArray(responseStrBuilder.toString());
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
@@ -388,13 +405,13 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			setListAdapter(adapter);
 			mProgressDialog.dismiss();
 			getListView().setOnScrollListener(new OnScrollListener() {
- 
+
 				@Override
 				public void onScrollStateChanged(AbsListView view,
 						int scrollState) { // TODO Auto-generated method stub
 					int threshold = 1;
 					int count = getListView().getCount();
- 
+
 					if (scrollState == SCROLL_STATE_IDLE) {
 						if (getListView().getLastVisiblePosition() >= count
 								- threshold) {
@@ -403,16 +420,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						}
 					}
 				}
- 
+
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem,
 						int visibleItemCount, int totalItemCount) {
 					// TODO Auto-generated method stub
- 
+
 				}
- 
+
 			});
-		
+
 		}
 		private class LoadMoreDataTask extends AsyncTask<HoovFetchParams, Void, Void> {
 			@Override
@@ -423,7 +440,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				mProgressDialog.setIndeterminate(false);
 				mProgressDialog.show();
 			}
- 
+
 			@Override
 			protected Void doInBackground(HoovFetchParams... params) {
 				// Create the array
@@ -448,16 +465,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					conn.setRequestMethod("GET");
 					conn.setRequestProperty("Content-Type", "application/json");
 					conn.setRequestProperty("Accept", "application/json");
-					
+
 					int s=conn.getResponseCode();
-						
+
 					BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
 					StringBuilder responseStrBuilder = new StringBuilder();
 
 					String inputStr;
 					while ((inputStr = streamReader.readLine()) != null)
 						responseStrBuilder.append(inputStr);
-					
+
 					array = new JSONArray(responseStrBuilder.toString());
 					for(int i=0;i<array.length();i++){
 						HoovChapter hc=new HoovChapter();
@@ -508,9 +525,9 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					return null;
 				}
 				return null;	
-			
+
 			}
- 
+
 			@Override
 			protected void onPostExecute(Void result) {
 				int position = getListView().getLastVisiblePosition();
@@ -525,6 +542,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	@Override
 	public void onRefresh() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

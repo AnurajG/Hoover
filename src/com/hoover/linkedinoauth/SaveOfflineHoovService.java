@@ -2,10 +2,7 @@ package com.hoover.linkedinoauth;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -20,8 +17,8 @@ import org.json.JSONObject;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
+import com.goebl.david.Webb;
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovQueryBuilder;
 
@@ -29,12 +26,12 @@ public class SaveOfflineHoovService extends IntentService {
 	private String userId;
 	private String userCompany;
 	private String userCity;
-	
+
 	private ArrayList<Integer> success=new ArrayList<Integer>();
 	public SaveOfflineHoovService() {
 		super(SaveOfflineHoovService.class.getName());
 	}
-	
+
 	public class x {
 		public Integer key;
 		public String text;
@@ -55,7 +52,7 @@ public class SaveOfflineHoovService extends IntentService {
 				JSONArray array=new JSONArray(hoovArray);
 				for(int i=0;i<array.length();i++){
 					JSONObject obj = (JSONObject)array.get(i);
-					
+
 					x en=new x();
 					en.key=i;
 					en.text=obj.getString("hoovText");
@@ -65,9 +62,33 @@ public class SaveOfflineHoovService extends IntentService {
 					h.city=userCity;
 					h.hoov=en.text;
 
+					String path=null;
+
+					if(obj.getString("parentId")!=null){
+
+						JSONObject f = new JSONObject();
+						f.put("document.path",1);
+
+						Webb webb = Webb.create();
+						JSONObject parent=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov/"+obj.getString("parentId")).param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
+								.ensureSuccess().asJsonObject().getBody();
+						JSONObject d = parent.getJSONObject("document");
+						String p = d.getString("path");
+
+
+						if(p==null || p.compareTo("null")==0){
+							path=","+obj.getString("parentId")+",";
+						}else{
+							path=p+","+obj.getString("parentId")+",";
+						}
+
+					}
+					h.path=path;
+
+
 					h.hoovUpIds =new ArrayList<String>();
 					h.hoovDownIds=new ArrayList<String>();
-					
+
 					HoovQueryBuilder qb = new HoovQueryBuilder();						
 
 					HttpClient httpClient = new DefaultHttpClient();
@@ -123,7 +144,7 @@ public class SaveOfflineHoovService extends IntentService {
 		@Override
 		protected Integer doInBackground(x... arg0) {
 
-			
+
 
 		}
 

@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
     android:descendantFocusability="blocksDescendants" >
-
 
     <TextView
         android:id="@+id/hoov_text"
@@ -34,7 +33,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/up"
-        android:onClick="myUPClickHandler"
         android:textColor="#925FAE" />
 
     <Button
@@ -45,7 +43,6 @@
         android:layout_marginRight="25dp"
         android:layout_toLeftOf="@+id/hoov_up_button"
         android:background="@drawable/down"
-        android:onClick="myDOWNClickHandler"
         android:textColor="#925FAE" />
 
     <TextView
