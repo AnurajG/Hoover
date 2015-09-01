@@ -105,7 +105,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				new GetHoovsAsyncTask().doInBackground(params);
+				new GetHoovsAsyncTask().execute(params);
 				if (refreshLayout.isRefreshing()) {
 					refreshLayout.setRefreshing(false);
 				}
@@ -559,6 +559,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	@Override
 	public void onRefresh() {
 		// TODO Auto-generated method stub
+		System.out.println("o yeah");
 
 	}
 }
