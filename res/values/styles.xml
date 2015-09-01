@@ -2,14 +2,15 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
 
-   
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
         <!-- API 11 theme customizations can go here. -->
     </style>
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <!-- API 11 theme customizations can go here. -->
+
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:typeface">normal</item>
     </style>
+
 </resources>

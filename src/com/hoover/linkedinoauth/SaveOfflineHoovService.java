@@ -64,7 +64,7 @@ public class SaveOfflineHoovService extends IntentService {
 
 					String path=null;
 
-					if(obj.getString("parentId")!=null){
+					if(obj.has("parentId") && obj.getString("parentId")!=null){
 
 						JSONObject f = new JSONObject();
 						f.put("document.path",1);
