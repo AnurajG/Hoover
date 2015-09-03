@@ -147,7 +147,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
-		Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
 		startActivity(myIntent);
 

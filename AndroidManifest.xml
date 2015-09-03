@@ -41,7 +41,8 @@
         </activity>
         <activity
             android:name=".HoovActivity"
-            android:label="@string/title_activity_home" >
+            android:label="@string/title_activity_home"
+            >
         </activity>
         <activity
             android:name=".HoovDetailsActivity"
