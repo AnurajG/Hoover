@@ -15,6 +15,10 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,7 +28,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +45,9 @@ import com.hoover.util.HoovFetchParams;
 
 public class HomeFragment extends ListFragment implements OnRefreshListener{
 
-	private SwipeRefreshLayout refreshLayout;
+	//private SwipeRefreshLayout refreshLayout;
+	private	PullToRefreshLayout mPullToRefreshLayout;
+	
 	String city;
 	String company;
 	String userId;
@@ -93,7 +98,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		params.city=city;
 		params.comapny=company;
 		new GetHoovsAsyncTask().execute(params);
-		refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+		//refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 		/*hoov_in=(Button) findViewById(R.id.hoov_in);
 		hoov_in.setOnClickListener(new OnClickListener() {
 			@Override
@@ -102,7 +107,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				startActivity(intent); 
 			} 
 		});*/
-		refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+		/*refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
 				new GetHoovsAsyncTask().execute(params);
@@ -110,8 +115,27 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					refreshLayout.setRefreshing(false);
 				}
 			}
-		});
+		});*/
 		return view;
+	}
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewCreated(view, savedInstanceState);
+		ViewGroup viewGroup = (ViewGroup) view;
+
+            // As we're using a ListFragment we create a PullToRefreshLayout manually
+            mPullToRefreshLayout = new PullToRefreshLayout(viewGroup.getContext());
+
+            // We can now setup the PullToRefreshLayout
+            ActionBarPullToRefresh.from(getActivity())
+                    // We need to insert the PullToRefreshLayout into the Fragment's ViewGroup
+                    .insertLayoutInto(viewGroup)
+                    // Here we mark just the ListView and it's Empty View as pullable
+                    .theseChildrenArePullable(android.R.id.list, android.R.id.empty)
+                    .listener(this)
+                    .setup(mPullToRefreshLayout);
+		
 	}
 
 
@@ -305,6 +329,119 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			return final_up_value;
 		}
 
+	}
+	public void onRefreshStarted(View view) {
+		// TODO Auto-generated method stub
+		
+		
+		//setListShown(false); // This will hide the listview and visible a round progress bar 
+		
+		
+		 new AsyncTask<Void, Void, Void>() {
+
+                @Override
+                protected Void doInBackground(Void... params) {
+        			HoovChapterlist_t=new ArrayList<HoovChapter>();
+        			try 
+        			{			
+        				JSONArray array;
+        				JSONObject p = new JSONObject();
+        				p.put("document.company",company);
+        				p.put("document.city",city);
+        				JSONObject q = new JSONObject();
+        				q.put("_id", -1);
+        				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
+        				URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+        				URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        				url = uri.toURL();
+        				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        				Random random = new Random();
+        				conn.setRequestMethod("GET");
+        				conn.setRequestProperty("Content-Type", "application/json");
+        				conn.setRequestProperty("Accept", "application/json");
+
+        				int s=conn.getResponseCode();
+
+        				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+        				StringBuilder responseStrBuilder = new StringBuilder();
+
+        				String inputStr;
+        				while ((inputStr = streamReader.readLine()) != null)
+        					responseStrBuilder.append(inputStr);
+
+        				array = new JSONArray(responseStrBuilder.toString());
+        				for(int i=0;i<array.length();i++){
+        					HoovChapter hc=new HoovChapter();
+        					JSONObject obj = (JSONObject)array.get(i);
+        					JSONObject doc = obj.getJSONObject("document");
+        					JSONObject ids = obj.getJSONObject("_id");
+        					JSONArray ups = doc.getJSONArray("hoovUpIds");
+        					JSONArray downs = doc.getJSONArray("hoovDownIds");
+        					hc.hoovText=doc.getString("hoov");
+        					hc.mongoHoovId=ids.getString("$oid");
+        					hc.hoov_up_ids=new ArrayList<String>();
+        					hc.hoov_down_ids =new ArrayList<String>();
+        					if (ups != null) { 
+        						int len = ups.length();
+        						for (int j=0;j<len;j++){ 
+        							hc.hoov_up_ids.add(ups.get(j).toString());
+        						} 
+        					} 
+        					if (downs != null) { 
+        						int len = downs.length();
+        						for (int j=0;j<len;j++){ 
+        							hc.hoov_down_ids.add(downs.get(j).toString());
+        						} 
+        					} 
+        					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
+        					Long epoch=tmp;
+        					Long curr_epoch = System.currentTimeMillis()/1000;
+        					if(curr_epoch-epoch > 86400 )
+        						hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
+        					else if(curr_epoch-epoch > 3600)
+        						hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
+        					else if(curr_epoch-epoch > 60)
+        						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
+        					else
+        						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+        					HoovChapterlist_t.add(hc);
+        				}
+
+        			} 
+        			catch (MalformedURLException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			} catch (IOException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        			}
+        			return null;	
+        		
+                }
+
+                @Override
+                protected void onPostExecute(Void result) {
+                   // super.onPostExecute(result);
+              
+                	adapter = new HoovListAdapter(context,HoovChapterlist_t);
+        			setListAdapter(adapter);
+                    
+                    // Notify PullToRefreshLayout that the refresh has finished
+                    mPullToRefreshLayout.setRefreshComplete();
+
+            // if you set the "setListShown(false)" then you have to 
+            //uncomment the below code segment
+                    
+//                    if (getView() != null) {
+//                        // Show the list again
+//                        setListShown(true);
+//                    }
+                }
+            }.execute();
+		
+		
 	}
 	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void,HoovFetchParams> {
 		@Override
@@ -556,10 +693,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		}
 
 	}
-	@Override
-	public void onRefresh() {
-		// TODO Auto-generated method stub
-		System.out.println("o yeah");
-
-	}
+	
+	
 }
