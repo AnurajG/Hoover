@@ -552,22 +552,24 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					int count = getListView().getCount();
 
 					if (scrollState == SCROLL_STATE_IDLE) {
-						if(noMoreDataToLoad){
-							AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-							alertDialog.setTitle("Alert");
-							alertDialog.setMessage("No more hoovs to show");
-							alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-							    new DialogInterface.OnClickListener() {
-							        public void onClick(DialogInterface dialog, int which) {
-							            dialog.dismiss();
-							        }
-							    });
-							alertDialog.show();
-							
-						}else if (getListView().getLastVisiblePosition() >= count
+						 if (getListView().getLastVisiblePosition() >= count
 								- threshold) {
+							 if(noMoreDataToLoad){
+									AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+									alertDialog.setTitle("Alert");
+									alertDialog.setMessage("No more hoovs to show");
+									alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+									    new DialogInterface.OnClickListener() {
+									        public void onClick(DialogInterface dialog, int which) {
+									            dialog.dismiss();
+									        }
+									    });
+									alertDialog.show();
+									
+								}else{
 							// Execute LoadMoreDataTask AsyncTask
 							new LoadMoreDataTask().execute(data);
+								}
 						}
 					}
 				}
