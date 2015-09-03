@@ -3,6 +3,7 @@ package com.hoover.linkedinoauth;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,6 +26,8 @@ public class HoovDetailsActivity extends Activity{
 		Intent intent = getIntent();
 
 		hoovText.setText(intent.getStringExtra("text"));
+		hoovText.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+			    getResources().getDimension(R.dimen.hoov_detail_text));
 		hoovDate.setText(intent.getStringExtra("date"));
 
 		mongoHoovId=intent.getStringExtra("mongodbHoovId");

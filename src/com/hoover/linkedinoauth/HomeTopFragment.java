@@ -35,6 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 
@@ -338,7 +339,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 					//JSONObject ids = obj.getJSONObject("_id");
 					JSONArray ups = obj.getJSONArray("_hoovUpIds");
 					JSONArray downs = obj.getJSONArray("_hoovDownIds");
-					hc.hoovText=obj.getString("_hoov");
+					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(obj.getString("_hoov"));
 					hc.mongoHoovId=obj.getString("_id");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
@@ -465,7 +466,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 						//JSONObject ids = obj.getJSONObject("_id");
 						JSONArray ups = obj.getJSONArray("_hoovUpIds");
 						JSONArray downs = obj.getJSONArray("_hoovDownIds");
-						hc.hoovText=obj.getString("_hoov");
+						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(obj.getString("_hoov"));
 						hc.mongoHoovId=obj.getString("_id");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
