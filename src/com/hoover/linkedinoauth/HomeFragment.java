@@ -147,6 +147,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
+		myIntent.putExtra("currentUserid",userId);
+		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
 		startActivity(myIntent);
@@ -393,6 +395,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
         							hc.hoov_down_ids.add(downs.get(j).toString());
         						} 
         					} 
+        					hc.hoovUserId =doc.getString("id");
         					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
         					Long epoch=tmp;
         					Long curr_epoch = System.currentTimeMillis()/1000;
@@ -498,6 +501,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					hc.mongoHoovId=ids.getString("$oid");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
+					hc.hoovUserId =doc.getString("id");
 					if (ups != null) { 
 						int len = ups.length();
 						for (int j=0;j<len;j++){ 
@@ -552,24 +556,24 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					int count = getListView().getCount();
 
 					if (scrollState == SCROLL_STATE_IDLE) {
-						 if (getListView().getLastVisiblePosition() >= count
+						if (getListView().getLastVisiblePosition() >= count
 								- threshold) {
-							 if(noMoreDataToLoad){
-									AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-									alertDialog.setTitle("Alert");
-									alertDialog.setMessage("No more hoovs to show");
-									alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-									    new DialogInterface.OnClickListener() {
-									        public void onClick(DialogInterface dialog, int which) {
-									            dialog.dismiss();
-									        }
-									    });
-									alertDialog.show();
-									
-								}else{
+							if(noMoreDataToLoad){
+								AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+								alertDialog.setTitle("Alert");
+								alertDialog.setMessage("No more hoovs to show");
+								alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+								    new DialogInterface.OnClickListener() {
+								        public void onClick(DialogInterface dialog, int which) {
+								            dialog.dismiss();
+								        }
+								    });
+								alertDialog.show();
+								
+							}else{
 							// Execute LoadMoreDataTask AsyncTask
 							new LoadMoreDataTask().execute(data);
-								}
+							}
 						}
 					}
 				}
@@ -643,6 +647,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						hc.mongoHoovId=ids.getString("$oid");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
+						hc.hoovUserId =doc.getString("id");
 						if (ups != null) { 
 							int len = ups.length();
 							for (int j=0;j<len;j++){ 

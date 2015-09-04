@@ -28,13 +28,22 @@
         android:layout_marginTop="58dp"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <Button
+       <Button
         android:id="@+id/rehoov"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="@string/rehoov_button_title" />
+
+    <Button
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rehoov"
+        android:layout_alignLeft="@+id/rehoov"
+        android:layout_marginBottom="79dp"
+        android:text="@string/delete_my_hoov" 
+        android:visibility="invisible" />
 
 </RelativeLayout>

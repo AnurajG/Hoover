@@ -13,6 +13,7 @@
     <string name="action_myprofile_view">My Hoovs!</string>
     <string name="hoov_up_button_title">UP</string>
      <string name="hoov_down_button_title">DOWN</string>
+      <string name="delete_my_hoov">DELETE</string>
     
 
 </resources>
