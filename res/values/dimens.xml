@@ -3,5 +3,6 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">100dp</dimen>
     <dimen name="activity_vertical_margin">100dp</dimen>
+    <dimen name="hoov_detail_text">20dp</dimen>
 
 </resources>

@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovInsertParams;
 
 public class HoovActivity extends Activity implements OnClickListener{
@@ -145,7 +146,7 @@ public class HoovActivity extends Activity implements OnClickListener{
 		case R.id.button1:
 			SubmitHoovAsyncTask tsk= new SubmitHoovAsyncTask();
 			HoovInsertParams p = new HoovInsertParams();
-			p.text=hoovText.getText().toString();
+			p.text=EmojiMapUtil.replaceUnicodeEmojis(hoovText.getText().toString());
 			p.parentId=parentId;
 			tsk.execute(p);
 		case R.id.button_cancel:

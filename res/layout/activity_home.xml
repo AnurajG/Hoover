@@ -19,13 +19,4 @@
         </ListView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <Button
-        android:id="@+id/hoov_in"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/hoov_button_title" />
-
 </RelativeLayout>

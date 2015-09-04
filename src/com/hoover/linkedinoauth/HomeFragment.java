@@ -18,7 +18,6 @@ import org.json.JSONObject;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,7 +26,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +36,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 
@@ -379,7 +377,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
         					JSONObject ids = obj.getJSONObject("_id");
         					JSONArray ups = doc.getJSONArray("hoovUpIds");
         					JSONArray downs = doc.getJSONArray("hoovDownIds");
-        					hc.hoovText=doc.getString("hoov");
+        					hc.hoovText= EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
         					hc.mongoHoovId=ids.getString("$oid");
         					hc.hoov_up_ids=new ArrayList<String>();
         					hc.hoov_down_ids =new ArrayList<String>();
@@ -497,7 +495,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject ids = obj.getJSONObject("_id");
 					JSONArray ups = doc.getJSONArray("hoovUpIds");
 					JSONArray downs = doc.getJSONArray("hoovDownIds");
-					hc.hoovText=doc.getString("hoov");
+					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 					hc.mongoHoovId=ids.getString("$oid");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
@@ -643,7 +641,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						JSONObject ids = obj.getJSONObject("_id");
 						JSONArray ups = doc.getJSONArray("hoovUpIds");
 						JSONArray downs = doc.getJSONArray("hoovDownIds");
-						hc.hoovText=doc.getString("hoov");
+						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 						hc.mongoHoovId=ids.getString("$oid");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
