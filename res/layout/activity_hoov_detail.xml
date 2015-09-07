@@ -16,14 +16,6 @@
         android:text="TextView"
         android:textColor="#925FAE" />
 
-    <Button
-        android:id="@+id/rehoov"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/rehoov_button_title" />
-
     <TextView
         android:id="@+id/hoovdateView2"
         android:layout_width="wrap_content"
@@ -35,6 +27,15 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+       <Button
+        android:id="@+id/rehoov"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/rehoov_button_title"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#925FAE" />
 
@@ -54,5 +55,15 @@
         android:layout_below="@+id/hoovlinesep"
         android:layout_marginTop="10dp"
         android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rehoov"
+        android:layout_alignLeft="@+id/rehoov"
+        android:layout_marginBottom="79dp"
+        android:text="@string/delete_my_hoov" 
+        android:visibility="invisible" />
 
 </RelativeLayout>

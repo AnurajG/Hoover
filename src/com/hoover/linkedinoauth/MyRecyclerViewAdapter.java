@@ -3,6 +3,7 @@ package com.hoover.linkedinoauth;
 import java.util.ArrayList;
 
 import android.support.v7.widget.RecyclerView;
+//import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
  
         @Override
         public void onClick(View v) {
-            myClickListener.onItemClick(getAdapterPosition(), v);
+            myClickListener.onItemClick(getPosition(), v);
         }
     }
  

@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.hoover.linkedinoauth.HomeActivityNew" >
+
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="100"
+        android:title="@string/logout"
+        app:showAsAction="never"/>
+     <item
+        android:id="@+id/profile"
+        android:orderInCategory="100"
+        android:title="@string/view_my_profile"
+        app:showAsAction="never"/>
+	<item
+        android:id="@+id/deleteProfile"
+        android:orderInCategory="100"
+        android:title="@string/delete_my_profile"
+        app:showAsAction="never"/>
+     
+</menu>

@@ -8,6 +8,7 @@ public class HoovChapter {
 		public String hoovDate;
 		public String mongoHoovId;
 		public Boolean posted;
+		public String hoovUserId;
 		public ArrayList<String> hoov_up_ids;
 		public ArrayList<String> hoov_down_ids;
 		
