@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
@@ -22,48 +23,53 @@
         android:layout_centerHorizontal="true"
         android:text="@string/hoov_button_title" />
 
-</RelativeLayout-->
+</RelativeLayout
+-->
 
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
+
     <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-     <!-- Framelayout to display Fragments -->
+    <!-- Framelayout to display Fragments -->
+
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-     <!-- Listview to display slider menu -->
+    <!-- Listview to display slider menu -->
+
     <ListView
         android:id="@+id/list_slidermenu"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/list_background"
         android:choiceMode="singleChoice"
         android:divider="@color/list_divider"
-        android:dividerHeight="1dp"        
-        android:listSelector="@drawable/list_selector"
-        android:background="@color/list_background"/>
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_margin="10dp"
+        android:gravity="bottom|center_horizontal"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/hoov_in"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:gravity="center_vertical" 
-            android:orientation="horizontal">
-             <Button
-        android:id="@+id/hoov_in"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/hoov_button_title" />
-             </LinearLayout>
-    
+            android:text="@string/hoov_button_title" />
+
+    </LinearLayout>
+
 </android.support.v4.widget.DrawerLayout>

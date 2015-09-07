@@ -8,40 +8,40 @@
     <string name="title_activity_home">HOOVER-HOME</string>
     <string name="hoov_button_title">Hoov!</string>
     <string name="hoov_edit_text">What\'s in your mind</string>
+    <string name="rehoov_edit_text">Add to the Hoov.</string>
     <string name="hoov_edit_button_title">Hoov!</string>
     <string name="rehoov_button_title">ReHoov!</string>
     <string name="action_myprofile_view">My Hoovs!</string>
     <string name="hoov_up_button_title">UP</string>
-     <string name="hoov_down_button_title">DOWN</string>
-      <string name="delete_my_hoov">Delete</string>
-       <string name="logout">Logout</string>
-        <string name="view_my_profile">ViewProfile</string>
-         <string name="delete_my_profile">DeleteProfile</string>
-    
-<string name="drawer_open">Slider Menu Opened</string>
+    <string name="hoov_down_button_title">DOWN</string>
+    <string name="delete_my_hoov">Delete</string>
+    <string name="logout">Logout</string>
+    <string name="view_my_profile">ViewProfile</string>
+    <string name="delete_my_profile">DeleteProfile</string>
+    <string name="drawer_open">Slider Menu Opened</string>
     <string name="drawer_close">Slider Menu Closed</string>
-      <string name="desc_list_item_icon">Item Icon</string>
-     <!-- Navigation Drawer Menu Items -->
+    <string name="desc_list_item_icon">Item Icon</string>
+    <!-- Navigation Drawer Menu Items -->
     <string-array name="nav_drawer_items">
-        <item >Home</item>
-        <item >Settings</item>
-        <item >Profile</item>
-        <item >Hoovs</item>
-        <item >Rate us</item>
-        <item >Invite</item>
-        <item >Logout</item>
+        <item>Home</item>
+        <item>Settings</item>
+        <item>Profile</item>
+        <item>Hoovs</item>
+        <item>Rate us</item>
+        <item>Invite</item>
+        <item>Logout</item>
     </string-array>
-    
+
     <!-- Nav Drawer List Item Icons -->
     <!-- Keep them in order as the titles are in -->
     <array name="nav_drawer_icons">
         <item>@drawable/ic_home</item>
         <item>@drawable/ic_settings</item>
         <item>@drawable/ic_profile</item>
-        <item >@drawable/ic_hoov</item>
+        <item>@drawable/ic_hoov</item>
         <item>@drawable/ic_rateus</item>
         <item>@drawable/ic_invite</item>
         <item>@drawable/ic_logout</item>
     </array>
-    
+
 </resources>
