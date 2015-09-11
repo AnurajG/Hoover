@@ -349,6 +349,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
         				JSONObject p = new JSONObject();
         				p.put("document.company",company);
         				p.put("document.city",city);
+        				p.put("document.path","null");
         				JSONObject q = new JSONObject();
         				q.put("_id", -1);
         				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
@@ -467,6 +468,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				JSONObject p = new JSONObject();
 				p.put("document.company",u.comapny);
 				p.put("document.city",u.city);
+				p.put("document.path","null");
+				
 				JSONObject q = new JSONObject();
 				q.put("_id", -1);
 				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
@@ -611,6 +614,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject p = new JSONObject();
 					p.put("document.company",u.comapny);
 					p.put("document.city",u.city);
+					p.put("document.path","null");
 					limit=limit+8;
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);

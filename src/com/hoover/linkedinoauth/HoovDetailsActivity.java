@@ -41,10 +41,10 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.goebl.david.WebbException;
-import com.hoover.util.DataObject;
 import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovChapter;
@@ -52,7 +52,7 @@ import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovInsertParams;
 import com.hoover.util.HoovQueryBuilder;
 
-public class HoovDetailsActivity extends Activity implements OnClickListener{
+public class HoovDetailsActivity extends Activity{
 	private TextView hoovText;
 	private TextView hoovDate;
 
@@ -60,13 +60,14 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 	Button rehoov_in;
 	EditText myEditText;
 
-	Button deleteHoov;
+	ImageButton deleteHoov;
 
 	private RecyclerView mRecyclerView;
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager;
 	ProgressDialog mProgressDialog;
 	private List<HoovChapter> HoovChapterlist_t = null;
+	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	String userComapny;
 	String userCity;
 	String userId;
@@ -99,6 +100,7 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 		mongoHoovId=intent.getStringExtra("mongodbHoovId");
 
 		myEditText = (EditText) findViewById(R.id.commenttext);
+
 		// Check if no view has focus:
 		View view = this.getCurrentFocus();
 		if (view != null) {  
@@ -106,20 +108,39 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 			imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
 		}
 
-		//rehoov_in=(Button) findViewById(R.id.rehoov);
-		/*rehoov_in.setOnClickListener(new OnClickListener() {
+		rehoov_in=(Button) findViewById(R.id.submit);
+		rehoov_in.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent myIntent = new Intent(HoovDetailsActivity.this,CommentActivity.class);
-				myIntent.putExtra("mongodbParentId",mongoHoovId);
-				startActivity(myIntent); 
+				InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+				inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+				String toPost=myEditText.getText().toString();
+				myEditText.getText().clear();
+
+				SubmitHoovAsyncTask s_tsk= new SubmitHoovAsyncTask();
+				HoovInsertParams p = new HoovInsertParams();
+				p.text=EmojiMapUtil.replaceUnicodeEmojis(toPost);
+				p.parentId=mongoHoovId;
+				s_tsk.execute(p);
 
 			} 
 
-		});*/
+		});
 
-		deleteHoov=(Button) findViewById(R.id.delete);
+		deleteHoov=(ImageButton) findViewById(R.id.delete);
+		deleteHoov.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask();
+				tsk.execute();
+			} 
+
+		});
+
+
+
 		if(intent.getStringExtra("currentUserid").equals(intent.getStringExtra("selectedHoovUserId"))){
 			deleteHoov.setVisibility(Button.VISIBLE);
 		}
@@ -265,6 +286,7 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 					hc.mongoHoovId=obj.getString("_id");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
+					hc.hoovUserId=userId;
 					if (ups != null) { 
 						int len = ups.length();
 						for (int j=0;j<len;j++){ 
@@ -308,11 +330,8 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 		@Override
 		protected void onPostExecute(final Void  data){
 			super.onProgressUpdate(data);
-			ArrayList results = new ArrayList<DataObject>();
-			for(HoovChapter hc: HoovChapterlist_t){
-				DataObject d=new DataObject(hc.hoovText, hc.hoovDate);
-				results.add(d);
-			}
+
+			results.addAll(HoovChapterlist_t);
 			mAdapter = new MyRecyclerViewAdapter(results);
 			mRecyclerView.setAdapter(mAdapter);
 			mProgressDialog.dismiss();
@@ -335,15 +354,29 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 
 
 
-	private ArrayList<DataObject> getDataSet() {
-		ArrayList results = new ArrayList<DataObject>();
+	private ArrayList<HoovChapter> getDataSet() {
+		ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 		return results;
 	}
 
-	public class SubmitHoovAsyncTask extends AsyncTask<HoovInsertParams, Void, Boolean>{
+	public class SubmitHoovAsyncTask extends AsyncTask<HoovInsertParams, Void, String>{
 
 		@Override
-		protected Boolean doInBackground(HoovInsertParams... params) {
+		protected void onPostExecute(String result) {
+			super.onPostExecute(result);
+			if(result!=null){
+				HoovChapter hc=new HoovChapter();
+				hc.hoovText=result;
+				hc.hoovUserId=userId;
+				results.add(hc);
+				mAdapter = new MyRecyclerViewAdapter(results);
+				mRecyclerView.setAdapter(mAdapter);
+				mProgressDialog.dismiss();
+			}
+		}
+
+		@Override
+		protected String doInBackground(HoovInsertParams... params) {
 
 
 			Hoov h=new Hoov();
@@ -373,7 +406,7 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 				request.setEntity(param);
 				HttpResponse response = httpClient.execute(request);
 				if(response.getStatusLine().getStatusCode()<205){
-					System.out.println("success");
+					return h.hoov;
 				}
 				else{
 					System.out.println("");
@@ -392,24 +425,6 @@ public class HoovDetailsActivity extends Activity implements OnClickListener{
 		}
 
 
-	}
-
-	@Override
-	public void onClick(View v) {
-		InputMethodManager inputMethodManager = (InputMethodManager)  this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-		inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
-		switch (v.getId()) {
-		case R.id.delete:
-			DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask();
-			tsk.execute();
-		case R.id.submit:
-			SubmitHoovAsyncTask s_tsk= new SubmitHoovAsyncTask();
-			HoovInsertParams p = new HoovInsertParams();
-			p.text=EmojiMapUtil.replaceUnicodeEmojis(hoovText.getText().toString());
-			p.parentId=mongoHoovId;
-			s_tsk.execute(p);
-
-		}
 
 	}
 }

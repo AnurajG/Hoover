@@ -63,7 +63,7 @@ public class SaveOfflineHoovService extends IntentService {
 					h.hoov=en.text;
 
 					String path=null;
-
+					h.path="null";
 					if(obj.has("parentId") && obj.getString("parentId")!=null){
 
 						JSONObject f = new JSONObject();
@@ -81,9 +81,9 @@ public class SaveOfflineHoovService extends IntentService {
 						}else{
 							path=p+obj.getString("parentId")+",";
 						}
-
+						h.path=path;
 					}
-					h.path=path;
+
 
 
 					h.hoovUpIds =new ArrayList<String>();
