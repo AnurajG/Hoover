@@ -79,7 +79,7 @@ public class SaveOfflineHoovService extends IntentService {
 						if(p==null || p.compareTo("null")==0){
 							path=","+obj.getString("parentId")+",";
 						}else{
-							path=p+","+obj.getString("parentId")+",";
+							path=p+obj.getString("parentId")+",";
 						}
 
 					}

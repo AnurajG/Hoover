@@ -145,6 +145,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
+		myIntent.putExtra("path",selectedHoov.path);
 		myIntent.putExtra("currentUserid",userId);
 		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
@@ -500,6 +501,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
 					hc.hoovUserId =doc.getString("id");
+					hc.path=doc.getString("path");
+					
 					if (ups != null) { 
 						int len = ups.length();
 						for (int j=0;j<len;j++){ 
