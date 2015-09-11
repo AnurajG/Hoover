@@ -23,6 +23,8 @@ public class MyRecyclerViewAdapter extends RecyclerView
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
 	private ArrayList<HoovChapter> mDataset;
 	private static MyClickListener myClickListener;
+	private final Context context;
+	private final String currentuserId;
 
 	public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
@@ -32,6 +34,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		TextView downlabel;
 		Button h_up_button;
 		Button h_down_button;
+		Button del;
 		private final Context context;
 
 		//TextView dateTime;
@@ -43,11 +46,22 @@ public class MyRecyclerViewAdapter extends RecyclerView
 			downlabel = (TextView) itemView.findViewById(R.id.comment_down_count);
 			h_up_button=(Button)itemView.findViewById(R.id.comment_up_button);
 			h_down_button=(Button)itemView.findViewById(R.id.comment_down_button);
+			del=(Button)itemView.findViewById(R.id.delete_comment_button);
 			context = itemView.getContext();
+
 			//dateTime = (TextView) itemView.findViewById(R.id.textView2);
 			Log.i(LOG_TAG, "Adding Listener");
 			itemView.setOnClickListener(this);
 
+
+			View.OnClickListener delHandler = new View.OnClickListener() {
+				public void onClick(View v) {
+					int position = getPosition();
+					String hoovid=mDataset1.get(position).mongoHoovId;
+					DeleteHoovsAsyncTask tsk=new DeleteHoovsAsyncTask(context, hoovid);
+					tsk.execute();
+				}
+			};
 			View.OnClickListener upHandler = new View.OnClickListener() {
 				public void onClick(View v) {
 					//DataObjectHolder holder=(DataObjectHolder) v.getTag();
@@ -118,6 +132,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 
 			h_up_button.setOnClickListener(upHandler);
 			h_down_button.setOnClickListener(downHandler);
+			del.setOnClickListener(delHandler);
 
 		}
 
@@ -131,8 +146,10 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		this.myClickListener = myClickListener;
 	}
 
-	public MyRecyclerViewAdapter(ArrayList<HoovChapter> myDataset) {
+	public MyRecyclerViewAdapter(ArrayList<HoovChapter> myDataset, Context mContext, String id) {
 		mDataset = myDataset;
+		context=mContext;
+		currentuserId=id;
 	}
 
 	@Override
@@ -150,6 +167,16 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		holder.label.setText(mDataset.get(position).hoovText);
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
+		if(!mDataset.get(position).hoovUserId.equals(currentuserId))
+			holder.del.setEnabled(false);
+
+		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
+			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
+			holder.h_up_button.setEnabled(false);
+		}else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
+			holder.h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
+			holder.h_down_button.setEnabled(false);	
+		}
 	}
 
 	public void addItem(HoovChapter dataObj, int index) {

@@ -24,18 +24,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:textStyle="bold" />
-            
-            <Button
-                android:id="@+id/delete_comment_button"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_toLeftOf="@+id/comment_up_button"
-                android:layout_toStartOf="@+id/comment_up_button"
-                android:background="@drawable/purple_delete"
-                 />
 
             <Button
                 android:id="@+id/comment_up_button"
@@ -76,6 +64,16 @@
                 android:layout_below="@+id/comment_hoov"
                 android:text=""
                 android:textColor="#925FAE" />
+
+            <Button
+                android:id="@+id/delete_comment_button"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                
+                android:background="@drawable/purple_delete" />
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
