@@ -3,26 +3,35 @@ package com.hoover.linkedinoauth;
 
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hoover.util.HoovFetchParams;
 import com.hoover.util.NavigationDrawerItem;
 import com.hoover.util.NavigationDrawerListAdapter;
+import com.tjeannin.apprate.AppRate;
 
 import android.app.ActionBar;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ListFragment;
+import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -42,10 +51,11 @@ public class HomeActivityNew extends FragmentActivity{
 	String userCity;
 	String userId;
 	HomePageAdapter pageAdapter;
-	Button hoov_in;
 	SlidingTabLayout tabs;
 	CharSequence Titles[]={"Newest","Hottest"};
 	ViewPager pager;
+	ProgressDialog mProgressDialog;
+	AppRate appRate;
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -68,8 +78,6 @@ public class HomeActivityNew extends FragmentActivity{
 	protected void onCreate(Bundle savedInstanceState) {  
 		super.onCreate(savedInstanceState);  
 		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
 		ColorDrawable colorDrawable = new ColorDrawable(Color.WHITE);
 		actionBar.setStackedBackgroundDrawable(colorDrawable);
 		
@@ -81,18 +89,7 @@ public class HomeActivityNew extends FragmentActivity{
 
 		setContentView(R.layout.activity_home_new);
 
-		hoov_in=(Button) findViewById(R.id.hoov_in);
-		hoov_in.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(HomeActivityNew.this,HoovActivity.class);
-				startActivity(intent); 
-
-			} 
-
-		});
-
+		
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -110,21 +107,22 @@ public class HomeActivityNew extends FragmentActivity{
 		// adding nav drawer items to array
 		// Home
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-		// Find People
+		// Settings 
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-		// Photos
+		// Delete Profile
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-		// Communities, Will add a counter here
-		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
-		// Pages
+		/*// Communities, Will add a counter here
+		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));*/
+		// Rate Us
+		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
+		// Invite
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-		// What's hot, We  will add a counter here
-		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
-		
+			
 
 		// Recycle the typed array
 		navMenuIcons.recycle();
-
+		// set a custom shadow that overlays the main content when the drawer oepns
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,  GravityCompat.START);
 		mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
 
 		// setting the nav drawer list adapter
@@ -148,6 +146,8 @@ public class HomeActivityNew extends FragmentActivity{
 
 			public void onDrawerOpened(View drawerView) {
 				getActionBar().setTitle(mDrawerTitle);
+				mDrawerList.bringToFront();
+				mDrawerLayout.requestLayout();
 				// calling onPrepareOptionsMenu() to hide action bar icons
 				invalidateOptionsMenu();
 			}
@@ -155,10 +155,9 @@ public class HomeActivityNew extends FragmentActivity{
 			
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
 		if (savedInstanceState == null) {
 			// on first time display view for first nav item
-			displayView(-1);
+			displayView(0);
 		}
 
 		
@@ -169,75 +168,80 @@ public class HomeActivityNew extends FragmentActivity{
 	 * */
 	private void displayView(int position) {
 		// update the main content by replacing fragments
-		Fragment fragment = null;
+		Fragment fragment 	 = null;
+		ListFragment listfragment = null;
 		switch (position) {
 		case 0:
-			Toast.makeText(getApplicationContext(), "0...", Toast.LENGTH_LONG).show();
-			break;
-		case 1:
-			Toast.makeText(getApplicationContext(), "1...", Toast.LENGTH_LONG).show();
-			break;
-		case 2:
-			Toast.makeText(getApplicationContext(), "2...", Toast.LENGTH_LONG).show();
-			break;
-		case 3:
-			Toast.makeText(getApplicationContext(), "3...", Toast.LENGTH_LONG).show();
-			break;
-		case 4:
-			Toast.makeText(getApplicationContext(), "4...", Toast.LENGTH_LONG).show();
-			break;
-		case 5:
-			Toast.makeText(getApplicationContext(), "5....", Toast.LENGTH_LONG).show();
-			break;
-
-		default:
-			List<Fragment> fragments = getFragments();
-			pageAdapter = new HomePageAdapter(getSupportFragmentManager(), fragments);
-			pager = (ViewPager)findViewById(R.id.pager);
-			pager.setAdapter(pageAdapter);
-
-			ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-				public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-					pager.setCurrentItem(tab.getPosition());
-				}
-
-				public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-					// hide the given tab
-				}
-
-				public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-					// probably ignore this event
-				}
-			};
-
-			pager.setOnPageChangeListener(
-					new ViewPager.SimpleOnPageChangeListener() {
-						@Override
-						public void onPageSelected(int position) {
-							// When swiping between pages, select the
-							// corresponding tab.
-							getActionBar().setSelectedNavigationItem(position);
-						}
-					});
-			
-			getActionBar().addTab(getActionBar().newTab().setText("Newest Hoovs").setTabListener(tabListener));
-			getActionBar().addTab(getActionBar().newTab().setText("Hottest Hoovs").setTabListener(tabListener));
-			break;
-		}
-
-		/*if (fragment != null) {
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-				.replace(R.id.frame_container, fragment).commit();
-// update selected item and title, then close the drawer
+			//HOME
+			getSupportFragmentManager()
+			.beginTransaction()
+			.replace(R.id.frame_container, TabbedActivity.newInstance(userComapny,userCity,userId), TabbedActivity.TAG).commit();
 			mDrawerList.setItemChecked(position, true);
 			mDrawerList.setSelection(position);
 			setTitle(navMenuTitles[position]);
 			mDrawerLayout.closeDrawer(mDrawerList);
-		} else {
-			// error in creating fragment
-			Log.e("MainActivity", "Error in creating fragment");
-		}*/
+			break;
+		case 1:
+			//SETTINGS
+		case 2:
+			//DELETE PROFILE
+			final String uid=this.userId;
+			new AlertDialog.Builder(this)
+	        .setTitle("Delete entry")
+	        .setMessage("Are you sure you want to delete this entry?")
+	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) { 
+	            	getSupportFragmentManager()
+					.beginTransaction()
+					.replace(R.id.frame_container, DeleteProfileFragment.newInstance(uid), DeleteProfileFragment.TAG).commit();
+	            	finish();
+	            }
+	         })
+	        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) { 
+	            	System.out.println("NO");
+	            	mDrawerList.setItemChecked(0, true);
+	    			mDrawerList.setSelection(0);
+	    			mDrawerLayout.closeDrawer(mDrawerList);
+	            }
+	         })
+	        .setIcon(android.R.drawable.ic_dialog_alert)
+	         .show();
+			
+           
+			break;
+		case 3:
+			//RATE US
+			mDrawerLayout.closeDrawer(mDrawerList);
+			mDrawerList.setItemChecked(0, true);
+			mDrawerList.setSelection(0);
+			
+			if(appRate==null){
+				appRate = new AppRate(this);
+				appRate.init();
+			}else{
+				AppRate.reset(this);
+				appRate.init();
+			}
+			break;
+		case 4:
+			//Invite Freinds
+			mDrawerLayout.closeDrawer(mDrawerList);
+			Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+			sharingIntent.setType("text/plain");
+			String shareBody = "Ye mera app hai...hohohohohhahahah";
+			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+			
+			startActivity(Intent.createChooser(sharingIntent, "Share via"));
+			mDrawerList.setItemChecked(0, true);
+			mDrawerList.setSelection(0);
+			break;
+		default:
+			
+			break;
+		}
+
 	}
 	
 
@@ -266,7 +270,7 @@ public class HomeActivityNew extends FragmentActivity{
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// display view for selected nav drawer item
-			//displayView(position);
+			displayView(position);
 		}
 	}
 	/**
@@ -294,6 +298,8 @@ public class HomeActivityNew extends FragmentActivity{
 		return fList;
 
 	}
+	
+	
 
 }
 

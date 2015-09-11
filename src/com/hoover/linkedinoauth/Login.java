@@ -166,7 +166,7 @@ public class Login extends Activity {
 					u.company=data.getString("headline").split("at")[1].trim();
 					u.city=data.getJSONObject("location").getString("name");
 
-					Intent i = new Intent(Login.this, HomeFragment.class);
+					Intent i = new Intent(Login.this, HomeActivityNew.class);
 
 
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
@@ -183,7 +183,6 @@ public class Login extends Activity {
 
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
-
 					startActivity(i);
 
 					//h.hoov="xxx";
