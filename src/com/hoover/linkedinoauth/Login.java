@@ -183,7 +183,6 @@ public class Login extends Activity {
 
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
-
 					startActivity(i);
 
 					//h.hoov="xxx";

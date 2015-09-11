@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -130,7 +131,12 @@ public class FirstActivity extends Activity {
 					user.deviceId=doc.getString("deviceId");
 				}
 				conn.disconnect();
-			} catch (Exception e) {
+			} catch (JSONException e) {
+				Intent intent = new Intent(FirstActivity.this,MainActivity.class);
+				startActivity(intent); 
+
+				return null;
+			}catch (Exception e) {
 				e.printStackTrace();
 				return null;
 			}

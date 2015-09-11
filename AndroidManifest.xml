@@ -60,11 +60,13 @@
         </service>
         <service
             android:name=".SaveLikeDislikeService">
-         </service>
+         </service>.
         <service
             android:name=".SaveOfflineHoovService"
             android:label="@string/title_activity_home" >
         </service>
+        <service android:name=".DeleteProfileService"  android:enabled="true">
+</service>
         <receiver
             android:name=".NetworkChangeReceiver"
             android:label="@string/title_activity_home" >
