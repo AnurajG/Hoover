@@ -31,6 +31,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +49,8 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 	private Context context;
 	Button hoov_in;
 	//ListView listview;
-	ProgressDialog mProgressDialog;
+	//ProgressDialog mProgressDialog;
+	ProgressBar mProgressBar;
 	HoovListAdapter adapter;
 	private int limit = 8;
 	private List<HoovChapter> HoovChapterlist_t = null;
@@ -93,6 +95,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 		params.comapny=company;
 		new GetHoovsAsyncTask().execute(params);
 		refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+		mProgressBar=(ProgressBar)view.findViewById(R.id.a_progressbar);
 		/*hoov_in=(Button) findViewById(R.id.hoov_in);
 		hoov_in.setOnClickListener(new OnClickListener() {
 			@Override
@@ -288,15 +291,15 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 		}
 
 	}
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void,HoovFetchParams> {
+	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,HoovFetchParams> {
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			mProgressDialog = new ProgressDialog(getActivity());
-			mProgressDialog.setTitle("Load Hoovs.....");
-			mProgressDialog.setMessage("Loading...");
-			mProgressDialog.setIndeterminate(false);
-			mProgressDialog.show();
+			
+		}
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			mProgressBar.setProgress(values[0]);
 		}
 
 
@@ -307,6 +310,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 			{			
 				HoovFetchParams u = params[0];
 				JSONArray array;
+				publishProgress(0);
 				JSONObject p = new JSONObject();
 				p.put("document.company",u.comapny);
 				p.put("document.city",u.city);
@@ -323,6 +327,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 				conn.setRequestProperty("Accept", "application/json");
 				
 				int s=conn.getResponseCode();
+				publishProgress(90);
 					
 				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
 				StringBuilder responseStrBuilder = new StringBuilder();
@@ -368,7 +373,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
 					HoovChapterlist_t.add(hc);
 				}
-
+				publishProgress(100);
 			} 
 			catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
@@ -387,7 +392,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 			//listview = (ListView) findViewById(android.R.id.list);
 			adapter = new HoovListAdapter(context,HoovChapterlist_t);
 			setListAdapter(adapter);
-			mProgressDialog.dismiss();
+			mProgressBar.setVisibility(View.GONE);
 			getListView().setOnScrollListener(new OnScrollListener() {
  
 				@Override
@@ -419,10 +424,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
-				mProgressDialog.setTitle("Load More Hoovs.....");
-				mProgressDialog.setMessage("Loading more...");
-				mProgressDialog.setIndeterminate(false);
-				mProgressDialog.show();
+				
 			}
  
 			@Override
@@ -517,7 +519,7 @@ public class HomeTopFragment extends ListFragment implements OnRefreshListener{
 				adapter = new HoovListAdapter(context,HoovChapterlist_t);
 				getListView().setAdapter(adapter);
 				getListView().setSelectionFromTop(position, 0);
-				mProgressDialog.dismiss();
+				
 			}
 		}
 

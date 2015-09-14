@@ -7,12 +7,10 @@ package com.hoover.linkedinoauth;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hoover.util.HoovFetchParams;
-import com.hoover.util.NavigationDrawerItem;
-import com.hoover.util.NavigationDrawerListAdapter;
-import com.tjeannin.apprate.AppRate;
-
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.app.ListFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,30 +18,21 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
-import android.app.ProgressDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.hoover.util.NavigationDrawerItem;
+import com.hoover.util.NavigationDrawerListAdapter;
+import com.tjeannin.apprate.AppRate;
 
 public class HomeActivityNew extends FragmentActivity{
 	FragmentManager fm;
@@ -54,7 +43,7 @@ public class HomeActivityNew extends FragmentActivity{
 	SlidingTabLayout tabs;
 	CharSequence Titles[]={"Newest","Hottest"};
 	ViewPager pager;
-	ProgressDialog mProgressDialog;
+	//ProgressDialog mProgressDialog;
 	AppRate appRate;
 	
 	private DrawerLayout mDrawerLayout;

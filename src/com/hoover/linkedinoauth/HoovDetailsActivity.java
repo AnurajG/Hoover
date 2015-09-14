@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,17 +39,14 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.hoover.util.EmojiMapUtil;
-import com.hoover.util.HidingScrollListener;
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
@@ -70,7 +66,7 @@ public class HoovDetailsActivity extends Activity{
 	private RecyclerView mRecyclerView;
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager;
-	ProgressDialog mProgressDialog;
+	ProgressBar mProgressBar;
 	private List<HoovChapter> HoovChapterlist_t = null;
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	String userComapny;
@@ -97,6 +93,7 @@ public class HoovDetailsActivity extends Activity{
 
 		hoovText = (TextView) findViewById(R.id.hoovtextView);
 		hoovDate= (TextView) findViewById(R.id.hoovdateView2);
+		mProgressBar=(ProgressBar)findViewById(R.id.a_progressbar);
 
 
 
@@ -204,18 +201,17 @@ public class HoovDetailsActivity extends Activity{
 
 	}
 
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void,Void> {
+	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,Void> {
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			mProgressDialog = new ProgressDialog(HoovDetailsActivity.this);
-			mProgressDialog.setTitle("Load Comments.....");
-			mProgressDialog.setMessage("Loading...");
-			mProgressDialog.setIndeterminate(false);
-			mProgressDialog.show();
 		}
 
-
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			mProgressBar.setProgress(values[0]);
+		}
+		
 		@Override
 		protected Void doInBackground(HoovFetchParams... params) {
 			HoovChapterlist_t=new ArrayList<HoovChapter>();
@@ -304,12 +300,12 @@ public class HoovDetailsActivity extends Activity{
 
 		@Override
 		protected void onPostExecute(final Void  data){
-			super.onProgressUpdate(data);
+			super.onPostExecute(data);
 
 			results.addAll(HoovChapterlist_t);
 			mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),currentUserId);
 			mRecyclerView.setAdapter(mAdapter);
-			mProgressDialog.dismiss();
+			mProgressBar.setVisibility(View.GONE);
 
 		}
 
@@ -351,7 +347,6 @@ public class HoovDetailsActivity extends Activity{
 				results.add(hc);
 				mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),currentUserId);
 				mRecyclerView.setAdapter(mAdapter);
-				mProgressDialog.dismiss();
 			}
 		}
 
