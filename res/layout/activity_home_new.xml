@@ -18,9 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
      <!-- Listview to display slider menu -->
-   
-   
-    <ListView
+
+      <ListView
         android:id="@+id/list_slidermenu"
         android:layout_width="240dp"
         android:layout_height="match_parent"

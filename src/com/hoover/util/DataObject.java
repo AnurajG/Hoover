@@ -2,27 +2,37 @@ package com.hoover.util;
 
 
 public class DataObject {
-    private String mText1;
-    private String mText2;
+    private String hoovText;
+    private String hoovId;
+    private String userId;
  
-    public DataObject (String text1, String text2){
-        mText1 = text1;
-        mText2 = text2;
+    public DataObject (String text1, String text2, String text3){
+        hoovText = text1;
+        hoovId = text2;
+        userId =text3;
     }
  
-    public String getmText1() {
-        return mText1;
+    public String gethoovText() {
+        return hoovText;
     }
  
-    public void setmText1(String mText1) {
-        this.mText1 = mText1;
+    public void sethoovText(String mText1) {
+        this.hoovText = mText1;
     }
  
-    public String getmText2() {
-        return mText2;
+    public String gethoovId() {
+        return hoovId;
     }
  
-    public void setmText2(String mText2) {
-        this.mText2 = mText2;
+    public void sethoovId(String mText2) {
+        this.hoovId = mText2;
     }
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }

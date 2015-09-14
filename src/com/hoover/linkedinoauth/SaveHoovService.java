@@ -14,7 +14,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovQueryBuilder;
