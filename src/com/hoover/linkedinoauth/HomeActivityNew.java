@@ -41,6 +41,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -160,8 +162,6 @@ public class HomeActivityNew extends FragmentActivity{
 			displayView(0);
 		}
 
-		
-		
 	}
 	/**
 	 * Diplaying fragment view for selected nav drawer list item
@@ -183,6 +183,13 @@ public class HomeActivityNew extends FragmentActivity{
 			break;
 		case 1:
 			//SETTINGS
+			Intent intent = new Intent(this,PrefsActivity.class);
+			startActivity(intent); 
+			mDrawerList.setItemChecked(0, true);
+			mDrawerList.setSelection(0);
+			setTitle(navMenuTitles[0]);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			break;
 		case 2:
 			//DELETE PROFILE
 			final String uid=this.userId;
