@@ -3,6 +3,7 @@ package com.hoover.linkedinoauth;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -211,7 +212,7 @@ public class HoovDetailsActivity extends Activity{
 		protected void onProgressUpdate(Integer... values) {
 			mProgressBar.setProgress(values[0]);
 		}
-		
+
 		@Override
 		protected Void doInBackground(HoovFetchParams... params) {
 			HoovChapterlist_t=new ArrayList<HoovChapter>();
@@ -363,11 +364,12 @@ public class HoovDetailsActivity extends Activity{
 
 
 
-			h.path=path+","+mongoHoovId;
 
 
+			h.commentHoovIds=new ArrayList<String>();
 			h.hoovUpIds =new ArrayList<String>();
 			h.hoovDownIds=new ArrayList<String>();
+			h.parentId=mongoHoovId;
 
 			HoovQueryBuilder qb = new HoovQueryBuilder();						
 
@@ -385,6 +387,26 @@ public class HoovDetailsActivity extends Activity{
 					try {
 						JSONObject obj=new JSONObject(jsonString);
 						hoovId=obj.getJSONObject("_id").getString("$oid");
+
+						JSONObject f1 = new JSONObject();
+						JSONObject addToSet=new JSONObject();
+
+						f1.put("document.commentHoovIds",hoovId);
+						addToSet.put("$addToSet", f1);
+
+						URL url = new URL("https://api.mongolab.com/api/1/databases/hoover/collections/hoov/"+mongoHoovId+"?apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC");
+						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+						Random random = new Random();
+						conn.setRequestMethod("PUT");
+						conn.setDoOutput(true);
+						conn.setRequestProperty("Content-Type", "application/json");
+						conn.setRequestProperty("Accept", "application/json");
+						OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+						osw.write(String.format(addToSet.toString(), random.nextInt(30), random.nextInt(20)));
+						osw.flush();
+						osw.close();
+						int s= conn.getResponseCode();
+						System.out.println("oo "+s);
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}

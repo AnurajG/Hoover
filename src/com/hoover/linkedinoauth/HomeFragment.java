@@ -155,7 +155,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
-		myIntent.putExtra("path",selectedHoov.path);
+		//myIntent.putExtra("path",selectedHoov.path);
 		myIntent.putExtra("currentUserid",userId);
 		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
@@ -359,7 +359,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject p = new JSONObject();
 					p.put("document.company",company);
 					p.put("document.city",city);
-					p.put("document.path","null");
+					p.put("document.parentId","null");
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);
 					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
@@ -476,7 +476,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				JSONObject p = new JSONObject();
 				p.put("document.company",u.comapny);
 				p.put("document.city",u.city);
-				p.put("document.path","null");
+				p.put("document.parentId","null");
 				publishProgress(0);
 				JSONObject q = new JSONObject();
 				q.put("_id", -1);
@@ -512,7 +512,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
 					hc.hoovUserId =doc.getString("id");
-					hc.path=doc.getString("path");
+					//hc.path=doc.getString("path");
 
 					if (ups != null) { 
 						int len = ups.length();
@@ -619,7 +619,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject p = new JSONObject();
 					p.put("document.company",u.comapny);
 					p.put("document.city",u.city);
-					p.put("document.path","null");
+					p.put("document.parentId","null");
 					limit=limit+8;
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);
