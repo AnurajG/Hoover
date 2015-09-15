@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +29,7 @@ import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
 public class Login extends Activity {
 	//private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~";
-	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location)";
+	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions)";
 	private static final String OAUTH_ACCESS_TOKEN_PARAM ="oauth2_access_token";
 	private static final String QUESTION_MARK = "?";
 	private static final String EQUALS = "=";
@@ -163,9 +164,25 @@ public class Login extends Activity {
 				try {
 					User u=new User();
 					u.id=data.getString("id");
-					u.company=data.getString("headline").split("at")[1].trim();
+					//u.company=data.getString("headline").split("at")[1].trim();
 					u.city=data.getJSONObject("location").getString("name");
+					JSONObject obj1,obj2,obj3;
+					String str=null;
+					obj1=data.getJSONObject("positions");
+					JSONArray arr=obj1.getJSONArray("values");
+					for(int i=0;i<arr.length();i++){
+						obj2=(JSONObject)arr.get(i);	
+						if(obj2.has("company")){
+							obj3=obj2.getJSONObject("company");
+							str=obj3.getString("name");
+						}
+					}
 
+					if(!str.equals(null)){
+						u.company=str;
+					}else{
+						u.company=data.getString("headline").split("at")[1].trim();
+					}
 					Intent i = new Intent(Login.this, HomeActivityNew.class);
 
 
