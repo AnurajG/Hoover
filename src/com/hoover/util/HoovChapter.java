@@ -1,9 +1,11 @@
 package com.hoover.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class HoovChapter {
+@SuppressWarnings("serial")
+public class HoovChapter implements Serializable {
 		public String hoovText;
 		public String hoovDate;
 		public String mongoHoovId;

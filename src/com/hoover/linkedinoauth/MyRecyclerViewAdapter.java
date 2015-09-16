@@ -10,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.hoover.util.DataObject;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
@@ -39,7 +37,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 
 		//TextView dateTime;
 
-		public DataObjectHolder(View itemView,final ArrayList<HoovChapter> mDataset1) {
+		public DataObjectHolder(View itemView,final ArrayList<HoovChapter> mDataset1,final String currentUserId) {
 			super(itemView);
 			label = (TextView) itemView.findViewById(R.id.comment_hoov);
 			uplabel = (TextView) itemView.findViewById(R.id.comment_up_count);
@@ -58,7 +56,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 				public void onClick(View v) {
 					int position = getPosition();
 					String hoovid=mDataset1.get(position).mongoHoovId;
-					DeleteHoovsAsyncTask tsk=new DeleteHoovsAsyncTask(context, hoovid);
+					DeleteHoovsAsyncTask tsk=new DeleteHoovsAsyncTask(context, hoovid,true,mDataset1.get(position),currentUserId);
 					tsk.execute();
 				}
 			};
@@ -158,7 +156,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		View view = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.comment_list, parent, false);
 
-		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset);
+		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset,currentuserId);
 		return dataObjectHolder;
 	}
 

@@ -75,6 +75,7 @@ public class HoovDetailsActivity extends Activity{
 	String userId;
 	String path;
 	String currentUserId;
+	Context context;
 
 
 	@SuppressWarnings("deprecation")
@@ -82,8 +83,10 @@ public class HoovDetailsActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_hoov_detail);
+		context=this;
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
+		HoovChapter hc=(HoovChapter) intent.getSerializableExtra("chapter");
 		currentUserId=intent.getStringExtra("currentUserid");
 
 		mRecyclerView.setHasFixedSize(true);
@@ -98,13 +101,13 @@ public class HoovDetailsActivity extends Activity{
 
 
 
-		hoovText.setText(intent.getStringExtra("text"));
+		hoovText.setText(hc.hoovText);
 		path=intent.getStringExtra("path");
 		hoovText.setTextSize(TypedValue.COMPLEX_UNIT_PX,
 				getResources().getDimension(R.dimen.hoov_detail_text));
-		hoovDate.setText(intent.getStringExtra("date"));
+		hoovDate.setText(hc.hoovDate);
 
-		mongoHoovId=intent.getStringExtra("mongodbHoovId");
+		mongoHoovId=hc.mongoHoovId;
 
 		myEditText = (EditText) findViewById(R.id.commenttext);
 
@@ -140,7 +143,7 @@ public class HoovDetailsActivity extends Activity{
 
 			@Override
 			public void onClick(View arg0) {
-				DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask(getApplicationContext(),mongoHoovId);
+				DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask(context,mongoHoovId);
 				tsk.execute();
 			} 
 
@@ -148,7 +151,7 @@ public class HoovDetailsActivity extends Activity{
 
 
 
-		if(currentUserId.equals(intent.getStringExtra("selectedHoovUserId"))){
+		if(currentUserId.equals(hc.hoovUserId)){
 			deleteHoov.setVisibility(Button.VISIBLE);
 		}
 

@@ -152,12 +152,14 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = adapter.hoovChapterList.get(position);
 		Intent myIntent = new Intent(context, HoovDetailsActivity.class);
-		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
+		/*myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
-		//myIntent.putExtra("path",selectedHoov.path);
+		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);*/
+		
 		myIntent.putExtra("currentUserid",userId);
-		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);
+		myIntent.putExtra("chapter", selectedHoov);
+		
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
 		startActivity(myIntent);

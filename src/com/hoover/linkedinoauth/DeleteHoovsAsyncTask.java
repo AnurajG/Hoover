@@ -12,17 +12,31 @@ import android.content.Intent;
 import android.os.AsyncTask;
 
 import com.goebl.david.WebbException;
+import com.hoover.util.HoovChapter;
 
 public class DeleteHoovsAsyncTask extends AsyncTask<Void, Void,Void>{
 	private final Context mContext;
 	private final String mongoHoovId;
+	private boolean comment=false;
+	private HoovChapter hChapter;
+	private String id;
 	public DeleteHoovsAsyncTask(Context mContext, String mongoHoovId) {
 		super();
 		this.mContext = mContext;
 		this.mongoHoovId = mongoHoovId;
 	}
+
+	public DeleteHoovsAsyncTask(Context mContext, String mongoHoovId, Boolean isComment,HoovChapter hc, String currentUserId) {
+		super();
+		this.mContext = mContext;
+		this.mongoHoovId = mongoHoovId;
+		this.comment=isComment;
+		this.hChapter=hc;
+		this.id=currentUserId;
+	}
+
 	ProgressDialog mProgressDialog;
-	
+
 	protected void onPreExecute(){
 		super.onPreExecute();
 		mProgressDialog = new ProgressDialog(mContext);
@@ -33,9 +47,13 @@ public class DeleteHoovsAsyncTask extends AsyncTask<Void, Void,Void>{
 	}
 	@Override
 	protected Void doInBackground(Void... arg0) {
-		// TODO Auto-generated method stub
+		String urlPrefix;
+		if(comment)
+			urlPrefix="http://nodejs-hooverest.rhcloud.com/deletecomment"+"?comment=";
+		else
+			urlPrefix="http://nodejs-hooverest.rhcloud.com/deletehoov"+"?parent=";
 		try{   
-			URL url = new URL("https://api.mongolab.com/api/1/databases/hoover/collections/hoov/"+mongoHoovId+"?apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC");
+			URL url = new URL(urlPrefix+mongoHoovId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			Random random = new Random();
 			conn.setRequestMethod("DELETE");
@@ -59,9 +77,16 @@ public class DeleteHoovsAsyncTask extends AsyncTask<Void, Void,Void>{
 		return null;
 	}
 	protected void onPostExecute(Void data){
+		Intent myOrigIntent = null;
+		if(comment){
+			myOrigIntent = new Intent(mContext,HoovDetailsActivity.class);
+			myOrigIntent.putExtra("currentUserid", id);
+			myOrigIntent.putExtra("chapter", hChapter);
+		}else{
+			myOrigIntent = new Intent(mContext,HomeActivityNew.class);
+			myOrigIntent.putExtra("hoovId",mongoHoovId);
+		}
 		mProgressDialog.dismiss();
-		Intent myOrigIntent = new Intent(mContext,HomeActivityNew.class);
-		myOrigIntent.putExtra("hoovId",mongoHoovId);
 		mContext.startActivity(myOrigIntent);
 	}
 
