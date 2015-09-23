@@ -156,10 +156,10 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
 		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);*/
-		
+
 		myIntent.putExtra("currentUserid",userId);
 		myIntent.putExtra("chapter", selectedHoov);
-		
+
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
 		startActivity(myIntent);
@@ -362,6 +362,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					p.put("document.company",company);
 					p.put("document.city",city);
 					p.put("document.parentId","null");
+					p.put("document.status",0);
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);
 					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
@@ -479,6 +480,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				p.put("document.company",u.comapny);
 				p.put("document.city",u.city);
 				p.put("document.parentId","null");
+				p.put("document.status",0);
 				publishProgress(0);
 				JSONObject q = new JSONObject();
 				q.put("_id", -1);
@@ -622,6 +624,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					p.put("document.company",u.comapny);
 					p.put("document.city",u.city);
 					p.put("document.parentId","null");
+					p.put("document.status",0);
 					limit=limit+8;
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);

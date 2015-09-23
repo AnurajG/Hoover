@@ -14,6 +14,6 @@ public class Hoov {
 	public ArrayList<String> commentHoovIds;
 	public ArrayList<String> followerUserIds;
 	public ArrayList<String> abuserUserIds;
-	
+	public Integer status;//1-submitted not checked 2-checked and to be moderated 3-contains not allowed text 0-fine 
 	
 }

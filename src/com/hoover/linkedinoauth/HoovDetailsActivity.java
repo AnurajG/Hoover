@@ -76,6 +76,7 @@ public class HoovDetailsActivity extends Activity{
 	String path;
 	String currentUserId;
 	Context context;
+	HoovChapter hc;
 
 
 	@SuppressWarnings("deprecation")
@@ -86,7 +87,7 @@ public class HoovDetailsActivity extends Activity{
 		context=this;
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
-		HoovChapter hc=(HoovChapter) intent.getSerializableExtra("chapter");
+		hc=(HoovChapter) intent.getSerializableExtra("chapter");
 		currentUserId=intent.getStringExtra("currentUserid");
 
 		mRecyclerView.setHasFixedSize(true);
@@ -351,6 +352,37 @@ public class HoovDetailsActivity extends Activity{
 				results.add(hc);
 				mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),currentUserId);
 				mRecyclerView.setAdapter(mAdapter);
+
+				/*ParseQuery pushQuery = ParseInstallation.getQuery();
+				pushQuery.whereEqualTo("userId", hc.hoovUserId);
+
+				// Send push notification to query
+				ParsePush push = new ParsePush();
+				push.setQuery(pushQuery); // Set our Installation query
+				push.setMessage("YaY! Someone commented on the hoov you posted!");
+				push.sendInBackground();*/
+				
+				JSONObject where1= new JSONObject();
+				JSONObject where= new JSONObject();
+				
+				JSONObject data1=new JSONObject();
+				JSONObject data=new JSONObject();
+
+
+				try {
+					where1.put("userId", hc.hoovUserId);
+					data.put("where", where1);
+					data1.put("alert", "YaY! Someone commented on the hoov you posted!");
+					data.put("data", data1);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				
+				Intent mServiceIntent = new Intent(HoovDetailsActivity.this, SendParsePushService.class);
+				mServiceIntent.putExtra("data",data.toString());
+				getApplicationContext().startService(mServiceIntent);
+
 			}
 		}
 

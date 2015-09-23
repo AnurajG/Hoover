@@ -21,6 +21,7 @@ import android.telephony.TelephonyManager;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
+import com.parse.ParseInstallation;
 //import org.json.simple.parser.JSONParser;
 
 public class FirstActivity extends Activity {
@@ -161,6 +162,16 @@ public class FirstActivity extends Activity {
 				editor.putString("userCity", data.city);
 				editor.putString("userDeviceId", data.deviceId);
 				editor.commit();
+				
+				ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+				installation.put("userMongoId",data.mongoId);
+				installation.put("userId",data.id);
+				installation.put("userCompany",data.company);
+				installation.put("userCity",data.city);
+				installation.put("userDeviceId",data.deviceId);
+
+				installation.saveInBackground();
+				
 
 				//this intent is used to open other activity wich contains another webView
 				Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);

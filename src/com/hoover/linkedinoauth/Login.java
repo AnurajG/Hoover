@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
+import com.parse.ParseInstallation;
 public class Login extends Activity {
 	//private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~";
 	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions)";
@@ -108,6 +109,17 @@ public class Login extends Activity {
 					editor.putString("userCity", doc.getString("city"));
 					editor.putString("userDeviceId", doc.getString("deviceId"));
 					editor.commit();
+					
+					ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+					installation.put("userMongoId",_id.getString("$oid"));
+					installation.put("userId",doc.getString("id"));
+					installation.put("userCompany",doc.getString("company"));
+					installation.put("userCity",doc.getString("city"));
+					installation.put("userDeviceId",doc.getString("deviceId"));
+
+					installation.saveInBackground();
+					
+					
 
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -198,6 +210,7 @@ public class Login extends Activity {
 					editor.putString("userDeviceId", u.deviceId);
 					editor.commit();
 
+							
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
 					startActivity(i);
