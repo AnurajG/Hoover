@@ -52,9 +52,12 @@ public class Login extends Activity {
 			String profileUrl = getProfileUrl(accessToken);
 			new GetProfileRequestAsyncTask().execute(profileUrl);
 		}
+		Intent i = new Intent(Login.this, HomeActivityNew.class);
+		startActivity(i);
+		
 	}
 
-	private static final String getProfileUrl(String accessToken){
+	static final String getProfileUrl(String accessToken){
 		return PROFILE_URL
 				+QUESTION_MARK
 				+OAUTH_ACCESS_TOKEN_PARAM+EQUALS+accessToken;
@@ -120,7 +123,7 @@ public class Login extends Activity {
 		}
 	}
 
-	private class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
+	public class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
 
 		@Override
 		protected void onPreExecute(){
@@ -183,9 +186,7 @@ public class Login extends Activity {
 					}else{
 						u.company=data.getString("headline").split("at")[1].trim();
 					}
-					Intent i = new Intent(Login.this, HomeActivityNew.class);
-
-
+					
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 					String uuid = tManager.getDeviceId();
 					u.deviceId=uuid;
@@ -200,8 +201,7 @@ public class Login extends Activity {
 
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
-					startActivity(i);
-
+					
 					//h.hoov="xxx";
 
 					/*SaveAsyncTask tsk = new SaveAsyncTask();

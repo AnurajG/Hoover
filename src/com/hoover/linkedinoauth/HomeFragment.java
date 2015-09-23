@@ -26,19 +26,26 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hoover.util.EmojiMapUtil;
+import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 
@@ -51,7 +58,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	String company;
 	String userId;
 	private Context context;
-	Button hoov_in;
 	boolean noMoreDataToLoad=false;
 	//ProgressDialog mProgressDialog;
 	ProgressBar mProgressBar;
@@ -509,11 +515,33 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject ids = obj.getJSONObject("_id");
 					JSONArray ups = doc.getJSONArray("hoovUpIds");
 					JSONArray downs = doc.getJSONArray("hoovDownIds");
+					JSONArray followers= doc.getJSONArray("followerUserIds");
+					JSONArray abuseds= doc.getJSONArray("abuserUserIds");
 					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 					hc.mongoHoovId=ids.getString("$oid");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
 					hc.hoovUserId =doc.getString("id");
+					hc.abused=false;
+					hc.followed=false;
+					if (followers != null) { 
+						int len = followers.length();
+						for (int j=0;j<len;j++){ 
+							if(userId.equals(followers.get(j).toString())){
+								hc.followed=true;
+								break;
+							}
+						} 
+					} 
+					if (abuseds != null) { 
+						int len = abuseds.length();
+						for (int j=0;j<len;j++){ 
+							if(userId.equals(abuseds.get(j).toString())){
+								hc.abused=true;
+								break;
+							}
+						} 
+					} 
 					//hc.path=doc.getString("path");
 
 					if (ups != null) { 
@@ -561,6 +589,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			//listview = (ListView) findViewById(android.R.id.list);
 			adapter = new HoovListAdapter(context,HoovChapterlist_t);
 			setListAdapter(adapter);
+			registerForContextMenu(getListView());
+			
 			mProgressBar.setVisibility(View.GONE);
 			getListView().setOnScrollListener(new OnScrollListener() {
 
@@ -655,11 +685,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						JSONObject ids = obj.getJSONObject("_id");
 						JSONArray ups = doc.getJSONArray("hoovUpIds");
 						JSONArray downs = doc.getJSONArray("hoovDownIds");
+						JSONArray followers= doc.getJSONArray("followerUserIds");
+						JSONArray abuseds= doc.getJSONArray("abuserUserIds");
+						
 						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 						hc.mongoHoovId=ids.getString("$oid");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
 						hc.hoovUserId =doc.getString("id");
+						hc.followed=false;
+						hc.abused=false;
 						if (ups != null) { 
 							int len = ups.length();
 							for (int j=0;j<len;j++){ 
@@ -670,6 +705,24 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 							int len = downs.length();
 							for (int j=0;j<len;j++){ 
 								hc.hoov_down_ids.add(downs.get(j).toString());
+							} 
+						} 
+						if (followers != null) { 
+							int len = followers.length();
+							for (int j=0;j<len;j++){ 
+								if(userId.equals(followers.get(j).toString())){
+									hc.followed=true;
+									break;
+								}
+							} 
+						} 
+						if (abuseds != null) { 
+							int len = abuseds.length();
+							for (int j=0;j<len;j++){ 
+								if(userId.equals(abuseds.get(j).toString())){
+									hc.abused=true;
+									break;
+								}
 							} 
 						} 
 						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
@@ -706,10 +759,155 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				int position = getListView().getLastVisiblePosition();
 				adapter = new HoovListAdapter(context,HoovChapterlist_t);
 				getListView().setAdapter(adapter);
+				registerForContextMenu(getListView());
 				getListView().setSelectionFromTop(position, 0);
 			}
 		}
 
+	}
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==android.R.id.list) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    //menu.setHeaderTitle("Options");
+	    int pos=info.position;
+	    HoovChapter selectedHoov = adapter.hoovChapterList.get(pos);
+	    String selectedHoovUserId=selectedHoov.hoovUserId;
+	    List<String> menuItems=new ArrayList<String>();
+	    if(!selectedHoovUserId.equals(userId)){//selected hoov is not current user's hoov
+	    	if(!selectedHoov.followed)
+	    		menuItems.add(HoovActionOptions.FOLLOW.getoptionString());
+	    	else
+	    		menuItems.add(HoovActionOptions.UNFOLLOW.getoptionString());
+	    	menuItems.add(HoovActionOptions.MARK_ABUSE.getoptionString());
+	    }else{//selected hoov is current user's hoov
+	    	menuItems.add(HoovActionOptions.DELETE.getoptionString());
+	    	
+	    }
+	    for (int i = 0; i<menuItems.size(); i++) {
+    		menu.add(Menu.NONE, i, i, menuItems.get(i));
+    	}
+	   /* if(!selectedHoovUserId.equals(userId)){
+	    	if(!selectedHoov.followed)
+	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs1);
+	    	else
+	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs2);
+	    	for (int i = 0; i<menuItems.length; i++) {
+	    		menu.add(Menu.NONE, i, i, menuItems[i]);
+	    	}
+	    }else{
+	    	menuItems = getResources().getStringArray(R.array.action_items_for_own_hoovs);
+	    	for (int i = 0; i<menuItems.length; i++) {
+	    		menu.add(Menu.NONE, i, i, menuItems[i]);
+	    	}
+	    	
+	    }*/
+	  }
+	}
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+	  //int menuItemIndex = item.getItemId();
+	  String menuItemName=item.getTitle().toString();
+	  int pos=info.position;
+	  HoovChapter selectedHoov = adapter.hoovChapterList.get(pos);
+	  String selectedHoovUserId=selectedHoov.hoovUserId;
+	  final String selectedmongoHoovId=selectedHoov.mongoHoovId;
+	  AlertDialog alertDialog;
+	  HoovActionOptions[] al=HoovActionOptions.values();
+	  String actionName=null;
+	  for(int i=0;i<HoovActionOptions.values().length;i++){
+		  if(al[i].optionString.equals(menuItemName)){
+			  actionName=al[i].name();
+			  break;
+		  }
+	  }
+	  if(actionName!= null){
+		  switch(HoovActionOptions.valueOf(actionName)){
+		  case FOLLOW:
+			  SaveFollowHoovInfoAsyncTask tsk= new SaveFollowHoovInfoAsyncTask(selectedmongoHoovId,userId);
+			  tsk.execute();
+			  alertDialog = new AlertDialog.Builder(context).create();
+			  alertDialog.setTitle("Alert");
+			  alertDialog.setMessage("You are now following this hoov");
+			  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+					  new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) {
+					  dialog.dismiss();
+				  }
+			  });
+			  alertDialog.show();
+			  selectedHoov.followed=true;
+			  break;
+		  case UNFOLLOW:
+			  DeleteFollowHoovInfoAsyncTask tsk2= new DeleteFollowHoovInfoAsyncTask(selectedmongoHoovId,userId);
+			  tsk2.execute();
+			  alertDialog = new AlertDialog.Builder(context).create();
+			  alertDialog.setTitle("Alert");
+			  alertDialog.setMessage("You have stopped following this hoov");
+			  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+					  new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) {
+					  dialog.dismiss();
+				  }
+			  });
+			  alertDialog.show();
+			  selectedHoov.followed=false;	
+			  break;
+		  case MARK_ABUSE:
+			  if(selectedHoov.abused){
+				  alertDialog = new AlertDialog.Builder(context).create();
+				  alertDialog.setTitle("Alert");
+				  alertDialog.setMessage("You have already abused this hoov");
+				  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+						  new DialogInterface.OnClickListener() {
+					  public void onClick(DialogInterface dialog, int which) {
+						  dialog.dismiss();
+					  }
+				  });
+				  alertDialog.show();
+
+			  }else{
+				  SaveAbuseHoovInfoAsyncTask tsk1= new SaveAbuseHoovInfoAsyncTask(selectedmongoHoovId,userId);
+				  tsk1.execute();
+				  alertDialog = new AlertDialog.Builder(context).create();
+				  alertDialog.setTitle("Alert");
+				  alertDialog.setMessage("You have successfully abused this hoov");
+				  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+						  new DialogInterface.OnClickListener() {
+					  public void onClick(DialogInterface dialog, int which) {
+						  dialog.dismiss();
+					  }
+				  });
+				  alertDialog.show();
+				  selectedHoov.abused=true;
+			  }
+			  break;
+		  case DELETE:
+			  new AlertDialog.Builder(this.getActivity())
+			  .setTitle("Delete Hoov")
+			  .setMessage("Are you sure you want to delete this hoov?")
+			  .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) { 
+					  DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask(context,selectedmongoHoovId);
+					  tsk.execute();
+				  }
+			  })
+			  .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) { 
+
+				  }
+			  })
+			  .setIcon(android.R.drawable.ic_dialog_alert)
+			  .show();
+			  break;
+		  default:
+			  break;
+
+		  }
+	  }
+	  return true;
 	}
 
 

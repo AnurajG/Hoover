@@ -3,6 +3,7 @@
 
 <string name="tab1_title">Newest Hoov</string>
 <string name="tab2_title">Hottest Hoov</string>
+<string name="tab3_title">Followed Hoov</string>
     <string name="app_name">HOOVER</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Lets see what the people in your company are gossiping abt ;-)</string>
@@ -52,5 +53,16 @@
      <item>2</item>
      <item>3</item>
     </string-array>
+    <string-array name="action_items_for_others_hoovs1">
+        <item >Follow</item>
+        <item >Mark abuse</item>
+    </string-array>
+     <string-array name="action_items_for_others_hoovs2">
+        <item >UnFollow</item>
+        <item >Mark abuse</item>
+     </string-array>
+     <string-array name="action_items_for_own_hoovs">
+        <item >Delete</item>
+     </string-array>
 
 </resources>

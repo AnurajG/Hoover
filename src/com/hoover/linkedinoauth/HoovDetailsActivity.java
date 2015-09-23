@@ -138,7 +138,7 @@ public class HoovDetailsActivity extends Activity{
 
 		});
 
-		deleteHoov=(ImageButton) findViewById(R.id.delete);
+		/*deleteHoov=(ImageButton) findViewById(R.id.delete);
 		deleteHoov.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -153,7 +153,7 @@ public class HoovDetailsActivity extends Activity{
 
 		if(currentUserId.equals(hc.hoovUserId)){
 			deleteHoov.setVisibility(Button.VISIBLE);
-		}
+		}*/
 
 		rehoov_in=(Button) findViewById(R.id.submit);
 		if(myEditText.length() == 0) rehoov_in.setEnabled(false);

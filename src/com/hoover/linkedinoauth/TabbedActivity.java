@@ -38,7 +38,8 @@ public class TabbedActivity extends Fragment {
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
 		fList.add(HomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId));
-		fList.add(HomeTopFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId)); 
+		fList.add(HomeTopFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId));
+		fList.add(HomeFollowedHoovFragment.newInstance("Fragment 3",this.getActivity(),userComapny,userCity,userId));
 		return fList;
 
 	}

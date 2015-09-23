@@ -66,6 +66,8 @@ public class SaveOfflineHoovService extends IntentService {
 					h.commentHoovIds= new ArrayList<String>();
 					h.hoovUpIds =new ArrayList<String>();
 					h.hoovDownIds=new ArrayList<String>();
+					h.abuserUserIds=new ArrayList<String>();
+					h.followerUserIds=new ArrayList<String>();
 					h.parentId="null";
 
 					HoovQueryBuilder qb = new HoovQueryBuilder();						

@@ -38,6 +38,8 @@ public class HomePageAdapter extends FragmentPagerAdapter {
 			return mcontext.getString(R.string.tab1_title).toUpperCase(l);
 		case 1:
 			return mcontext.getString(R.string.tab2_title).toUpperCase(l);
+		case 2:
+			return mcontext.getString(R.string.tab3_title).toUpperCase(l);
 	
 		}
 		return null;
