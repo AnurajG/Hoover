@@ -39,6 +39,7 @@ public class HomeActivityNew extends FragmentActivity{
 	String userComapny;
 	String userCity;
 	String userId;
+	String userMongoId;
 	HomePageAdapter pageAdapter;
 	SlidingTabLayout tabs;
 	CharSequence Titles[]={"Newest","Hottest"};
@@ -75,7 +76,7 @@ public class HomeActivityNew extends FragmentActivity{
 		userComapny = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
 		userId = preferences.getString("userId", null);
-
+		userMongoId= preferences.getString("userMongoId", null);
 		setContentView(R.layout.activity_home_new);
 
 		
@@ -185,9 +186,13 @@ public class HomeActivityNew extends FragmentActivity{
 	        .setMessage("Are you sure you want to delete this entry?")
 	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 	            public void onClick(DialogInterface dialog, int which) { 
-	            	getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.frame_container, DeleteProfileFragment.newInstance(uid), DeleteProfileFragment.TAG).commit();
+	            	SharedPreferences preferences = getSharedPreferences("user_info", 0);
+	                SharedPreferences.Editor editor=preferences.edit();
+	                editor.clear();
+	        		editor.commit();
+	            	Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
+	                myIntent.putExtra("userMongoId",userMongoId);
+	                startService(myIntent);
 	            	finish();
 	            }
 	         })

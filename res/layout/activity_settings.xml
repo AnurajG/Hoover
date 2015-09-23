@@ -35,9 +35,9 @@
 
     <EditTextPreference
         android:key="pref_text"
-        android:title="Input text"
-        android:summary="Tap to enter some text"
-        android:dialogTitle="Enter text"
+        android:title="Switch to other organisation"
+        android:summary="The company name mentioned here must match the company name in your linkedin profile"
+        android:dialogTitle="Enter the name of the organisation"
     />
      
   </PreferenceCategory>

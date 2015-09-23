@@ -97,7 +97,7 @@
         android:layout_marginTop="10dp"
         android:scrollbars="vertical" />
 
-    <ImageButton
+    <!-- ImageButton
         android:id="@+id/delete"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -105,7 +105,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/purple_delete"
         android:text="@string/delete_my_hoov"
-        android:visibility="invisible" />
+        android:visibility="invisible" /-->
 
     <EditText
         android:id="@+id/commenttext"
