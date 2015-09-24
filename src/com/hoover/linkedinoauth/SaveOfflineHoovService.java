@@ -17,7 +17,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,10 +25,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.google.gson.JsonObject;
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovQueryBuilder;
-import com.textrazor.AnalysisException;
 
 public class SaveOfflineHoovService extends IntentService {
 	private String userId;
@@ -62,7 +59,7 @@ public class SaveOfflineHoovService extends IntentService {
 				for(int i=0;i<array.length();i++){
 
 					JSONObject obj = (JSONObject)array.get(i);
-						
+
 					x en=new x();
 					en.key=i;
 					en.text=obj.getString("hoovText");
@@ -71,7 +68,7 @@ public class SaveOfflineHoovService extends IntentService {
 						h.status=0;
 					else
 						h.status=2;
-					
+
 					h.id=userId;
 					h.company=userCompany;
 					h.city=userCity;
@@ -172,6 +169,8 @@ public class SaveOfflineHoovService extends IntentService {
 						JSONObject obj = (JSONObject)ent.get(i);
 						if(obj.getString("type").contains("Person") || obj.getString("type").contains("Location"))
 							return false;
+						else
+							return true;
 					}
 				}else
 					return true;

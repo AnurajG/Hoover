@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.hoover.linkedinoauth.HoovDetailsActivity.DeleteCommentAsyncTask;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 	private static MyClickListener myClickListener;
 	private final Context context;
 	private final String currentuserId;
+	//private final HoovChapter pHoov;
 
 	public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
@@ -34,6 +36,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		Button h_down_button;
 		Button del;
 		private final Context context;
+		//private final HoovChapter parentHoov;
 
 		//TextView dateTime;
 
@@ -46,6 +49,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 			h_down_button=(Button)itemView.findViewById(R.id.comment_down_button);
 			del=(Button)itemView.findViewById(R.id.delete_comment_button);
 			context = itemView.getContext();
+			//parentHoov=pHoov;
 
 			//dateTime = (TextView) itemView.findViewById(R.id.textView2);
 			Log.i(LOG_TAG, "Adding Listener");
@@ -56,8 +60,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 				public void onClick(View v) {
 					int position = getPosition();
 					String hoovid=mDataset1.get(position).mongoHoovId;
-					DeleteHoovsAsyncTask tsk=new DeleteHoovsAsyncTask(context, hoovid,true,mDataset1.get(position),currentUserId);
-					tsk.execute();
+					((HoovDetailsActivity)context).deleteComment(position);
 				}
 			};
 			View.OnClickListener upHandler = new View.OnClickListener() {
@@ -148,6 +151,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		mDataset = myDataset;
 		context=mContext;
 		currentuserId=id;
+		//pHoov=parentHoov;
 	}
 
 	@Override

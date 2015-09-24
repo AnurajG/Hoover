@@ -71,12 +71,16 @@ public class FirstActivity extends Activity {
 		userCompany = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
 		userId = preferences.getString("userId", null);
-
 		if(userId==null || userCity == null || userCompany == null){
 			GetUserAsyncTask tsk= new GetUserAsyncTask();
 			tsk.execute(uuid);
 		}else{
+			Intent mServiceIntent = new Intent(FirstActivity.this, SaveOfflineHoovService.class);
+			//mServiceIntent.putExtra("hoovText", hoovText.getText().toString());
+			getApplicationContext().startService(mServiceIntent);
+
 			Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent); 
 		}
 
@@ -162,7 +166,7 @@ public class FirstActivity extends Activity {
 				editor.putString("userCity", data.city);
 				editor.putString("userDeviceId", data.deviceId);
 				editor.commit();
-				
+
 				ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 				installation.put("userMongoId",data.mongoId);
 				installation.put("userId",data.id);
@@ -171,10 +175,11 @@ public class FirstActivity extends Activity {
 				installation.put("userDeviceId",data.deviceId);
 
 				installation.saveInBackground();
-				
+
 
 				//this intent is used to open other activity wich contains another webView
 				Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				startActivity(intent); 
 			}
 

@@ -163,7 +163,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		myIntent.putExtra("date",selectedHoov.hoovDate);
 		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);*/
 
-		myIntent.putExtra("currentUserid",userId);
+		//myIntent.putExtra("currentUserid",userId);
 		myIntent.putExtra("chapter", selectedHoov);
 
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
