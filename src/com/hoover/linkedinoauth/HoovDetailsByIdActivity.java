@@ -89,6 +89,7 @@ public class HoovDetailsByIdActivity extends Activity{
 					hc.mongoHoovId=id;
 					hc.hoov_up_ids=new Gson().fromJson(r.getJSONObject("document").getJSONArray("hoovUpIds").toString(), new TypeToken<List<String>>(){}.getType());
 					hc.hoov_down_ids = new Gson().fromJson(r.getJSONObject("document").getJSONArray("hoovDownIds").toString(), new TypeToken<List<String>>(){}.getType());
+					hc.commentHoovIds = new Gson().fromJson(r.getJSONObject("document").getJSONArray("commentHoovIds").toString(), new TypeToken<List<String>>(){}.getType());
 					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
 					Long epoch=tmp;
 					Long curr_epoch = System.currentTimeMillis()/1000;

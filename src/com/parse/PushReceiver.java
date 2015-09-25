@@ -8,12 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.hoover.linkedinoauth.FirstActivity;
-import com.hoover.linkedinoauth.HomeActivityNew;
 import com.hoover.linkedinoauth.HoovDetailsByIdActivity;
-import com.parse.ParseAnalytics;
-import com.parse.ParsePushBroadcastReceiver;
 
 public class PushReceiver extends ParsePushBroadcastReceiver {
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		if(intent.getAction().equals("com.parse.push.intent.ORDERED_RECEIVE"))
+			super.onPushReceive(context, intent);
+		else if(intent.getAction().equals("com.parse.push.intent.OPEN"))
+			onPushOpen(context, intent);
+		else if(intent.getAction().equals("com.parse.push.intent.DELETE"))
+			super.onPushDismiss(context, intent);
+	}
 
 	@Override
 	public void onPushOpen(Context context, Intent intent) {

@@ -13,6 +13,7 @@ public class HoovChapter implements Serializable {
 		public String hoovUserId;
 		public ArrayList<String> hoov_up_ids;
 		public ArrayList<String> hoov_down_ids;
+		public ArrayList<String> commentHoovIds;
 		public Boolean followed;
 		public Boolean abused;
 		//public String path;

@@ -44,6 +44,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
@@ -402,6 +404,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						hc.mongoHoovId=ids.getString("$oid");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
+						hc.commentHoovIds = new Gson().fromJson(doc.getJSONArray("commentHoovIds").toString(), new TypeToken<List<String>>(){}.getType());
 						if (ups != null) { 
 							int len = ups.length();
 							for (int j=0;j<len;j++){ 

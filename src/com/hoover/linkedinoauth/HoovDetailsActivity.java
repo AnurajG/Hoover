@@ -27,8 +27,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -209,6 +211,49 @@ public class HoovDetailsActivity extends Activity{
 
 	}
 
+	//Must unregister onPause()
+	@Override
+	protected void onPause() {
+		super.onPause();
+		context.unregisterReceiver(mMessageReceiver);
+	}
+
+
+	//This is the handler that will manager to process the broadcast intent
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Bundle extras=intent.getExtras();
+
+			if (extras != null) {
+				String jsonData = extras.getString("com.parse.Data");
+				try {
+					JSONObject json;
+					json = new JSONObject(jsonData);
+
+					if(json.has("hoovId")){
+						String id;
+						id = json.getString("hoovId");
+						if(id.equals(mongoHoovId)){
+							abortBroadcast();
+							GetHoovsAsyncTask tsk = new GetHoovsAsyncTask();
+							HoovFetchParams p = new HoovFetchParams();
+							p.city=userCity;
+							p.comapny=userComapny;
+							p.parentId=mongoHoovId;
+							tsk.execute(p);
+						}
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				String message = intent.getStringExtra("message");
+				System.out.println(message);
+			}
+		}
+	};
+
 	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,Void> {
 		@Override
 		protected void onPreExecute(){
@@ -322,6 +367,7 @@ public class HoovDetailsActivity extends Activity{
 	@Override
 	protected void onResume() {
 		super.onResume();
+		context .registerReceiver(mMessageReceiver, new IntentFilter("com.parse.push.intent.ORDERED_RECEIVE"));
 		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter
 				.MyClickListener() {
 			@Override
@@ -337,12 +383,12 @@ public class HoovDetailsActivity extends Activity{
 		ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 		return results;
 	}
-	
+
 	public void deleteComment(Integer position){
 		DeleteCommentAsyncTask tsk=new DeleteCommentAsyncTask();
 		tsk.execute(position);
 	}
-	
+
 	public class DeleteCommentAsyncTask extends AsyncTask<Integer, Void,Integer>{
 
 		ProgressDialog mProgressDialog;
