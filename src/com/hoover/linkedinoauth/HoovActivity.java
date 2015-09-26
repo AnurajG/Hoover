@@ -142,14 +142,13 @@ public class HoovActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		InputMethodManager inputMethodManager = (InputMethodManager)  this.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
-		switch (v.getId()) {
-		case R.id.button1:
+		if(v.getId()==R.id.button1){
 			SubmitHoovAsyncTask tsk= new SubmitHoovAsyncTask();
 			HoovInsertParams p = new HoovInsertParams();
 			p.text=EmojiMapUtil.replaceUnicodeEmojis(hoovText.getText().toString());
 			p.parentId=parentId;
 			tsk.execute(p);
-		case R.id.button_cancel:
+		}else if (v.getId()==R.id.button_cancel){
 			Intent openMainActivity= new Intent(HoovActivity.this, HomeActivityNew.class);
 			openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 			startActivity(openMainActivity);

@@ -30,6 +30,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/my_hoov_date"
         android:layout_marginEnd="27dp"
-        android:src="@drawable/abc_ab_share_pack_holo_light" />
+        />
  
 </RelativeLayout>
