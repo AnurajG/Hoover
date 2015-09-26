@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -20,6 +21,7 @@ import android.telephony.TelephonyManager;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
+import com.parse.ParseInstallation;
 //import org.json.simple.parser.JSONParser;
 
 public class FirstActivity extends Activity {
@@ -69,12 +71,16 @@ public class FirstActivity extends Activity {
 		userCompany = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
 		userId = preferences.getString("userId", null);
-
 		if(userId==null || userCity == null || userCompany == null){
 			GetUserAsyncTask tsk= new GetUserAsyncTask();
 			tsk.execute(uuid);
 		}else{
+			Intent mServiceIntent = new Intent(FirstActivity.this, SaveOfflineHoovService.class);
+			//mServiceIntent.putExtra("hoovText", hoovText.getText().toString());
+			getApplicationContext().startService(mServiceIntent);
+
 			Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent); 
 		}
 
@@ -130,7 +136,12 @@ public class FirstActivity extends Activity {
 					user.deviceId=doc.getString("deviceId");
 				}
 				conn.disconnect();
-			} catch (Exception e) {
+			} catch (JSONException e) {
+				Intent intent = new Intent(FirstActivity.this,MainActivity.class);
+				startActivity(intent); 
+
+				return null;
+			}catch (Exception e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -156,8 +167,19 @@ public class FirstActivity extends Activity {
 				editor.putString("userDeviceId", data.deviceId);
 				editor.commit();
 
+				ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+				installation.put("userMongoId",data.mongoId);
+				installation.put("userId",data.id);
+				installation.put("userCompany",data.company);
+				installation.put("userCity",data.city);
+				installation.put("userDeviceId",data.deviceId);
+
+				installation.saveInBackground();
+
+
 				//this intent is used to open other activity wich contains another webView
 				Intent intent = new Intent(FirstActivity.this,HomeActivityNew.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				startActivity(intent); 
 			}
 

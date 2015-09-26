@@ -1,7 +1,14 @@
 package com.hoover.linkedinoauth;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
@@ -18,7 +25,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.goebl.david.Webb;
 import com.hoover.util.Hoov;
 import com.hoover.util.HoovQueryBuilder;
 
@@ -51,12 +57,18 @@ public class SaveOfflineHoovService extends IntentService {
 			try {
 				JSONArray array=new JSONArray(hoovArray);
 				for(int i=0;i<array.length();i++){
+
 					JSONObject obj = (JSONObject)array.get(i);
 
 					x en=new x();
 					en.key=i;
 					en.text=obj.getString("hoovText");
 					Hoov h=new Hoov();
+					if(checkForModeration(obj.getString("hoovText")))
+						h.status=0;
+					else
+						h.status=2;
+
 					h.id=userId;
 					h.company=userCompany;
 					h.city=userCity;
@@ -64,30 +76,12 @@ public class SaveOfflineHoovService extends IntentService {
 
 					String path=null;
 
-					if(obj.has("parentId") && obj.getString("parentId")!=null){
-
-						JSONObject f = new JSONObject();
-						f.put("document.path",1);
-
-						Webb webb = Webb.create();
-						JSONObject parent=webb.get("https://api.mongolab.com/api/1/databases/hoover/collections/hoov/"+obj.getString("parentId")).param("apiKey", "zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC")
-								.ensureSuccess().asJsonObject().getBody();
-						JSONObject d = parent.getJSONObject("document");
-						String p = d.getString("path");
-
-
-						if(p==null || p.compareTo("null")==0){
-							path=","+obj.getString("parentId")+",";
-						}else{
-							path=p+","+obj.getString("parentId")+",";
-						}
-
-					}
-					h.path=path;
-
-
+					h.commentHoovIds= new ArrayList<String>();
 					h.hoovUpIds =new ArrayList<String>();
 					h.hoovDownIds=new ArrayList<String>();
+					h.abuserUserIds=new ArrayList<String>();
+					h.followerUserIds=new ArrayList<String>();
+					h.parentId="null";
 
 					HoovQueryBuilder qb = new HoovQueryBuilder();						
 
@@ -130,11 +124,74 @@ public class SaveOfflineHoovService extends IntentService {
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
+			} 
 
 		}
 
 	}
+	public Boolean checkForModeration(String text){
+
+		try {
+			StringBuilder path= new StringBuilder();
+			path.append("extractors=entities");
+			path.append("&");
+			path.append("text="+URLEncoder.encode(text, "UTF-8"));
+
+			URL url = null;
+			HttpURLConnection connection = null;
+			url = new URL("https://api.textrazor.com/");
+			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("X-TextRazor-Key", "f9daeffbfb83eaeeeb5aacc1b6915f19cab0a300096e8ddd4f632158");
+			connection.setRequestProperty("Content-Length", ""+ path.toString().length());
+			OutputStream os = connection.getOutputStream();
+			os.write( path.toString().getBytes() );
+			connection.connect();
+			InputStream resultingInputStream= connection.getInputStream();
+			final Reader reader = new InputStreamReader(resultingInputStream);
+			final char[] buf = new char[16384];
+			int read;
+			final StringBuffer sbuff = new StringBuffer();
+			while((read = reader.read(buf)) > 0) {
+				sbuff.append(buf, 0, read);
+			}
+
+			int status = connection.getResponseCode();
+			if (status != 200) {
+				System.out.println();
+			}else{
+				JSONObject res=new JSONObject(sbuff.toString());
+				if(res.getJSONObject("response").has("entities")){
+					JSONArray ent=res.getJSONObject("response").getJSONArray("entities");
+					for(int i=0;i<ent.length();i++){
+						JSONObject obj = (JSONObject)ent.get(i);
+						if(obj.getString("type").contains("Person") || obj.getString("type").contains("Location"))
+							return false;
+						else
+							return true;
+					}
+				}else
+					return true;
+			}
+
+			connection.disconnect();
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+
+	}
+
 	/*class AttemptHoovSubmit extends AsyncTask<x, String, Integer> {
 
 		protected void onPreExecute() {

@@ -52,8 +52,8 @@ public class MainActivity extends Activity{
 	/*********************************************/
 	
 	//These are constants used for build the urls
-	private static final String AUTHORIZATION_URL = "http://www.linkedin.com/uas/oauth2/authorization";
-	private static final String ACCESS_TOKEN_URL = "http://www.linkedin.com/uas/oauth2/accessToken";
+	private static final String AUTHORIZATION_URL = "https://www.linkedin.com/uas/oauth2/authorization";
+	private static final String ACCESS_TOKEN_URL = "https://www.linkedin.com/uas/oauth2/accessToken";
 	private static final String SECRET_KEY_PARAM = "client_secret";
 	private static final String RESPONSE_TYPE_PARAM = "response_type";
 	private static final String GRANT_TYPE_PARAM = "grant_type";
@@ -175,12 +175,13 @@ public class MainActivity extends Activity{
 				SchemeRegistry registry = new SchemeRegistry();
 				SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
 				socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
-				registry.register(new Scheme("http", socketFactory, 443));
+				registry.register(new Scheme("https", socketFactory, 443));
 				SingleClientConnManager mgr = new SingleClientConnManager(client.getParams(), registry);
 				DefaultHttpClient httpClient = new DefaultHttpClient(mgr, client.getParams());
-
+				
 				// Set verifier     
-				HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+				//HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
+				
 				String url = urls[0];
 				HttpPost httpost = new HttpPost(url);
 				try{

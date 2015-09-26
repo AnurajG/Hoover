@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,9 +27,10 @@ import android.widget.TextView;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
+import com.parse.ParseInstallation;
 public class Login extends Activity {
 	//private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~";
-	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location)";
+	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions)";
 	private static final String OAUTH_ACCESS_TOKEN_PARAM ="oauth2_access_token";
 	private static final String QUESTION_MARK = "?";
 	private static final String EQUALS = "=";
@@ -51,9 +53,12 @@ public class Login extends Activity {
 			String profileUrl = getProfileUrl(accessToken);
 			new GetProfileRequestAsyncTask().execute(profileUrl);
 		}
+		Intent i = new Intent(Login.this, HomeActivityNew.class);
+		startActivity(i);
+		
 	}
 
-	private static final String getProfileUrl(String accessToken){
+	static final String getProfileUrl(String accessToken){
 		return PROFILE_URL
 				+QUESTION_MARK
 				+OAUTH_ACCESS_TOKEN_PARAM+EQUALS+accessToken;
@@ -107,6 +112,17 @@ public class Login extends Activity {
 					editor.putString("userCity", doc.getString("city"));
 					editor.putString("userDeviceId", doc.getString("deviceId"));
 					editor.commit();
+					
+					ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+					installation.put("userMongoId",_id.getString("$oid"));
+					installation.put("userId",doc.getString("id"));
+					installation.put("userCompany",doc.getString("company"));
+					installation.put("userCity",doc.getString("city"));
+					installation.put("userDeviceId",doc.getString("deviceId"));
+
+					installation.saveInBackground();
+					
+					
 
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -119,7 +135,7 @@ public class Login extends Activity {
 		}
 	}
 
-	private class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
+	public class GetProfileRequestAsyncTask extends AsyncTask<String, Void, JSONObject>{
 
 		@Override
 		protected void onPreExecute(){
@@ -163,12 +179,26 @@ public class Login extends Activity {
 				try {
 					User u=new User();
 					u.id=data.getString("id");
-					u.company=data.getString("headline").split("at")[1].trim();
+					//u.company=data.getString("headline").split("at")[1].trim();
 					u.city=data.getJSONObject("location").getString("name");
+					JSONObject obj1,obj2,obj3;
+					String str=null;
+					obj1=data.getJSONObject("positions");
+					JSONArray arr=obj1.getJSONArray("values");
+					for(int i=0;i<arr.length();i++){
+						obj2=(JSONObject)arr.get(i);	
+						if(obj2.has("company")){
+							obj3=obj2.getJSONObject("company");
+							str=obj3.getString("name");
+						}
+					}
 
-					Intent i = new Intent(Login.this, HomeFragment.class);
-
-
+					if(!str.equals(null)){
+						u.company=str;
+					}else{
+						u.company=data.getString("headline").split("at")[1].trim();
+					}
+					
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 					String uuid = tManager.getDeviceId();
 					u.deviceId=uuid;
@@ -181,11 +211,10 @@ public class Login extends Activity {
 					editor.putString("userDeviceId", u.deviceId);
 					editor.commit();
 
+							
 					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
 					tsk.execute(u);
-
-					startActivity(i);
-
+					
 					//h.hoov="xxx";
 
 					/*SaveAsyncTask tsk = new SaveAsyncTask();

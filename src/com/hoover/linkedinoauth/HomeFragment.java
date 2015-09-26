@@ -19,25 +19,35 @@ import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hoover.util.EmojiMapUtil;
+import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 
@@ -45,14 +55,14 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 
 	//private SwipeRefreshLayout refreshLayout;
 	private	PullToRefreshLayout mPullToRefreshLayout;
-	
+
 	String city;
 	String company;
 	String userId;
 	private Context context;
-	Button hoov_in;
 	boolean noMoreDataToLoad=false;
-	ProgressDialog mProgressDialog;
+	//ProgressDialog mProgressDialog;
+	ProgressBar mProgressBar;
 	HoovListAdapter adapter;
 	private int limit = 8;
 	private List<HoovChapter> HoovChapterlist_t = null;
@@ -96,6 +106,14 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		params.city=city;
 		params.comapny=company;
 		new GetHoovsAsyncTask().execute(params);
+		mProgressBar=(ProgressBar)view.findViewById(R.id.a_progressbar);
+		mProgressBar.setBackgroundResource(R.drawable.anim_progress);
+		final AnimationDrawable mailAnimation = (AnimationDrawable) mProgressBar.getBackground();
+		mProgressBar.post(new Runnable() {
+			public void run() {
+				if ( mailAnimation != null ) mailAnimation.start();
+			}
+		});
 		//refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 		/*hoov_in=(Button) findViewById(R.id.hoov_in);
 		hoov_in.setOnClickListener(new OnClickListener() {
@@ -122,18 +140,18 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		super.onViewCreated(view, savedInstanceState);
 		ViewGroup viewGroup = (ViewGroup) view;
 
-            // As we're using a ListFragment we create a PullToRefreshLayout manually
-            mPullToRefreshLayout = new PullToRefreshLayout(viewGroup.getContext());
+		// As we're using a ListFragment we create a PullToRefreshLayout manually
+		mPullToRefreshLayout = new PullToRefreshLayout(viewGroup.getContext());
 
-            // We can now setup the PullToRefreshLayout
-            ActionBarPullToRefresh.from(getActivity())
-                    // We need to insert the PullToRefreshLayout into the Fragment's ViewGroup
-                    .insertLayoutInto(viewGroup)
-                    // Here we mark just the ListView and it's Empty View as pullable
-                    .theseChildrenArePullable(android.R.id.list, android.R.id.empty)
-                    .listener(this)
-                    .setup(mPullToRefreshLayout);
-		
+		// We can now setup the PullToRefreshLayout
+		ActionBarPullToRefresh.from(getActivity())
+		// We need to insert the PullToRefreshLayout into the Fragment's ViewGroup
+		.insertLayoutInto(viewGroup)
+		// Here we mark just the ListView and it's Empty View as pullable
+		.theseChildrenArePullable(android.R.id.list, android.R.id.empty)
+		.listener(this)
+		.setup(mPullToRefreshLayout);
+
 	}
 
 
@@ -142,9 +160,14 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = adapter.hoovChapterList.get(position);
 		Intent myIntent = new Intent(context, HoovDetailsActivity.class);
-		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
+		/*myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
+		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);*/
+
+		//myIntent.putExtra("currentUserid",userId);
+		myIntent.putExtra("chapter", selectedHoov);
+
 		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
 
 		startActivity(myIntent);
@@ -261,7 +284,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 
 			h_up_button.setOnClickListener(upHandler);
 			h_down_button.setOnClickListener(downHandler);
-			
+
 			HoovChapter chapter = hoovChapterList.get(arg0);
 
 			if(chapter.hoov_up_ids.contains(userID)){
@@ -330,129 +353,131 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	}
 	public void onRefreshStarted(View view) {
 		// TODO Auto-generated method stub
-		
-		
+
+
 		//setListShown(false); // This will hide the listview and visible a round progress bar 
-		
-		
-		 new AsyncTask<Void, Void, Void>() {
 
-                @Override
-                protected Void doInBackground(Void... params) {
-        			HoovChapterlist_t=new ArrayList<HoovChapter>();
-        			try 
-        			{			
-        				JSONArray array;
-        				JSONObject p = new JSONObject();
-        				p.put("document.company",company);
-        				p.put("document.city",city);
-        				JSONObject q = new JSONObject();
-        				q.put("_id", -1);
-        				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
-        				URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
-        				URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-        				url = uri.toURL();
-        				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        				Random random = new Random();
-        				conn.setRequestMethod("GET");
-        				conn.setRequestProperty("Content-Type", "application/json");
-        				conn.setRequestProperty("Accept", "application/json");
 
-        				int s=conn.getResponseCode();
+		new AsyncTask<Void, Void, Void>() {
 
-        				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
-        				StringBuilder responseStrBuilder = new StringBuilder();
+			@Override
+			protected Void doInBackground(Void... params) {
+				HoovChapterlist_t=new ArrayList<HoovChapter>();
+				try 
+				{			
+					JSONArray array;
+					JSONObject p = new JSONObject();
+					p.put("document.company",company);
+					p.put("document.city",city);
+					p.put("document.parentId","null");
+					p.put("document.status",0);
+					JSONObject q = new JSONObject();
+					q.put("_id", -1);
+					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
+					URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+					url = uri.toURL();
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					Random random = new Random();
+					conn.setRequestMethod("GET");
+					conn.setRequestProperty("Content-Type", "application/json");
+					conn.setRequestProperty("Accept", "application/json");
 
-        				String inputStr;
-        				while ((inputStr = streamReader.readLine()) != null)
-        					responseStrBuilder.append(inputStr);
+					int s=conn.getResponseCode();
 
-        				array = new JSONArray(responseStrBuilder.toString());
-        				for(int i=0;i<array.length();i++){
-        					HoovChapter hc=new HoovChapter();
-        					JSONObject obj = (JSONObject)array.get(i);
-        					JSONObject doc = obj.getJSONObject("document");
-        					JSONObject ids = obj.getJSONObject("_id");
-        					JSONArray ups = doc.getJSONArray("hoovUpIds");
-        					JSONArray downs = doc.getJSONArray("hoovDownIds");
-        					hc.hoovText= EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
-        					hc.mongoHoovId=ids.getString("$oid");
-        					hc.hoov_up_ids=new ArrayList<String>();
-        					hc.hoov_down_ids =new ArrayList<String>();
-        					if (ups != null) { 
-        						int len = ups.length();
-        						for (int j=0;j<len;j++){ 
-        							hc.hoov_up_ids.add(ups.get(j).toString());
-        						} 
-        					} 
-        					if (downs != null) { 
-        						int len = downs.length();
-        						for (int j=0;j<len;j++){ 
-        							hc.hoov_down_ids.add(downs.get(j).toString());
-        						} 
-        					} 
-        					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
-        					Long epoch=tmp;
-        					Long curr_epoch = System.currentTimeMillis()/1000;
-        					if(curr_epoch-epoch > 86400 )
-        						hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
-        					else if(curr_epoch-epoch > 3600)
-        						hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
-        					else if(curr_epoch-epoch > 60)
-        						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
-        					else
-        						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
-        					HoovChapterlist_t.add(hc);
-        				}
+					BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+					StringBuilder responseStrBuilder = new StringBuilder();
 
-        			} 
-        			catch (MalformedURLException e) {
-        				// TODO Auto-generated catch block
-        				e.printStackTrace();
-        			} catch (IOException e) {
-        				// TODO Auto-generated catch block
-        				e.printStackTrace();
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        			}
-        			return null;	
-        		
-                }
+					String inputStr;
+					while ((inputStr = streamReader.readLine()) != null)
+						responseStrBuilder.append(inputStr);
 
-                @Override
-                protected void onPostExecute(Void result) {
-                   // super.onPostExecute(result);
-              
-                	adapter = new HoovListAdapter(context,HoovChapterlist_t);
-        			setListAdapter(adapter);
-                    
-                    // Notify PullToRefreshLayout that the refresh has finished
-                    mPullToRefreshLayout.setRefreshComplete();
+					array = new JSONArray(responseStrBuilder.toString());
+					for(int i=0;i<array.length();i++){
+						HoovChapter hc=new HoovChapter();
+						JSONObject obj = (JSONObject)array.get(i);
+						JSONObject doc = obj.getJSONObject("document");
+						JSONObject ids = obj.getJSONObject("_id");
+						JSONArray ups = doc.getJSONArray("hoovUpIds");
+						JSONArray downs = doc.getJSONArray("hoovDownIds");
+						hc.hoovText= EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
+						hc.mongoHoovId=ids.getString("$oid");
+						hc.hoov_up_ids=new ArrayList<String>();
+						hc.hoov_down_ids =new ArrayList<String>();
+						hc.commentHoovIds = new Gson().fromJson(doc.getJSONArray("commentHoovIds").toString(), new TypeToken<List<String>>(){}.getType());
+						if (ups != null) { 
+							int len = ups.length();
+							for (int j=0;j<len;j++){ 
+								hc.hoov_up_ids.add(ups.get(j).toString());
+							} 
+						} 
+						if (downs != null) { 
+							int len = downs.length();
+							for (int j=0;j<len;j++){ 
+								hc.hoov_down_ids.add(downs.get(j).toString());
+							} 
+						} 
+						hc.hoovUserId =doc.getString("id");
+						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
+						Long epoch=tmp;
+						Long curr_epoch = System.currentTimeMillis()/1000;
+						if(curr_epoch-epoch > 86400 )
+							hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
+						else if(curr_epoch-epoch > 3600)
+							hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
+						else if(curr_epoch-epoch > 60)
+							hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
+						else
+							hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+						HoovChapterlist_t.add(hc);
+					}
 
-            // if you set the "setListShown(false)" then you have to 
-            //uncomment the below code segment
-                    
-//                    if (getView() != null) {
-//                        // Show the list again
-//                        setListShown(true);
-//                    }
-                }
-            }.execute();
-		
-		
+				} 
+				catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;	
+
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				// super.onPostExecute(result);
+
+				adapter = new HoovListAdapter(context,HoovChapterlist_t);
+				setListAdapter(adapter);
+
+				// Notify PullToRefreshLayout that the refresh has finished
+				mPullToRefreshLayout.setRefreshComplete();
+
+				// if you set the "setListShown(false)" then you have to 
+				//uncomment the below code segment
+
+				//                    if (getView() != null) {
+				//                        // Show the list again
+				//                        setListShown(true);
+				//                    }
+			}
+		}.execute();
+
+
 	}
-	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Void,HoovFetchParams> {
+	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,HoovFetchParams> {
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			mProgressDialog = new ProgressDialog(getActivity());
-			mProgressDialog.setTitle("Load Hoovs.....");
-			mProgressDialog.setMessage("Loading...");
-			mProgressDialog.setIndeterminate(false);
-			mProgressDialog.show();
 		}
 
-
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			mProgressBar.setProgress(values[0]);
+		}
 		@Override
 		protected HoovFetchParams doInBackground(HoovFetchParams... params) {
 			HoovChapterlist_t=new ArrayList<HoovChapter>();
@@ -463,6 +488,9 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				JSONObject p = new JSONObject();
 				p.put("document.company",u.comapny);
 				p.put("document.city",u.city);
+				p.put("document.parentId","null");
+				p.put("document.status",0);
+				publishProgress(0);
 				JSONObject q = new JSONObject();
 				q.put("_id", -1);
 				String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
@@ -483,7 +511,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				String inputStr;
 				while ((inputStr = streamReader.readLine()) != null)
 					responseStrBuilder.append(inputStr);
-
+				publishProgress(90);
 				array = new JSONArray(responseStrBuilder.toString());
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
@@ -492,10 +520,35 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject ids = obj.getJSONObject("_id");
 					JSONArray ups = doc.getJSONArray("hoovUpIds");
 					JSONArray downs = doc.getJSONArray("hoovDownIds");
+					JSONArray followers= doc.getJSONArray("followerUserIds");
+					JSONArray abuseds= doc.getJSONArray("abuserUserIds");
 					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 					hc.mongoHoovId=ids.getString("$oid");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
+					hc.hoovUserId =doc.getString("id");
+					hc.abused=false;
+					hc.followed=false;
+					if (followers != null) { 
+						int len = followers.length();
+						for (int j=0;j<len;j++){ 
+							if(userId.equals(followers.get(j).toString())){
+								hc.followed=true;
+								break;
+							}
+						} 
+					} 
+					if (abuseds != null) { 
+						int len = abuseds.length();
+						for (int j=0;j<len;j++){ 
+							if(userId.equals(abuseds.get(j).toString())){
+								hc.abused=true;
+								break;
+							}
+						} 
+					} 
+					//hc.path=doc.getString("path");
+
 					if (ups != null) { 
 						int len = ups.length();
 						for (int j=0;j<len;j++){ 
@@ -521,6 +574,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
 					HoovChapterlist_t.add(hc);
 				}
+				publishProgress(100);
 
 			} 
 			catch (MalformedURLException e) {
@@ -540,7 +594,9 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			//listview = (ListView) findViewById(android.R.id.list);
 			adapter = new HoovListAdapter(context,HoovChapterlist_t);
 			setListAdapter(adapter);
-			mProgressDialog.dismiss();
+			registerForContextMenu(getListView());
+			
+			mProgressBar.setVisibility(View.GONE);
 			getListView().setOnScrollListener(new OnScrollListener() {
 
 				@Override
@@ -550,24 +606,24 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					int count = getListView().getCount();
 
 					if (scrollState == SCROLL_STATE_IDLE) {
-						 if (getListView().getLastVisiblePosition() >= count
+						if (getListView().getLastVisiblePosition() >= count
 								- threshold) {
-							 if(noMoreDataToLoad){
-									AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-									alertDialog.setTitle("Alert");
-									alertDialog.setMessage("No more hoovs to show");
-									alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-									    new DialogInterface.OnClickListener() {
-									        public void onClick(DialogInterface dialog, int which) {
-									            dialog.dismiss();
-									        }
-									    });
-									alertDialog.show();
-									
-								}else{
-							// Execute LoadMoreDataTask AsyncTask
-							new LoadMoreDataTask().execute(data);
-								}
+							if(noMoreDataToLoad){
+								AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+								alertDialog.setTitle("Alert");
+								alertDialog.setMessage("No more hoovs to show");
+								alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+										new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.dismiss();
+									}
+								});
+								alertDialog.show();
+
+							}else{
+								// Execute LoadMoreDataTask AsyncTask
+								new LoadMoreDataTask().execute(data);
+							}
 						}
 					}
 				}
@@ -586,10 +642,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
-				mProgressDialog.setTitle("Load More Hoovs.....");
-				mProgressDialog.setMessage("Loading more...");
-				mProgressDialog.setIndeterminate(false);
-				mProgressDialog.show();
 			}
 
 			@Override
@@ -604,6 +656,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					JSONObject p = new JSONObject();
 					p.put("document.company",u.comapny);
 					p.put("document.city",u.city);
+					p.put("document.parentId","null");
+					p.put("document.status",0);
 					limit=limit+8;
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);
@@ -637,10 +691,16 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 						JSONObject ids = obj.getJSONObject("_id");
 						JSONArray ups = doc.getJSONArray("hoovUpIds");
 						JSONArray downs = doc.getJSONArray("hoovDownIds");
+						JSONArray followers= doc.getJSONArray("followerUserIds");
+						JSONArray abuseds= doc.getJSONArray("abuserUserIds");
+						
 						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
 						hc.mongoHoovId=ids.getString("$oid");
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
+						hc.hoovUserId =doc.getString("id");
+						hc.followed=false;
+						hc.abused=false;
 						if (ups != null) { 
 							int len = ups.length();
 							for (int j=0;j<len;j++){ 
@@ -651,6 +711,24 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 							int len = downs.length();
 							for (int j=0;j<len;j++){ 
 								hc.hoov_down_ids.add(downs.get(j).toString());
+							} 
+						} 
+						if (followers != null) { 
+							int len = followers.length();
+							for (int j=0;j<len;j++){ 
+								if(userId.equals(followers.get(j).toString())){
+									hc.followed=true;
+									break;
+								}
+							} 
+						} 
+						if (abuseds != null) { 
+							int len = abuseds.length();
+							for (int j=0;j<len;j++){ 
+								if(userId.equals(abuseds.get(j).toString())){
+									hc.abused=true;
+									break;
+								}
 							} 
 						} 
 						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
@@ -676,7 +754,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					e.printStackTrace();
 				} catch (Exception e) {
 					e.printStackTrace();
-					return null;
+					return null;	
 				}
 				return null;	
 
@@ -687,12 +765,156 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 				int position = getListView().getLastVisiblePosition();
 				adapter = new HoovListAdapter(context,HoovChapterlist_t);
 				getListView().setAdapter(adapter);
+				registerForContextMenu(getListView());
 				getListView().setSelectionFromTop(position, 0);
-				mProgressDialog.dismiss();
 			}
 		}
 
 	}
-	
-	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==android.R.id.list) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    //menu.setHeaderTitle("Options");
+	    int pos=info.position;
+	    HoovChapter selectedHoov = adapter.hoovChapterList.get(pos);
+	    String selectedHoovUserId=selectedHoov.hoovUserId;
+	    List<String> menuItems=new ArrayList<String>();
+	    if(!selectedHoovUserId.equals(userId)){//selected hoov is not current user's hoov
+	    	if(!selectedHoov.followed)
+	    		menuItems.add(HoovActionOptions.FOLLOW.getoptionString());
+	    	else
+	    		menuItems.add(HoovActionOptions.UNFOLLOW.getoptionString());
+	    	menuItems.add(HoovActionOptions.MARK_ABUSE.getoptionString());
+	    }else{//selected hoov is current user's hoov
+	    	menuItems.add(HoovActionOptions.DELETE.getoptionString());
+	    	
+	    }
+	    for (int i = 0; i<menuItems.size(); i++) {
+    		menu.add(Menu.NONE, i, i, menuItems.get(i));
+    	}
+	   /* if(!selectedHoovUserId.equals(userId)){
+	    	if(!selectedHoov.followed)
+	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs1);
+	    	else
+	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs2);
+	    	for (int i = 0; i<menuItems.length; i++) {
+	    		menu.add(Menu.NONE, i, i, menuItems[i]);
+	    	}
+	    }else{
+	    	menuItems = getResources().getStringArray(R.array.action_items_for_own_hoovs);
+	    	for (int i = 0; i<menuItems.length; i++) {
+	    		menu.add(Menu.NONE, i, i, menuItems[i]);
+	    	}
+	    	
+	    }*/
+	  }
+	}
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+	  //int menuItemIndex = item.getItemId();
+	  String menuItemName=item.getTitle().toString();
+	  int pos=info.position;
+	  HoovChapter selectedHoov = adapter.hoovChapterList.get(pos);
+	  String selectedHoovUserId=selectedHoov.hoovUserId;
+	  final String selectedmongoHoovId=selectedHoov.mongoHoovId;
+	  AlertDialog alertDialog;
+	  HoovActionOptions[] al=HoovActionOptions.values();
+	  String actionName=null;
+	  for(int i=0;i<HoovActionOptions.values().length;i++){
+		  if(al[i].optionString.equals(menuItemName)){
+			  actionName=al[i].name();
+			  break;
+		  }
+	  }
+	  if(actionName!= null){
+		  switch(HoovActionOptions.valueOf(actionName)){
+		  case FOLLOW:
+			  SaveFollowHoovInfoAsyncTask tsk= new SaveFollowHoovInfoAsyncTask(selectedmongoHoovId,userId);
+			  tsk.execute();
+			  alertDialog = new AlertDialog.Builder(context).create();
+			  alertDialog.setTitle("Alert");
+			  alertDialog.setMessage("You are now following this hoov");
+			  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+					  new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) {
+					  dialog.dismiss();
+				  }
+			  });
+			  alertDialog.show();
+			  selectedHoov.followed=true;
+			  break;
+		  case UNFOLLOW:
+			  DeleteFollowHoovInfoAsyncTask tsk2= new DeleteFollowHoovInfoAsyncTask(selectedmongoHoovId,userId);
+			  tsk2.execute();
+			  alertDialog = new AlertDialog.Builder(context).create();
+			  alertDialog.setTitle("Alert");
+			  alertDialog.setMessage("You have stopped following this hoov");
+			  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+					  new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) {
+					  dialog.dismiss();
+				  }
+			  });
+			  alertDialog.show();
+			  selectedHoov.followed=false;	
+			  break;
+		  case MARK_ABUSE:
+			  if(selectedHoov.abused){
+				  alertDialog = new AlertDialog.Builder(context).create();
+				  alertDialog.setTitle("Alert");
+				  alertDialog.setMessage("You have already abused this hoov");
+				  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+						  new DialogInterface.OnClickListener() {
+					  public void onClick(DialogInterface dialog, int which) {
+						  dialog.dismiss();
+					  }
+				  });
+				  alertDialog.show();
+
+			  }else{
+				  SaveAbuseHoovInfoAsyncTask tsk1= new SaveAbuseHoovInfoAsyncTask(selectedmongoHoovId,userId);
+				  tsk1.execute();
+				  alertDialog = new AlertDialog.Builder(context).create();
+				  alertDialog.setTitle("Alert");
+				  alertDialog.setMessage("You have successfully abused this hoov");
+				  alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+						  new DialogInterface.OnClickListener() {
+					  public void onClick(DialogInterface dialog, int which) {
+						  dialog.dismiss();
+					  }
+				  });
+				  alertDialog.show();
+				  selectedHoov.abused=true;
+			  }
+			  break;
+		  case DELETE:
+			  new AlertDialog.Builder(this.getActivity())
+			  .setTitle("Delete Hoov")
+			  .setMessage("Are you sure you want to delete this hoov?")
+			  .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) { 
+					  DeleteHoovsAsyncTask tsk= new DeleteHoovsAsyncTask(context,selectedmongoHoovId);
+					  tsk.execute();
+				  }
+			  })
+			  .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int which) { 
+
+				  }
+			  })
+			  .setIcon(android.R.drawable.ic_dialog_alert)
+			  .show();
+			  break;
+		  default:
+			  break;
+
+		  }
+	  }
+	  return true;
+	}
+
+
 }

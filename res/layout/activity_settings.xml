@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Preferences">
+
+  <PreferenceCategory
+     android:title="Options">
+<SwitchPreference
+    android:key="Option 0"
+    android:title="Option 0" />
+     <CheckBoxPreference
+       android:key="pref_opt1"
+       android:title="Option 1"
+       android:summary="Tick to set this option"
+       android:defaultValue="true"
+       />
+    <CheckBoxPreference
+       android:key="pref_opt2"
+       android:title="Option 2"
+       android:summary="Tick to set this option"
+       android:defaultValue="true"
+       />
+  </PreferenceCategory>
+
+  <PreferenceCategory
+     android:title="Selection">
+      
+    <ListPreference
+        android:key="pref_type"
+        android:title="Type"
+        android:summary="Select item from array"
+        android:entries="@array/types"
+        android:entryValues="@array/types_values"
+        android:defaultValue="1"
+        />
+
+    <EditTextPreference
+        android:key="pref_text"
+        android:title="Switch to other organisation"
+        android:summary="The company name mentioned here must match the company name in your linkedin profile"
+        android:dialogTitle="Enter the name of the organisation"
+    />
+     
+  </PreferenceCategory>
+
+  <Preference
+    android:title="Intent"
+    android:summary="Open a webpage">
+
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:data="http://android-elements.blogspot.com/" />
+
+  </Preference>
+   
+</PreferenceScreen>
