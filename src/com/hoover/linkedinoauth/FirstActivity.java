@@ -167,14 +167,14 @@ public class FirstActivity extends Activity {
 				editor.putString("userDeviceId", data.deviceId);
 				editor.commit();
 
-				ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+				/*ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 				installation.put("userMongoId",data.mongoId);
 				installation.put("userId",data.id);
 				installation.put("userCompany",data.company);
 				installation.put("userCity",data.city);
 				installation.put("userDeviceId",data.deviceId);
 
-				installation.saveInBackground();
+				installation.saveInBackground();*/
 
 
 				//this intent is used to open other activity wich contains another webView

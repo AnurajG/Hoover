@@ -62,7 +62,7 @@
             android:name=".HoovDetailsActivity"
             android:label="@string/title_activity_home" >
         </activity>
-         <activity
+        <activity
             android:name=".HoovDetailsByIdActivity"
             android:label="@string/title_activity_home" >
         </activity>
@@ -83,7 +83,7 @@
         </service>
         <service android:name=".SaveLikeDislikeService" >
         </service>
-.
+.
         <service
             android:name=".SaveOfflineHoovService"
             android:label="@string/title_activity_home" >
@@ -103,7 +103,8 @@
 
         <service android:name="com.parse.PushService" />
 
-        <receiver
+        <!--
+        >receiver
             android:name="com.parse.PushReceiver"
             android:exported="false" >
             <intent-filter>
@@ -118,18 +119,28 @@
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
             </intent-filter>
-        </receiver>
+        </receiver
+        -->
         <receiver
+            android:name="org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMMessageReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.hoover.linkedinoauth" />
+            </intent-filter>
+        </receiver>
+        <!--
+        >receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.hoover.linkedinoauth" />
             </intent-filter>
-        </receiver>
+        </receiver
+        -->
     </application>
 
 </manifest>

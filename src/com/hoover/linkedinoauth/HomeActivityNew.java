@@ -46,7 +46,7 @@ public class HomeActivityNew extends FragmentActivity{
 	ViewPager pager;
 	//ProgressDialog mProgressDialog;
 	AppRate appRate;
-	
+
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	@SuppressWarnings("deprecation")
@@ -70,8 +70,8 @@ public class HomeActivityNew extends FragmentActivity{
 		final ActionBar actionBar = getActionBar();
 		ColorDrawable colorDrawable = new ColorDrawable(Color.WHITE);
 		actionBar.setStackedBackgroundDrawable(colorDrawable);
-		
-		
+
+
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
 		userComapny = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
@@ -79,7 +79,7 @@ public class HomeActivityNew extends FragmentActivity{
 		userMongoId= preferences.getString("userMongoId", null);
 		setContentView(R.layout.activity_home_new);
 
-		
+
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -107,7 +107,7 @@ public class HomeActivityNew extends FragmentActivity{
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
 		// Invite
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-			
+
 
 		// Recycle the typed array
 		navMenuIcons.recycle();
@@ -126,8 +126,8 @@ public class HomeActivityNew extends FragmentActivity{
 				R.drawable.ic_drawer, //nav menu toggle icon
 				R.string.app_name, // nav drawer open - description for accessibility
 				R.string.app_name // nav drawer close - description for accessibility
-		) {
-			
+				) {
+
 			public void onDrawerClosed(View view) {
 				getActionBar().setTitle(mTitle);
 				// calling onPrepareOptionsMenu() to show action bar icons
@@ -142,7 +142,7 @@ public class HomeActivityNew extends FragmentActivity{
 				invalidateOptionsMenu();
 			}
 
-			
+
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		if (savedInstanceState == null) {
@@ -182,39 +182,39 @@ public class HomeActivityNew extends FragmentActivity{
 			//DELETE PROFILE
 			final String uid=this.userId;
 			new AlertDialog.Builder(this)
-	        .setTitle("Delete entry")
-	        .setMessage("Are you sure you want to delete this entry?")
-	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int which) { 
-	            	SharedPreferences preferences = getSharedPreferences("user_info", 0);
-	                SharedPreferences.Editor editor=preferences.edit();
-	                editor.clear();
-	        		editor.commit();
-	            	Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
-	                myIntent.putExtra("userMongoId",userMongoId);
-	                startService(myIntent);
-	            	finish();
-	            }
-	         })
-	        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int which) { 
-	            	System.out.println("NO");
-	            	mDrawerList.setItemChecked(0, true);
-	    			mDrawerList.setSelection(0);
-	    			mDrawerLayout.closeDrawer(mDrawerList);
-	            }
-	         })
-	        .setIcon(android.R.drawable.ic_dialog_alert)
-	         .show();
-			
-           
+			.setTitle("Delete entry")
+			.setMessage("Are you sure you want to delete this entry?")
+			.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) { 
+					SharedPreferences preferences = getSharedPreferences("user_info", 0);
+					SharedPreferences.Editor editor=preferences.edit();
+					editor.clear();
+					editor.commit();
+					Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
+					myIntent.putExtra("userMongoId",userMongoId);
+					startService(myIntent);
+					finish();
+				}
+			})
+			.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) { 
+					System.out.println("NO");
+					mDrawerList.setItemChecked(0, true);
+					mDrawerList.setSelection(0);
+					mDrawerLayout.closeDrawer(mDrawerList);
+				}
+			})
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.show();
+
+
 			break;
 		case 3:
 			//RATE US
 			mDrawerLayout.closeDrawer(mDrawerList);
 			mDrawerList.setItemChecked(0, true);
 			mDrawerList.setSelection(0);
-			
+
 			if(appRate==null){
 				appRate = new AppRate(this);
 				appRate.init();
@@ -231,18 +231,18 @@ public class HomeActivityNew extends FragmentActivity{
 			String shareBody = "Ye mera app hai...hohohohohhahahah";
 			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
 			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-			
+
 			startActivity(Intent.createChooser(sharingIntent, "Share via"));
 			mDrawerList.setItemChecked(0, true);
 			mDrawerList.setSelection(0);
 			break;
 		default:
-			
+
 			break;
 		}
 
 	}
-	
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -251,20 +251,19 @@ public class HomeActivityNew extends FragmentActivity{
 			return true;
 		}
 		// Handle action bar actions click
-		switch (item.getItemId()) {
-		case R.id.action_settings:
+		if(item.getItemId()== R.id.action_settings) {
 			return true;
-		default:
+		}else{
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 
 	/**
 	 * Slide menu item click listener
 	 * */
 	private class SlideMenuClickListener implements
-			ListView.OnItemClickListener {
+	ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
@@ -297,8 +296,8 @@ public class HomeActivityNew extends FragmentActivity{
 		return fList;
 
 	}
-	
-	
+
+
 
 }
 
