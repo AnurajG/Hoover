@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -57,6 +58,9 @@ import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovInsertParams;
 import com.hoover.util.HoovQueryBuilder;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 
 public class HoovDetailsActivity extends Activity{
 	private TextView hoovText;
@@ -451,18 +455,26 @@ public class HoovDetailsActivity extends Activity{
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 			if(result!=null){
-				HoovChapter hc=new HoovChapter();
-				hc.hoovText=result;
-				hc.hoovUserId=userId;
-				hc.hoov_down_ids=new ArrayList<String>();
-				hc.hoov_up_ids=new ArrayList<String>();
-				hc.mongoHoovId=hoovId;
-				results.add(hc);
+				HoovChapter _hc=new HoovChapter();
+				_hc.hoovText=result;
+				_hc.hoovUserId=userId;
+				_hc.hoov_down_ids=new ArrayList<String>();
+				_hc.hoov_up_ids=new ArrayList<String>();
+				_hc.mongoHoovId=hoovId;
+				results.add(_hc);
 				mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),userId);
 				mRecyclerView.setAdapter(mAdapter);
+				
+				HashSet<String> commentUserIds= new HashSet<String>();
+				for(HoovChapter h:results){
+					commentUserIds.add(h.hoovUserId);
+				}
+				JSONArray comments=new JSONArray(commentUserIds);
+				
+				
 
-				/*ParseQuery pushQuery = ParseInstallation.getQuery();
-				pushQuery.whereEqualTo("userId", hc.hoovUserId);
+				/*ParseQuery<ParseInstallation> pushQuery = ParseInstallation.getQuery();
+				pushQuery.whereContainedIn("userId", commentUserIds);
 
 				// Send push notification to query
 				ParsePush push = new ParsePush();
@@ -471,13 +483,23 @@ public class HoovDetailsActivity extends Activity{
 				push.sendInBackground();*/
 
 				JSONObject where= new JSONObject();
+				JSONObject where2= new JSONObject();
+				JSONObject user= new JSONObject();
+				JSONObject inq= new JSONObject();
 				JSONObject alert=new JSONObject();
 				JSONObject data=new JSONObject();
-
+				JSONObject in=new JSONObject();
+				
 
 				try {
-					where.put("userId", hc.hoovUserId);
+					in.put("$in", comments);
+					where.put("userId",in);
+					inq.put("where", where);
+					user.put("$inQuery", inq);
+					where2.put("Installation", user);
 					data.put("where", where);
+					
+					
 					alert.put("alert", "YaY! Someone commented on the hoov you posted!");
 					alert.put("title", "Hoover Comment Received");
 					alert.put("hoovId", mongoHoovId);
