@@ -238,6 +238,7 @@ public class HoovDetailsActivity extends Activity{
 							abortBroadcast();
 							GetHoovsAsyncTask tsk = new GetHoovsAsyncTask();
 							HoovFetchParams p = new HoovFetchParams();
+							results.clear();
 							p.city=userCity;
 							p.comapny=userComapny;
 							p.parentId=mongoHoovId;
