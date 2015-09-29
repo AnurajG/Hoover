@@ -42,7 +42,7 @@ public class HomeActivityNew extends FragmentActivity{
 	String userMongoId;
 	HomePageAdapter pageAdapter;
 	SlidingTabLayout tabs;
-	CharSequence Titles[]={"Newest","Hottest"};
+	//CharSequence Titles[]={"Home","Following"};
 	ViewPager pager;
 	//ProgressDialog mProgressDialog;
 	AppRate appRate;
