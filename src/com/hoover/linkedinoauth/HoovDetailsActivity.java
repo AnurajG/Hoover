@@ -102,7 +102,7 @@ public class HoovDetailsActivity extends Activity{
 		mRecyclerView.setHasFixedSize(true);
 		mLayoutManager = new LinearLayoutManager(this);
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new MyRecyclerViewAdapter(getDataSet(),this,userId);
+		mAdapter = new HoovDetailsViewAdapter(getDataSet(),this,userId);
 		mRecyclerView.setAdapter(mAdapter);
 
 		hoovText = (TextView) findViewById(R.id.hoovtextView);
@@ -315,7 +315,7 @@ public class HoovDetailsActivity extends Activity{
 					hc.mongoHoovId=obj.getString("_id");
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
-					hc.hoovUserId=userId;
+					hc.hoovUserId=doc.getString("id");
 					if (ups != null) { 
 						int len = ups.length();
 						for (int j=0;j<len;j++){ 
@@ -361,7 +361,7 @@ public class HoovDetailsActivity extends Activity{
 			super.onPostExecute(data);
 
 			results.addAll(HoovChapterlist_t);
-			mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),userId);
+			mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
 			mRecyclerView.setAdapter(mAdapter);
 			mProgressBar.setVisibility(View.GONE);
 
@@ -373,7 +373,7 @@ public class HoovDetailsActivity extends Activity{
 	protected void onResume() {
 		super.onResume();
 		context .registerReceiver(mMessageReceiver, new IntentFilter("com.parse.push.intent.ORDERED_RECEIVE"));
-		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter
+		((HoovDetailsViewAdapter) mAdapter).setOnItemClickListener(new HoovDetailsViewAdapter
 				.MyClickListener() {
 			@Override
 			public void onItemClick(int position, View v) {
@@ -436,7 +436,7 @@ public class HoovDetailsActivity extends Activity{
 		}
 		protected void onPostExecute(Integer data){
 			results.remove(data.intValue());
-			mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),userId);
+			mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
 			mRecyclerView.setAdapter(mAdapter);
 			mRecyclerView.refreshDrawableState();
 			//mRecyclerView.ref
@@ -462,10 +462,11 @@ public class HoovDetailsActivity extends Activity{
 				_hc.hoov_up_ids=new ArrayList<String>();
 				_hc.mongoHoovId=hoovId;
 				results.add(_hc);
-				mAdapter = new MyRecyclerViewAdapter(results,getApplicationContext(),userId);
+				mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
 				mRecyclerView.setAdapter(mAdapter);
 				
 				HashSet<String> commentUserIds= new HashSet<String>();
+				commentUserIds.add(hc.hoovUserId);
 				for(HoovChapter h:results){
 					commentUserIds.add(h.hoovUserId);
 				}
