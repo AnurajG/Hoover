@@ -54,7 +54,6 @@ import com.hoover.util.HoovFetchParams.eType;
 
 public class HomeFragment extends ListFragment implements OnRefreshListener{
 
-	//private SwipeRefreshLayout refreshLayout;
 	private	PullToRefreshLayout mPullToRefreshLayout;
 
 	String city;
@@ -62,7 +61,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	String userId;
 	private Context context;
 	boolean noMoreDataToLoad=false;
-	//ProgressDialog mProgressDialog;
+	
 	ProgressBar mProgressBar;
 	HoovListAdapter adapter;
 	private int limit = 8;
@@ -88,6 +87,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			params.city=city;
 			params.comapny=company;
 			params.order=eOrder.TOP;
+			params.type=type;
 			new GetHoovsAsyncTask().execute(params);
 
 		}else{
@@ -95,6 +95,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			params.city=city;
 			params.comapny=company;
 			params.order=eOrder.NEW;
+			params.type=type;
 			new GetHoovsAsyncTask().execute(params);
 		}
 	}
@@ -112,19 +113,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			Bundle savedInstanceState) {
 		View view;
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.activity_home);
-		//============================?
-		/*Integer status = NetworkUtil.getConnectivityStatus(this);
-
-		if(status==NetworkUtil.TYPE_NOT_CONNECTED){
-			Intent noNetIntent = new Intent(this, NoNetConnectivity.class);
-			this.startService(noNetIntent);
-		}else*/
 		view = inflater.inflate(R.layout.activity_home, container, false);
-		//SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		//String userComapny = preferences.getString("userCompany", null);
-		//String userCity = preferences.getString("userCity", null);
-
 		final HoovFetchParams params=new HoovFetchParams();
 		params.city=city;
 		params.comapny=company;
@@ -142,25 +131,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 
 
 		new GetHoovsAsyncTask().execute(params);
-
-		//refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-		/*hoov_in=(Button) findViewById(R.id.hoov_in);
-		hoov_in.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(HomeActivity.this,HoovActivity.class);
-				startActivity(intent); 
-			} 
-		});*/
-		/*refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				new GetHoovsAsyncTask().execute(params);
-				if (refreshLayout.isRefreshing()) {
-					refreshLayout.setRefreshing(false);
-				}
-			}
-		});*/
 		return view;
 	}
 	@Override
@@ -189,16 +159,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = adapter.hoovChapterList.get(position);
 		Intent myIntent = new Intent(context, HoovDetailsActivity.class);
-		/*myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
-		myIntent.putExtra("text",selectedHoov.hoovText);
-		myIntent.putExtra("date",selectedHoov.hoovDate);
-		myIntent.putExtra("selectedHoovUserId",selectedHoov.hoovUserId);*/
-
-		//myIntent.putExtra("currentUserid",userId);
 		myIntent.putExtra("chapter", selectedHoov);
-
-		//Toast.makeText(context, selectedHoov.hoovDate + " ID #", Toast.LENGTH_SHORT).show();
-
 		startActivity(myIntent);
 
 	}
@@ -209,8 +170,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = adapter.hoovChapterList.get(position);
 		String hoovId=selectedHoov.mongoHoovId;
-		//SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		//String userId = preferences.getString("userId", null);
 		TextView h_down_count = (TextView)rl.findViewById(R.id.hoov_down_count);
 		int currDownCount=Integer.parseInt((String)h_down_count.getText());
 
@@ -222,7 +181,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		if(finalDownCount<currDownCount)
 			intent.putExtra(SaveLikeDislikeService.deleteDown,true);
 		getActivity().startService(intent);
-		System.out.println("yeah");
 	}
 	public void myDOWNClickHandler(View v) {
 		RelativeLayout rl=(RelativeLayout)v.getParent();
@@ -230,8 +188,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = adapter.hoovChapterList.get(position);
 		String hoovId=selectedHoov.mongoHoovId;
-		//SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		//String userId = preferences.getString("userId", null);
 		TextView h_up_count = (TextView)rl.findViewById(R.id.hoov_up_count);
 		int currUpCount=Integer.parseInt((String)h_up_count.getText());
 
@@ -246,9 +202,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	}
 	public String getUserId()
 	{
-		//SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
-		//String userId = preferences.getString("userId", null);
-
 		return userId;
 
 	}
@@ -381,96 +334,17 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 
 	}
 	public void onRefreshStarted(View view) {
-		// TODO Auto-generated method stub
-
-
-		//setListShown(false); // This will hide the listview and visible a round progress bar 
-
-
 		new AsyncTask<Void, Void, Void>() {
 
 			@Override
 			protected Void doInBackground(Void... params) {
 				HoovChapterlist_t=new ArrayList<HoovChapter>();
-				try 
-				{			
-					JSONArray array;
-					JSONObject p = new JSONObject();
-					p.put("document.company",company);
-					p.put("document.city",city);
-					p.put("document.parentId","null");
-					p.put("document.status",0);
-					JSONObject q = new JSONObject();
-					q.put("_id", -1);
-					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
-					URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
-					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-					url = uri.toURL();
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					Random random = new Random();
-					conn.setRequestMethod("GET");
-					conn.setRequestProperty("Content-Type", "application/json");
-					conn.setRequestProperty("Accept", "application/json");
-
-					int s=conn.getResponseCode();
-
-					BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
-					StringBuilder responseStrBuilder = new StringBuilder();
-
-					String inputStr;
-					while ((inputStr = streamReader.readLine()) != null)
-						responseStrBuilder.append(inputStr);
-
-					array = new JSONArray(responseStrBuilder.toString());
-					for(int i=0;i<array.length();i++){
-						HoovChapter hc=new HoovChapter();
-						JSONObject obj = (JSONObject)array.get(i);
-						JSONObject doc = obj.getJSONObject("document");
-						JSONObject ids = obj.getJSONObject("_id");
-						JSONArray ups = doc.getJSONArray("hoovUpIds");
-						JSONArray downs = doc.getJSONArray("hoovDownIds");
-						hc.hoovText= EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
-						hc.mongoHoovId=ids.getString("$oid");
-						hc.hoov_up_ids=new ArrayList<String>();
-						hc.hoov_down_ids =new ArrayList<String>();
-						hc.commentHoovIds = new Gson().fromJson(doc.getJSONArray("commentHoovIds").toString(), new TypeToken<List<String>>(){}.getType());
-						if (ups != null) { 
-							int len = ups.length();
-							for (int j=0;j<len;j++){ 
-								hc.hoov_up_ids.add(ups.get(j).toString());
-							} 
-						} 
-						if (downs != null) { 
-							int len = downs.length();
-							for (int j=0;j<len;j++){ 
-								hc.hoov_down_ids.add(downs.get(j).toString());
-							} 
-						} 
-						hc.hoovUserId =doc.getString("id");
-						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
-						Long epoch=tmp;
-						Long curr_epoch = System.currentTimeMillis()/1000;
-						if(curr_epoch-epoch > 86400 )
-							hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
-						else if(curr_epoch-epoch > 3600)
-							hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
-						else if(curr_epoch-epoch > 60)
-							hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
-						else
-							hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
-						HoovChapterlist_t.add(hc);
-					}
-
-				} 
-				catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				final HoovFetchParams para=new HoovFetchParams();
+				para.city=city;
+				para.comapny=company;
+				para.order=eOrder.NEW;
+				para.type=type;
+				getHoovs(para,false);
 				return null;	
 
 			}
@@ -484,17 +358,145 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 
 				// Notify PullToRefreshLayout that the refresh has finished
 				mPullToRefreshLayout.setRefreshComplete();
-
-				// if you set the "setListShown(false)" then you have to 
-				//uncomment the below code segment
-
-				//                    if (getView() != null) {
-				//                        // Show the list again
-				//                        setListShown(true);
-				//                    }
 			}
 		}.execute();
 
+
+	}
+	public void getHoovs(HoovFetchParams hp,boolean increaseLimit){
+		try{
+			HoovFetchParams u = hp;
+			JSONArray array;
+			URL url = null;
+			if(increaseLimit)
+				limit=limit+8;
+			switch(u.type){
+			case HOME:
+				switch(u.order){
+				case NEW:
+					JSONObject p = new JSONObject();
+					p.put("document.company",u.comapny);
+					p.put("document.city",u.city);
+					p.put("document.parentId","null");
+					p.put("document.status",0);
+					//publishProgress(0);
+					JSONObject q = new JSONObject();
+					q.put("_id", -1);
+					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
+					url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+					url = uri.toURL();
+					break;
+				case TOP:
+					JSONObject p1 = new JSONObject();
+					p1.put("document.company",u.comapny);
+					p1.put("document.city",u.city);
+					JSONObject q1 = new JSONObject();
+					q1.put("_id", -1);
+					String url_str1="http://nodejs-hooverest.rhcloud.com/hoovlist?city="+city+"&company="+company;
+					url = new URL(url_str1);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+					URI uri1=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+					url = uri1.toURL();
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					Random random = new Random();
+					conn.setRequestMethod("GET");
+					break;
+				}
+				break;
+			case FOLLOW:
+				JSONObject p = new JSONObject();
+				p.put("document.company",u.comapny);
+				p.put("document.city",u.city);
+				JSONObject q = new JSONObject();
+				q.put("_id", -1);
+				String url_str="http://nodejs-hooverest.rhcloud.com/followhoovlist?userId="+userId;
+				url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
+				URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+				url = uri.toURL();
+			}
+
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			Random random = new Random();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Accept", "application/json");
+
+			int s=conn.getResponseCode();
+
+			BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+			StringBuilder responseStrBuilder = new StringBuilder();
+
+			String inputStr;
+			while ((inputStr = streamReader.readLine()) != null)
+				responseStrBuilder.append(inputStr);
+			//publishProgress(90);
+			array = new JSONArray(responseStrBuilder.toString());
+			for(int i=0;i<array.length();i++){
+				HoovChapter hc=new HoovChapter();
+				JSONObject obj = (JSONObject)array.get(i);
+				JSONObject doc = obj.getJSONObject("document");
+				String hid = "";
+				switch(u.type){
+				case HOME:
+					switch(u.order){
+					case NEW:
+						JSONObject ids = obj.getJSONObject("_id");
+						hid=ids.getString("$oid");
+						break;
+					case TOP:
+						hid=obj.getString("_id");
+						break;
+					}
+					break;
+				case FOLLOW:
+					hid=obj.getString("_id");
+					break;
+				}
+
+				JSONArray ups = doc.getJSONArray("hoovUpIds");
+				JSONArray downs = doc.getJSONArray("hoovDownIds");
+				JSONArray followers= doc.getJSONArray("followerUserIds");
+				JSONArray abuseds= doc.getJSONArray("abuserUserIds");
+				hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
+				hc.mongoHoovId=hid;
+				hc.hoov_up_ids=new Gson().fromJson(ups.toString(), new TypeToken<List<String>>(){}.getType());
+				hc.hoov_down_ids =new Gson().fromJson(downs.toString(), new TypeToken<List<String>>(){}.getType());
+				hc.hoovUserId =doc.getString("id");
+				hc.commentHoovIds = new Gson().fromJson(doc.getJSONArray("commentHoovIds").toString(), new TypeToken<List<String>>(){}.getType());
+				ArrayList<String> followArr=new Gson().fromJson(followers.toString(), new TypeToken<List<String>>(){}.getType());
+				ArrayList<String> abuseArr=new Gson().fromJson(abuseds.toString(), new TypeToken<List<String>>(){}.getType());
+
+				hc.abused=false;
+				hc.followed=false;
+				if (followers != null && followArr.contains(userId)) { 
+					hc.followed=true;
+				} 
+				if (abuseds != null && abuseArr.contains(userId)) { 
+					hc.abused=true;
+				} 
+				long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
+				Long epoch=tmp;
+				Long curr_epoch = System.currentTimeMillis()/1000;
+				if(curr_epoch-epoch > 86400 )
+					hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
+				else if(curr_epoch-epoch > 3600)
+					hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
+				else if(curr_epoch-epoch > 60)
+					hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
+				else
+					hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+				HoovChapterlist_t.add(hc);
+			}
+		} 
+		catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,HoovFetchParams> {
@@ -511,162 +513,7 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 		@Override
 		protected HoovFetchParams doInBackground(HoovFetchParams... params) {
 			HoovChapterlist_t=new ArrayList<HoovChapter>();
-			try 
-			{			
-				HoovFetchParams u = params[0];
-				JSONArray array;
-				URL url = null;
-				switch(params[0].type){
-				case HOME:
-					switch(params[0].order){
-					case NEW:
-						JSONObject p = new JSONObject();
-						p.put("document.company",u.comapny);
-						p.put("document.city",u.city);
-						p.put("document.parentId","null");
-						p.put("document.status",0);
-						publishProgress(0);
-						JSONObject q = new JSONObject();
-						q.put("_id", -1);
-						String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
-						url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
-						URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-						url = uri.toURL();
-						break;
-					case TOP:
-						JSONObject p1 = new JSONObject();
-						p1.put("document.company",u.comapny);
-						p1.put("document.city",u.city);
-						JSONObject q1 = new JSONObject();
-						q1.put("_id", -1);
-						String url_str1="http://nodejs-hooverest.rhcloud.com/hoovlist?city="+city+"&company="+company;
-						url = new URL(url_str1);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
-						URI uri1=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-						url = uri1.toURL();
-						HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-						Random random = new Random();
-						conn.setRequestMethod("GET");
-						break;
-					}
-					break;
-				case FOLLOW:
-					JSONObject p = new JSONObject();
-					p.put("document.company",u.comapny);
-					p.put("document.city",u.city);
-					JSONObject q = new JSONObject();
-					q.put("_id", -1);
-					String url_str="http://nodejs-hooverest.rhcloud.com/followhoovlist?userId="+userId;
-					url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
-					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-					url = uri.toURL();
-				}
-
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				Random random = new Random();
-				conn.setRequestMethod("GET");
-				conn.setRequestProperty("Content-Type", "application/json");
-				conn.setRequestProperty("Accept", "application/json");
-
-				int s=conn.getResponseCode();
-
-				BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
-				StringBuilder responseStrBuilder = new StringBuilder();
-
-				String inputStr;
-				while ((inputStr = streamReader.readLine()) != null)
-					responseStrBuilder.append(inputStr);
-				publishProgress(90);
-				array = new JSONArray(responseStrBuilder.toString());
-				for(int i=0;i<array.length();i++){
-					HoovChapter hc=new HoovChapter();
-					JSONObject obj = (JSONObject)array.get(i);
-					JSONObject doc = obj.getJSONObject("document");
-					String hid = "";
-					switch(params[0].type){
-					case HOME:
-						switch(params[0].order){
-						case NEW:
-							JSONObject ids = obj.getJSONObject("_id");
-							hid=ids.getString("$oid");
-							break;
-						case TOP:
-							hid=obj.getString("_id");
-							break;
-						}
-						break;
-					case FOLLOW:
-						hid=obj.getString("_id");
-						break;
-					}
-
-					JSONArray ups = doc.getJSONArray("hoovUpIds");
-					JSONArray downs = doc.getJSONArray("hoovDownIds");
-					JSONArray followers= doc.getJSONArray("followerUserIds");
-					JSONArray abuseds= doc.getJSONArray("abuserUserIds");
-					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
-					hc.mongoHoovId=hid;
-					hc.hoov_up_ids=new ArrayList<String>();
-					hc.hoov_down_ids =new ArrayList<String>();
-					hc.hoovUserId =doc.getString("id");
-					hc.abused=false;
-					hc.followed=false;
-					if (followers != null) { 
-						int len = followers.length();
-						for (int j=0;j<len;j++){ 
-							if(userId.equals(followers.get(j).toString())){
-								hc.followed=true;
-								break;
-							}
-						} 
-					} 
-					if (abuseds != null) { 
-						int len = abuseds.length();
-						for (int j=0;j<len;j++){ 
-							if(userId.equals(abuseds.get(j).toString())){
-								hc.abused=true;
-								break;
-							}
-						} 
-					} 
-					//hc.path=doc.getString("path");
-
-					if (ups != null) { 
-						int len = ups.length();
-						for (int j=0;j<len;j++){ 
-							hc.hoov_up_ids.add(ups.get(j).toString());
-						} 
-					} 
-					if (downs != null) { 
-						int len = downs.length();
-						for (int j=0;j<len;j++){ 
-							hc.hoov_down_ids.add(downs.get(j).toString());
-						} 
-					} 
-					long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
-					Long epoch=tmp;
-					Long curr_epoch = System.currentTimeMillis()/1000;
-					if(curr_epoch-epoch > 86400 )
-						hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
-					else if(curr_epoch-epoch > 3600)
-						hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
-					else if(curr_epoch-epoch > 60)
-						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
-					else
-						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
-					HoovChapterlist_t.add(hc);
-				}
-				publishProgress(100);
-
-			} 
-			catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			getHoovs(params[0],false);
 			return params[0];	
 		}
 
@@ -728,117 +575,9 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			@Override
 			protected Void doInBackground(HoovFetchParams... params) {
 				// Create the array
-
 				HoovChapterlist_t=new ArrayList<HoovChapter>();
-				try 
-				{			
-					HoovFetchParams u = params[0];
-					JSONArray array;
-					JSONObject p = new JSONObject();
-					p.put("document.company",u.comapny);
-					p.put("document.city",u.city);
-					p.put("document.parentId","null");
-					p.put("document.status",0);
-					limit=limit+8;
-					JSONObject q = new JSONObject();
-					q.put("_id", -1);
-					String url_str="https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&l="+limit+"&s="+q+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC";
-					URL url = new URL(url_str);
-					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-					url = uri.toURL();
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					Random random = new Random();
-					conn.setRequestMethod("GET");
-					conn.setRequestProperty("Content-Type", "application/json");
-					conn.setRequestProperty("Accept", "application/json");
-
-					int s=conn.getResponseCode();
-
-					BufferedReader streamReader = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
-					StringBuilder responseStrBuilder = new StringBuilder();
-
-					String inputStr;
-					while ((inputStr = streamReader.readLine()) != null)
-						responseStrBuilder.append(inputStr);
-
-					array = new JSONArray(responseStrBuilder.toString());
-					if(array.length()<limit){
-						noMoreDataToLoad=true;
-					}
-					for(int i=0;i<array.length();i++){
-						HoovChapter hc=new HoovChapter();
-						JSONObject obj = (JSONObject)array.get(i);
-						JSONObject doc = obj.getJSONObject("document");
-						JSONObject ids = obj.getJSONObject("_id");
-						JSONArray ups = doc.getJSONArray("hoovUpIds");
-						JSONArray downs = doc.getJSONArray("hoovDownIds");
-						JSONArray followers= doc.getJSONArray("followerUserIds");
-						JSONArray abuseds= doc.getJSONArray("abuserUserIds");
-
-						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
-						hc.mongoHoovId=ids.getString("$oid");
-						hc.hoov_up_ids=new ArrayList<String>();
-						hc.hoov_down_ids =new ArrayList<String>();
-						hc.hoovUserId =doc.getString("id");
-						hc.followed=false;
-						hc.abused=false;
-						if (ups != null) { 
-							int len = ups.length();
-							for (int j=0;j<len;j++){ 
-								hc.hoov_up_ids.add(ups.get(j).toString());
-							} 
-						} 
-						if (downs != null) { 
-							int len = downs.length();
-							for (int j=0;j<len;j++){ 
-								hc.hoov_down_ids.add(downs.get(j).toString());
-							} 
-						} 
-						if (followers != null) { 
-							int len = followers.length();
-							for (int j=0;j<len;j++){ 
-								if(userId.equals(followers.get(j).toString())){
-									hc.followed=true;
-									break;
-								}
-							} 
-						} 
-						if (abuseds != null) { 
-							int len = abuseds.length();
-							for (int j=0;j<len;j++){ 
-								if(userId.equals(abuseds.get(j).toString())){
-									hc.abused=true;
-									break;
-								}
-							} 
-						} 
-						long tmp = new BigInteger(hc.mongoHoovId.substring(0, 8), 16).longValue();
-						Long epoch=tmp;
-						Long curr_epoch = System.currentTimeMillis()/1000;
-						if(curr_epoch-epoch > 86400 )
-							hc.hoovDate=""+(curr_epoch-epoch)/86400L+"d";
-						else if(curr_epoch-epoch > 3600)
-							hc.hoovDate=""+(curr_epoch-epoch)/3600+"h";
-						else if(curr_epoch-epoch > 60)
-							hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
-						else
-							hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
-						HoovChapterlist_t.add(hc);
-					}
-
-				} 
-				catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
-					return null;	
-				}
+				getHoovs(params[0],true);
 				return null;	
-
 			}
 
 			@Override
@@ -875,21 +614,6 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			for (int i = 0; i<menuItems.size(); i++) {
 				menu.add(Menu.NONE, i, i, menuItems.get(i));
 			}
-			/* if(!selectedHoovUserId.equals(userId)){
-	    	if(!selectedHoov.followed)
-	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs1);
-	    	else
-	    		//menuItems = getResources().getStringArray(R.array.action_items_for_others_hoovs2);
-	    	for (int i = 0; i<menuItems.length; i++) {
-	    		menu.add(Menu.NONE, i, i, menuItems[i]);
-	    	}
-	    }else{
-	    	menuItems = getResources().getStringArray(R.array.action_items_for_own_hoovs);
-	    	for (int i = 0; i<menuItems.length; i++) {
-	    		menu.add(Menu.NONE, i, i, menuItems[i]);
-	    	}
-
-	    }*/
 		}
 	}
 	@Override

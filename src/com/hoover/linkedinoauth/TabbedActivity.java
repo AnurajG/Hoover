@@ -83,6 +83,12 @@ public class TabbedActivity extends Fragment {
 
 			}
 		});
+
+		if(toggle.isChecked()){
+			toggle.setText("Hottest");
+		}else{
+			toggle.setText("Newest");
+		}
 		List<Fragment> fragments = getFragments();
 		pageAdapter = new HomePageAdapter(getChildFragmentManager(), fragments,this.getActivity());
 		mViewPager = (ViewPager) v.findViewById(R.id.pager);
