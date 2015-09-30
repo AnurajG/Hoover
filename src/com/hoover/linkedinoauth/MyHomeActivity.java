@@ -3,7 +3,6 @@ package com.hoover.linkedinoauth;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,10 +18,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,7 +27,6 @@ import android.widget.Toast;
 
 import com.goebl.david.Webb;
 import com.hoover.util.HoovChapter;
-import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovQueryBuilder;
 import com.hoover.util.MyHoovFetchParams;
 
