@@ -1,9 +1,6 @@
 package com.hoover.linkedinoauth;
 
 
-
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -292,7 +289,7 @@ public class HomeActivityNew extends FragmentActivity{
 	}
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
-		fList.add(HomeFragment.newInstance("Fragment 1",this,userComapny,userCity,userId));
+		//fList.add(HomeFragment.newInstance("Fragment 1",this,userComapny,userCity,userId));
 		fList.add(HomeTopFragment.newInstance("Fragment 2",this,userComapny,userCity,userId)); 
 		return fList;
 

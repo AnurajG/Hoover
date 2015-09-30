@@ -3,6 +3,8 @@ package com.hoover.linkedinoauth;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hoover.util.HoovFetchParams.eType;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,10 +44,10 @@ public class TabbedActivity extends Fragment {
 	}
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
-		homeF=HomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId);
+		homeF=HomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId,eType.HOME);
 		fList.add(homeF);
 		//fList.add(HomeTopFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId));
-		fList.add(HomeFollowedHoovFragment.newInstance("Fragment 3",this.getActivity(),userComapny,userCity,userId));
+		fList.add(HomeFragment.newInstance("Fragment 3",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW));
 		return fList;
 
 	}
