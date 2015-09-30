@@ -295,7 +295,7 @@ public class HomeFollowedHoovFragment extends ListFragment implements OnRefreshL
 				p.put("document.city",u.city);
 				JSONObject q = new JSONObject();
 				q.put("_id", -1);
-				String url_str="http://nodejs-hooverest.rhcloud.com/hoovlist?city="+city+"&company="+company;
+				String url_str="http://nodejs-hooverest.rhcloud.com/followhoovlist?userId="+userId;
 				URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
 				URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
 				url = uri.toURL();
@@ -319,12 +319,12 @@ public class HomeFollowedHoovFragment extends ListFragment implements OnRefreshL
 				for(int i=0;i<array.length();i++){
 					HoovChapter hc=new HoovChapter();
 					JSONObject obj = (JSONObject)array.get(i);
-					//JSONObject doc = obj.getJSONObject("document");
-					//JSONObject ids = obj.getJSONObject("_id");
-					JSONArray ups = obj.getJSONArray("_hoovUpIds");
-					JSONArray downs = obj.getJSONArray("_hoovDownIds");
-					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(obj.getString("_hoov"));
-					hc.mongoHoovId=obj.getString("_id");
+					JSONObject doc = obj.getJSONObject("document");
+					String ids = obj.getString("_id");
+					JSONArray ups = doc.getJSONArray("hoovUpIds");
+					JSONArray downs = doc.getJSONArray("hoovDownIds");
+					hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(doc.getString("hoov"));
+					hc.mongoHoovId=ids;
 					hc.hoov_up_ids=new ArrayList<String>();
 					hc.hoov_down_ids =new ArrayList<String>();
 					if (ups != null) { 
@@ -420,7 +420,7 @@ public class HomeFollowedHoovFragment extends ListFragment implements OnRefreshL
 					p.put("document.city",u.city);
 					JSONObject q = new JSONObject();
 					q.put("_id", -1);
-					String url_str="http://nodejs-hooverest.rhcloud.com/hoovlist?city="+city+"&company="+company;
+					String url_str="http://nodejs-hooverest.rhcloud.com/followhoovlist?userId="+userId+"&city="+city+"&company="+company;
 					URL url = new URL(url_str);//(URLEncoder.encode("https://api.mongolab.com/api/1/databases/hoover/collections/hoov?q="+p.toString()+"&apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC","UTF-8"));
 					URI uri=new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
 					url = uri.toURL();
@@ -443,12 +443,12 @@ public class HomeFollowedHoovFragment extends ListFragment implements OnRefreshL
 					for(int i=0;i<array.length();i++){
 						HoovChapter hc=new HoovChapter();
 						JSONObject obj = (JSONObject)array.get(i);
-						//JSONObject doc = obj.getJSONObject("document");
-						//JSONObject ids = obj.getJSONObject("_id");
-						JSONArray ups = obj.getJSONArray("_hoovUpIds");
-						JSONArray downs = obj.getJSONArray("_hoovDownIds");
-						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(obj.getString("_hoov"));
-						hc.mongoHoovId=obj.getString("_id");
+						JSONObject doc = obj.getJSONObject("document");
+						String ids = obj.getString("_id");
+						JSONArray ups = obj.getJSONArray("hoovUpIds");
+						JSONArray downs = obj.getJSONArray("hoovDownIds");
+						hc.hoovText=EmojiMapUtil.replaceCheatSheetEmojis(obj.getString("hoov"));
+						hc.mongoHoovId=ids;
 						hc.hoov_up_ids=new ArrayList<String>();
 						hc.hoov_down_ids =new ArrayList<String>();
 						if (ups != null) { 
