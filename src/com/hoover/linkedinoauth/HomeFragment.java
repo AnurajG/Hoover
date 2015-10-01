@@ -75,8 +75,8 @@ public class HomeFragment extends Fragment{
 	private ArrayList<HoovChapter> dreggn = new ArrayList<HoovChapter>();
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 	private eType type;
-	private View toast_layout;
-
+	private View toast_layout;	boolean likeButtonPressed=false;
+	boolean dislikeButtonPressed=false;
 	public static final HomeFragment newInstance(String message,Context context, String comp, String cit,String id, eType t) {
 		HomeFragment f = new HomeFragment(context,comp,cit,id,t);
 		Bundle bdl = new Bundle(1);
