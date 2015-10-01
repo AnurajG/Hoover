@@ -69,7 +69,8 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 	private List<HoovChapter> dreggn = new ArrayList<HoovChapter>();
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 	private eType type;
-
+	boolean likeButtonPressed=false;
+	boolean dislikeButtonPressed=false;
 	public static final HomeFragment newInstance(String message,Context context, String comp, String cit,String id, eType t) {
 		HomeFragment f = new HomeFragment(context,comp,cit,id,t);
 		Bundle bdl = new Bundle(1);
@@ -248,8 +249,10 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			TextView h_date = (TextView)arg1.findViewById(R.id.hoov_date);
 			TextView h_up_count = (TextView)arg1.findViewById(R.id.hoov_up_count);
 			TextView h_down_count = (TextView)arg1.findViewById(R.id.hoov_down_count);
+			TextView h_comment_count=(TextView)arg1.findViewById(R.id.hoov_comment_count);
 			Button h_up_button=(Button)arg1.findViewById(R.id.hoov_up_button);
 			Button h_down_button=(Button)arg1.findViewById(R.id.hoov_down_button);
+			Button h_comment_button=(Button)arg1.findViewById(R.id.hoov_comment_button);
 
 
 			View.OnClickListener upHandler = new View.OnClickListener() {
@@ -263,24 +266,38 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 					myDOWNClickHandler(v);
 				}
 			};
-
+			View.OnClickListener commentHandler = new View.OnClickListener() {
+				public void onClick(View v) {
+					HoovChapter selectedHoov = new HoovChapter();
+					RelativeLayout rl=(RelativeLayout)v.getParent();
+					final int position = getListView().getPositionForView(rl);
+					selectedHoov = adapter.hoovChapterList.get(position);
+					Intent myIntent = new Intent(context, HoovDetailsActivity.class);
+					myIntent.putExtra("chapter", selectedHoov);
+					startActivity(myIntent);
+				}
+			};
+			h_comment_button.setOnClickListener(commentHandler);
 			h_up_button.setOnClickListener(upHandler);
 			h_down_button.setOnClickListener(downHandler);
-
+			h_up_button.setTag(0);
+			h_down_button.setTag(0);
 			HoovChapter chapter = hoovChapterList.get(arg0);
 
 			if(chapter.hoov_up_ids.contains(userID)){
 				h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
-				h_up_button.setEnabled(false);
+				h_up_button.setTag(1);
+				//h_up_button.setEnabled(false);
 			}else if(chapter.hoov_down_ids.contains(userID)){
 				h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
-				h_down_button.setEnabled(false);
+				h_down_button.setTag(1);
+				//h_down_button.setEnabled(false);
 			}
-
 			h_text.setText(chapter.hoovText);
 			h_date.setText(chapter.hoovDate);
 			h_up_count.setText(String.valueOf(chapter.hoov_up_ids.size()));
 			h_down_count.setText(String.valueOf(chapter.hoov_down_ids.size()));
+			h_comment_count.setText(String.valueOf(chapter.commentHoovIds.size()));
 			return arg1;
 		}
 		public int updateUpCountView(int arg0, View arg1) {
@@ -292,20 +309,29 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
 
 			String curr_up_value=(String)h_up_count.getText();
-			int final_up_value=Integer.parseInt(curr_up_value) + 1;
-			h_up_count.setText(String.valueOf(final_up_value));
-
+			int final_up_value=Integer.parseInt(curr_up_value);
+			
 			String curr_down_value=(String)h_down_count.getText();
 			int final_down_value=Integer.parseInt(curr_down_value);
-			if(!h_down_button.isEnabled()){
-				final_down_value= final_down_value- 1;
-				h_down_count.setText(String.valueOf(final_down_value));
-				h_down_button.setEnabled(true);
-				h_down_button.setBackground(getResources().getDrawable(R.drawable.down));
+			if(h_up_button.getTag().equals(1)){
+				//If like button is green
+				final_up_value=Integer.parseInt(curr_up_value) - 1;
+				h_up_button.setBackground(getResources().getDrawable(R.drawable.up));
+				h_up_button.setTag(0);
+			}else{
+				//If like button is not green 
+				final_up_value=Integer.parseInt(curr_up_value) + 1;
+				h_up_button.setTag(1);
+				h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
+				if(h_down_button.getTag().equals(1)){
+					//if dislike button is red
+					final_down_value= final_down_value- 1;
+					h_down_count.setText(String.valueOf(final_down_value));
+					h_down_button.setBackground(getResources().getDrawable(R.drawable.down));
+					h_down_button.setTag(0);;
+				}
 			}
-			h_up_button.setBackground(getResources().getDrawable(R.drawable.greenup));
-			h_up_button.setEnabled(false);
-
+			h_up_count.setText(String.valueOf(final_up_value));
 			return final_down_value;
 		}
 		public int updateDownCountView(int arg0, View arg1) {
@@ -317,18 +343,32 @@ public class HomeFragment extends ListFragment implements OnRefreshListener{
 			Button h_down_button = (Button)p.findViewById(R.id.hoov_down_button);
 
 			String curr_down_value=(String)h_down_count.getText();
-			int final_down_value=Integer.parseInt(curr_down_value) + 1;
-			h_down_count.setText(String.valueOf(final_down_value));
+			int final_down_value=Integer.parseInt(curr_down_value);
+			
 			String curr_up_value=(String)h_up_count.getText();
 			int final_up_value=Integer.parseInt(curr_up_value);
-			if(!h_up_button.isEnabled()){
-				final_up_value=final_up_value - 1;
-				h_up_count.setText(String.valueOf(final_up_value));
-				h_up_button.setEnabled(true);
-				h_up_button.setBackground(getResources().getDrawable(R.drawable.up));
+			
+			
+			if(h_down_button.getTag().equals(1)){
+				//If dislike button is red
+				final_down_value=Integer.parseInt(curr_down_value) - 1;
+				h_down_button.setBackground(getResources().getDrawable(R.drawable.down));
+				h_down_button.setTag(0);
+			}else{
+				final_down_value=Integer.parseInt(curr_down_value) + 1;
+				h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
+				h_down_button.setTag(1);
+				//If like button is green
+				if(h_up_button.getTag().equals(1)){
+					final_up_value=final_up_value - 1;
+					h_up_count.setText(String.valueOf(final_up_value));
+					h_up_button.setBackground(getResources().getDrawable(R.drawable.up));
+					h_up_button.setTag(0);
+				}	
 			}
-			h_down_button.setBackground(getResources().getDrawable(R.drawable.reddown));
-			h_down_button.setEnabled(false);
+			
+			h_down_count.setText(String.valueOf(final_down_value));
+			//h_down_button.setEnabled(false);
 			return final_up_value;
 		}
 
