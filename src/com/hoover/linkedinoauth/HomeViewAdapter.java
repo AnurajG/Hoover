@@ -12,15 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.hoover.linkedinoauth.HoovDetailsActivity.DeleteCommentAsyncTask;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
-public class MyRecyclerViewAdapter extends RecyclerView
-.Adapter<MyRecyclerViewAdapter
+public class HomeViewAdapter extends RecyclerView
+.Adapter<HomeViewAdapter
 .DataObjectHolder> {
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
-	private ArrayList<HoovChapter> mDataset;
+	public ArrayList<HoovChapter> mDataset;
 	private static MyClickListener myClickListener;
 	private final Context context;
 	private final String currentuserId;
@@ -29,12 +28,13 @@ public class MyRecyclerViewAdapter extends RecyclerView
 	public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
 	.OnClickListener {
-		TextView label;
+		TextView text;
+		TextView date;
 		TextView uplabel;
 		TextView downlabel;
 		Button h_up_button;
 		Button h_down_button;
-		Button del;
+		
 		private final Context context;
 		//private final HoovChapter parentHoov;
 
@@ -42,12 +42,13 @@ public class MyRecyclerViewAdapter extends RecyclerView
 
 		public DataObjectHolder(View itemView,final ArrayList<HoovChapter> mDataset1,final String currentUserId) {
 			super(itemView);
-			label = (TextView) itemView.findViewById(R.id.comment_hoov);
-			uplabel = (TextView) itemView.findViewById(R.id.comment_up_count);
-			downlabel = (TextView) itemView.findViewById(R.id.comment_down_count);
-			h_up_button=(Button)itemView.findViewById(R.id.comment_up_button);
-			h_down_button=(Button)itemView.findViewById(R.id.comment_down_button);
-			del=(Button)itemView.findViewById(R.id.delete_comment_button);
+			text = (TextView) itemView.findViewById(R.id.hoov_text);
+			date = (TextView) itemView.findViewById(R.id.hoov_date);
+			uplabel = (TextView) itemView.findViewById(R.id.hoov_up_count);
+			downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
+			h_up_button=(Button)itemView.findViewById(R.id.hoov_up_button);
+			h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
+
 			context = itemView.getContext();
 			//parentHoov=pHoov;
 
@@ -133,7 +134,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 
 			h_up_button.setOnClickListener(upHandler);
 			h_down_button.setOnClickListener(downHandler);
-			del.setOnClickListener(delHandler);
+			
 
 		}
 
@@ -147,7 +148,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 		this.myClickListener = myClickListener;
 	}
 
-	public MyRecyclerViewAdapter(ArrayList<HoovChapter> myDataset, Context mContext, String id) {
+	public HomeViewAdapter(ArrayList<HoovChapter> myDataset, Context mContext, String id) {
 		mDataset = myDataset;
 		context=mContext;
 		currentuserId=id;
@@ -158,7 +159,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
 	public DataObjectHolder onCreateViewHolder(ViewGroup parent,
 			int viewType) {
 		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.comment_list, parent, false);
+				.inflate(R.layout.hoov_list, parent, false);
 
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset,currentuserId);
 		return dataObjectHolder;
@@ -166,12 +167,10 @@ public class MyRecyclerViewAdapter extends RecyclerView
 
 	@Override
 	public void onBindViewHolder(DataObjectHolder holder, int position) {
-		holder.label.setText(mDataset.get(position).hoovText);
+		holder.text.setText(mDataset.get(position).hoovText);
+		holder.date.setText(mDataset.get(position).hoovDate);
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
-		if(!mDataset.get(position).hoovUserId.equals(currentuserId))
-			holder.del.setEnabled(false);
-
 		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
 			holder.h_up_button.setEnabled(false);

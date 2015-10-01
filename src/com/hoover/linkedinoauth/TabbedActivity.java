@@ -3,8 +3,6 @@ package com.hoover.linkedinoauth;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hoover.util.HoovFetchParams.eType;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,6 +16,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 
+import com.hoover.util.HoovFetchParams.eType;
+
 public class TabbedActivity extends Fragment {
 	public static final String TAG = TabbedActivity.class.getSimpleName();
 	ViewPager mViewPager;
@@ -28,6 +28,7 @@ public class TabbedActivity extends Fragment {
 	Button hoov_in;
 	Switch toggle;
 	private HomeFragment homeF;
+	private HomeFollowFragment followF;
 
 	public static TabbedActivity newInstance(String userComapny,String userCity,String userId) {
 		TabbedActivity tabact=new TabbedActivity();
@@ -45,9 +46,11 @@ public class TabbedActivity extends Fragment {
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
 		homeF=HomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId,eType.HOME);
+		followF=HomeFollowFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW);
 		fList.add(homeF);
-		//fList.add(HomeTopFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId));
-		fList.add(HomeFragment.newInstance("Fragment 3",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW));
+		fList.add(followF);
+
+		
 		return fList;
 
 	}

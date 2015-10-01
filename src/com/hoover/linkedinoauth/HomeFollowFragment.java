@@ -41,7 +41,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hoover.linkedinoauth.HomeViewAdapter.MyClickListener;
+import com.hoover.linkedinoauth.HomeFollowViewAdapter.MyClickListener;
 import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
@@ -50,7 +50,7 @@ import com.hoover.util.HoovFetchParams.eOrder;
 import com.hoover.util.HoovFetchParams.eType;
 import com.yalantis.phoenix.PullToRefreshView;
 
-public class HomeFragment extends Fragment{
+public class HomeFollowFragment extends Fragment{
 
 	private	PullToRefreshView  mPullToRefreshView;
 
@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment{
 	//HoovListAdapter adapter;
 
 	private RecyclerView mRecyclerView;
-	private HomeViewAdapter mAdapter;
+	private HomeFollowViewAdapter mAdapter;
 
 	private LinearLayoutManager mLayoutManager;
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
@@ -77,8 +77,8 @@ public class HomeFragment extends Fragment{
 	private eType type;
 	private View toast_layout;
 
-	public static final HomeFragment newInstance(String message,Context context, String comp, String cit,String id, eType t) {
-		HomeFragment f = new HomeFragment(context,comp,cit,id,t);
+	public static final HomeFollowFragment newInstance(String message,Context context, String comp, String cit,String id, eType t) {
+		HomeFollowFragment f = new HomeFollowFragment(context,comp,cit,id,t);
 		Bundle bdl = new Bundle(1);
 		bdl.putString(EXTRA_MESSAGE, message);
 		f.setArguments(bdl);
@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment{
 
 	public void refresh(boolean isHot){
 		//results.addAll(HoovChapterlist_t);
-		mAdapter = new HomeViewAdapter(dreggn,context,userId);
+		mAdapter = new HomeFollowViewAdapter(dreggn,context,userId);
 		mRecyclerView.setAdapter(mAdapter);
 		if(isHot){
 			final HoovFetchParams params=new HoovFetchParams();
@@ -108,7 +108,7 @@ public class HomeFragment extends Fragment{
 		}
 	}
 
-	public HomeFragment(Context context, String comp, String cit, String id, eType t) {
+	public HomeFollowFragment(Context context, String comp, String cit, String id, eType t) {
 		this.context = context;
 		this.company = comp;
 		this.city=cit;
@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment{
 		mRecyclerView.setHasFixedSize(true);
 		mLayoutManager = new LinearLayoutManager(context);
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new HomeViewAdapter(getDataSet(),context,userId);
+		mAdapter = new HomeFollowViewAdapter(getDataSet(),context,userId);
 		mRecyclerView.setAdapter(mAdapter);
 		mAdapter.setOnItemClickListener(new HoovListClickListener());
 
@@ -221,7 +221,7 @@ public class HomeFragment extends Fragment{
 					super.onPostExecute(result);
 					results.clear();
 					results.addAll(HoovChapterlist_t);
-					mAdapter = new HomeViewAdapter(results,context,userId);
+					mAdapter = new HomeFollowViewAdapter(results,context,userId);
 					mRecyclerView.setAdapter(mAdapter);
 
 					// Notify PullToRefreshLayout that the refresh has finished
@@ -411,7 +411,7 @@ public class HomeFragment extends Fragment{
 				//listview = (ListView) findViewById(android.R.id.list);
 				results.clear();
 				results.addAll(HoovChapterlist_t);
-				mAdapter = new HomeViewAdapter(results,context,userId);
+				mAdapter = new HomeFollowViewAdapter(results,context,userId);
 				mRecyclerView.setAdapter(mAdapter);
 
 				mProgressBar.setVisibility(View.GONE);
@@ -484,7 +484,7 @@ public class HomeFragment extends Fragment{
 				if(e==null){
 					int position = mRecyclerView.getChildCount();
 					results.addAll(HoovChapterlist_t);
-					mAdapter = new HomeViewAdapter(results,context,userId);
+					mAdapter = new HomeFollowViewAdapter(results,context,userId);
 					mRecyclerView.setAdapter(mAdapter);
 					registerForContextMenu(mRecyclerView);
 					mLayoutManager.scrollToPositionWithOffset(position, 0);

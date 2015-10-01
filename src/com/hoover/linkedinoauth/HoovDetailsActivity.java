@@ -58,9 +58,6 @@ import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovInsertParams;
 import com.hoover.util.HoovQueryBuilder;
-import com.parse.ParseInstallation;
-import com.parse.ParsePush;
-import com.parse.ParseQuery;
 
 public class HoovDetailsActivity extends Activity{
 	private TextView hoovText;
@@ -464,15 +461,17 @@ public class HoovDetailsActivity extends Activity{
 				results.add(_hc);
 				mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
 				mRecyclerView.setAdapter(mAdapter);
-				
+
 				HashSet<String> commentUserIds= new HashSet<String>();
 				commentUserIds.add(hc.hoovUserId);
 				for(HoovChapter h:results){
 					commentUserIds.add(h.hoovUserId);
 				}
+				commentUserIds.remove(userId);
 				JSONArray comments=new JSONArray(commentUserIds);
 				
-				
+
+
 
 				/*ParseQuery<ParseInstallation> pushQuery = ParseInstallation.getQuery();
 				pushQuery.whereContainedIn("userId", commentUserIds);
@@ -490,7 +489,7 @@ public class HoovDetailsActivity extends Activity{
 				JSONObject alert=new JSONObject();
 				JSONObject data=new JSONObject();
 				JSONObject in=new JSONObject();
-				
+
 
 				try {
 					in.put("$in", comments);
@@ -499,8 +498,8 @@ public class HoovDetailsActivity extends Activity{
 					user.put("$inQuery", inq);
 					where2.put("Installation", user);
 					data.put("where", where);
-					
-					
+
+
 					alert.put("alert", "YaY! Someone commented on the hoov you posted!");
 					alert.put("title", "Hoover Comment Received");
 					alert.put("hoovId", mongoHoovId);
@@ -535,6 +534,8 @@ public class HoovDetailsActivity extends Activity{
 
 
 			h.commentHoovIds=new ArrayList<String>();
+			h.abuserUserIds=new ArrayList<String>();
+			h.followerUserIds=new ArrayList<String>();
 			h.hoovUpIds =new ArrayList<String>();
 			h.hoovDownIds=new ArrayList<String>();
 			h.parentId=mongoHoovId;

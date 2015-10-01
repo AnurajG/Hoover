@@ -287,13 +287,7 @@ public class HomeActivityNew extends FragmentActivity{
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
-	private List<Fragment> getFragments(){
-		List<Fragment> fList = new ArrayList<Fragment>();
-		//fList.add(HomeFragment.newInstance("Fragment 1",this,userComapny,userCity,userId));
-		fList.add(HomeTopFragment.newInstance("Fragment 2",this,userComapny,userCity,userId)); 
-		return fList;
-
-	}
+	
 	
 	
 
