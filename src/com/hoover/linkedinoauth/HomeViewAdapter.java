@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.hoover.util.HoovChapter;
@@ -34,7 +35,9 @@ public class HomeViewAdapter extends RecyclerView
 		TextView downlabel;
 		Button h_up_button;
 		Button h_down_button;
-		
+		TextView h_comment_count;
+		Button h_comment_button;
+
 		private final Context context;
 		//private final HoovChapter parentHoov;
 
@@ -48,6 +51,8 @@ public class HomeViewAdapter extends RecyclerView
 			downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
 			h_up_button=(Button)itemView.findViewById(R.id.hoov_up_button);
 			h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
+			h_comment_count=(TextView)itemView.findViewById(R.id.hoov_comment_count);
+			h_comment_button=(Button)itemView.findViewById(R.id.hoov_comment_button);
 
 			context = itemView.getContext();
 			//parentHoov=pHoov;
@@ -71,19 +76,30 @@ public class HomeViewAdapter extends RecyclerView
 
 					int currDownCount=Integer.parseInt((String)downlabel.getText());
 					String curr_up_value=(String)uplabel.getText();
-					int final_up_value=Integer.parseInt(curr_up_value) + 1;
-					uplabel.setText(String.valueOf(final_up_value));
+					int final_up_value=Integer.parseInt(curr_up_value);
 
 					String curr_down_value=(String)downlabel.getText();
 					int final_down_value=Integer.parseInt(curr_down_value);
-					if(!h_down_button.isEnabled()){
-						final_down_value= final_down_value- 1;
-						downlabel.setText(String.valueOf(final_down_value));
-						h_down_button.setEnabled(true);
-						h_down_button.setBackground(context.getResources().getDrawable(R.drawable.down));
+					if(h_up_button.getTag().equals(1)){
+						//If like button is green
+						final_up_value=Integer.parseInt(curr_up_value) - 1;
+						h_up_button.setBackground(context.getResources().getDrawable(R.drawable.up));
+						h_up_button.setTag(0);
+					}else{
+						//If like button is not green 
+						final_up_value=Integer.parseInt(curr_up_value) + 1;
+						h_up_button.setTag(1);
+						h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
+						if(h_down_button.getTag().equals(1)){
+							//if dislike button is red
+							final_down_value= final_down_value- 1;
+							downlabel.setText(String.valueOf(final_down_value));
+							h_down_button.setBackground(context.getResources().getDrawable(R.drawable.down));
+							h_down_button.setTag(0);;
+						}
 					}
-					h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
-					h_up_button.setEnabled(false);
+
+					uplabel.setText(String.valueOf(final_up_value));
 					int finalDownCount=final_down_value;
 
 
@@ -106,18 +122,29 @@ public class HomeViewAdapter extends RecyclerView
 					int currUpCount=Integer.parseInt((String)uplabel.getText());
 
 					String curr_down_value=(String)downlabel.getText();
-					int final_down_value=Integer.parseInt(curr_down_value) + 1;
-					downlabel.setText(String.valueOf(final_down_value));
+					int final_down_value=Integer.parseInt(curr_down_value);
 					String curr_up_value=(String)uplabel.getText();
 					int final_up_value=Integer.parseInt(curr_up_value);
-					if(!h_up_button.isEnabled()){
-						final_up_value=final_up_value - 1;
-						uplabel.setText(String.valueOf(final_up_value));
-						h_up_button.setEnabled(true);
-						h_up_button.setBackground(context.getResources().getDrawable(R.drawable.up));
+
+
+					if(h_down_button.getTag().equals(1)){
+						//If dislike button is red
+						final_down_value=Integer.parseInt(curr_down_value) - 1;
+						h_down_button.setBackground(context.getResources().getDrawable(R.drawable.down));
+						h_down_button.setTag(0);
+					}else{
+						final_down_value=Integer.parseInt(curr_down_value) + 1;
+						h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
+						h_down_button.setTag(1);
+						//If like button is green
+						if(h_up_button.getTag().equals(1)){
+							final_up_value=final_up_value - 1;
+							uplabel.setText(String.valueOf(final_up_value));
+							h_up_button.setBackground(context.getResources().getDrawable(R.drawable.up));
+							h_up_button.setTag(0);
+						}	
 					}
-					h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
-					h_down_button.setEnabled(false);
+					downlabel.setText(String.valueOf(final_down_value));
 
 					int finalUpCount=final_up_value;
 					Intent intent = new Intent(context, SaveLikeDislikeService.class);
@@ -129,12 +156,21 @@ public class HomeViewAdapter extends RecyclerView
 					context.startService(intent);	
 				}
 			};
-
-
-
+			View.OnClickListener commentHandler = new View.OnClickListener() {
+				public void onClick(View v) {
+					HoovChapter selectedHoov = new HoovChapter();
+					RelativeLayout rl=(RelativeLayout)v.getParent();
+					final int position = getPosition();
+					selectedHoov = mDataset1.get(position);
+					Intent myIntent = new Intent(context, HoovDetailsActivity.class);
+					myIntent.putExtra("chapter", selectedHoov);
+					context.startActivity(myIntent);
+				}
+			};
+			h_comment_button.setOnClickListener(commentHandler);
 			h_up_button.setOnClickListener(upHandler);
 			h_down_button.setOnClickListener(downHandler);
-			
+
 
 		}
 
@@ -173,10 +209,10 @@ public class HomeViewAdapter extends RecyclerView
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
 		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
-			holder.h_up_button.setEnabled(false);
+			holder.h_up_button.setTag(1);
 		}else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
-			holder.h_down_button.setEnabled(false);	
+			holder.h_down_button.setTag(1);
 		}
 	}
 
