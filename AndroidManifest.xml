@@ -72,7 +72,8 @@
         </activity>
         <activity
             android:name=".HomeActivityNew"
-            android:label="@string/action_myprofile_view" >
+            android:label="@string/action_myprofile_view" 
+            android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
         <service
