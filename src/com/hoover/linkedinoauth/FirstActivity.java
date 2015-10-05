@@ -18,6 +18,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.hoover.util.User;
 import com.hoover.util.UserQueryBuilder;
@@ -29,11 +32,12 @@ public class FirstActivity extends Activity {
 	private String userCompany;
 	private String userCity;
 	private String userId;
+	Button signIn;
+	
 	public void getUser(String id){
 		try{
 			UserQueryBuilder qb = new UserQueryBuilder();						
 
-			//URL url = new URL(qb.buildContactsSaveURL()+"&q={\"document.deviceId\":\""+id+"\"}&f={\"document.id\":1,\"document.city\":1}");
 			URL url = new URL("https://api.mongolab.com/api/1/databases/hoover_user/collections/user?apiKey=zvbjTNUW6COSTIZxJcPIW7_tniVCnDKC&q={\"document.deviceId\":\"000000000000000\"}&f={\"document.id\":1,\"document.city\":1}");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
@@ -71,7 +75,20 @@ public class FirstActivity extends Activity {
 		userCompany = preferences.getString("userCompany", null);
 		userCity = preferences.getString("userCity", null);
 		userId = preferences.getString("userId", null);
-		if(userId==null || userCity == null || userCompany == null){
+		signIn = (Button) findViewById(R.id.signin);
+		signIn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(FirstActivity.this,MainActivity.class);
+				startActivity(intent); 
+			}
+		});
+		Bundle b=getIntent().getExtras();
+		if(b!=null && b.containsKey("SignIn") && b.getBoolean("SignIn")){
+			System.out.println("sign in enable");
+			signIn.setVisibility(View.VISIBLE);
+		}else if(userId==null || userCity == null || userCompany == null){
 			GetUserAsyncTask tsk= new GetUserAsyncTask();
 			tsk.execute(uuid);
 		}else{
@@ -137,9 +154,6 @@ public class FirstActivity extends Activity {
 				}
 				conn.disconnect();
 			} catch (JSONException e) {
-				Intent intent = new Intent(FirstActivity.this,MainActivity.class);
-				startActivity(intent); 
-
 				return null;
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -154,9 +168,10 @@ public class FirstActivity extends Activity {
 				pd.dismiss();
 			}
 			if(data==null){
+				signIn.setVisibility(View.VISIBLE);
 				//this intent is used to open other activity wich contains another webView
-				Intent intent = new Intent(FirstActivity.this,MainActivity.class);
-				startActivity(intent); 
+				/*Intent intent = new Intent(FirstActivity.this,MainActivity.class);
+				startActivity(intent); */
 			}else{
 				SharedPreferences preferences = FirstActivity.this.getSharedPreferences("user_info", 0);
 				SharedPreferences.Editor editor = preferences.edit();
@@ -186,6 +201,10 @@ public class FirstActivity extends Activity {
 
 		}
 
+	}
+	@Override
+	public void onBackPressed() {
+	    // Do Here what ever you want do on back press;
 	}
 	//	private void openBrowser1() 
 	//	{       

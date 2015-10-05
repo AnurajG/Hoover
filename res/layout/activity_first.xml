@@ -16,4 +16,15 @@
         android:scaleType="center"
         android:src="@drawable/foter1" />
 
+    <Button
+        android:id="@+id/signin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginLeft="112dp"
+        android:layout_marginTop="40dp"
+        android:text="SignIn" 
+        android:visibility="gone"/>
+
 </RelativeLayout>

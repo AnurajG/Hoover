@@ -156,7 +156,10 @@ public class MainActivity extends Activity{
 		Log.i("authorization URL",""+URL);
 		return URL;
 	}
-	
+	@Override
+	public void onBackPressed() {
+	    // Do Here what ever you want do on back press;
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);

@@ -190,7 +190,11 @@ public class HomeActivityNew extends FragmentActivity{
 	            	Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
 	                myIntent.putExtra("userMongoId",userMongoId);
 	                startService(myIntent);
-	            	finish();
+	                Intent finishIntent = new Intent(HomeActivityNew.this, FirstActivity.class);
+	                finishIntent.putExtra("SignIn", true);
+	                startActivity(finishIntent);
+	                
+	            	
 	            }
 	         })
 	        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -204,7 +208,6 @@ public class HomeActivityNew extends FragmentActivity{
 	        .setIcon(android.R.drawable.ic_dialog_alert)
 	         .show();
 			
-           
 			break;
 		case 3:
 			//RATE US

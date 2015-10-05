@@ -15,8 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -30,7 +32,7 @@ import com.hoover.util.UserQueryBuilder;
 import com.parse.ParseInstallation;
 public class Login extends Activity {
 	//private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~";
-	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions)";
+	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions,num-connections)";
 	private static final String OAUTH_ACCESS_TOKEN_PARAM ="oauth2_access_token";
 	private static final String QUESTION_MARK = "?";
 	private static final String EQUALS = "=";
@@ -38,11 +40,13 @@ public class Login extends Activity {
 	private TextView welcomeText;
 	private ProgressDialog pd;
 	private String token;
-
+	Context mcontext;
+	//AlertDialog alertDialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
+		mcontext=this.getApplicationContext();
 		welcomeText = (TextView) findViewById(R.id.activity_profile_welcome_text);
 
 		//Request basic profile of the user
@@ -53,8 +57,7 @@ public class Login extends Activity {
 			String profileUrl = getProfileUrl(accessToken);
 			new GetProfileRequestAsyncTask().execute(profileUrl);
 		}
-		Intent i = new Intent(Login.this, HomeActivityNew.class);
-		startActivity(i);
+		
 		
 	}
 
@@ -192,7 +195,8 @@ public class Login extends Activity {
 							str=obj3.getString("name");
 						}
 					}
-
+					String connections=data.getString("numConnections");
+					int numOfConnections=Integer.parseInt(connections);
 					if(!str.equals(null)){
 						u.company=str;
 					}else{
@@ -202,19 +206,35 @@ public class Login extends Activity {
 					TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 					String uuid = tManager.getDeviceId();
 					u.deviceId=uuid;
+					if(numOfConnections<10){
+						AlertDialog alertDialog = new AlertDialog.Builder(Login.this).create();
+						alertDialog.setTitle("Alert");
+						alertDialog.setMessage("You must have atlease 10 valid connections in Linkedin");
+						alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+								new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+								finish();
+							}
+						});
+						alertDialog.show();
+						
 
-					SharedPreferences preferences = Login.this.getSharedPreferences("user_info", 0);
-					SharedPreferences.Editor editor = preferences.edit();
-					editor.putString("userId", u.id);
-					editor.putString("userCompany", u.company);
-					editor.putString("userCity", u.city);
-					editor.putString("userDeviceId", u.deviceId);
-					editor.commit();
+					}else{
+						SharedPreferences preferences = Login.this.getSharedPreferences("user_info", 0);
+						SharedPreferences.Editor editor = preferences.edit();
+						editor.putString("userId", u.id);
+						editor.putString("userCompany", u.company);
+						editor.putString("userCity", u.city);
+						editor.putString("userDeviceId", u.deviceId);
+						editor.commit();
 
-							
-					SaveUserAsyncTask tsk = new SaveUserAsyncTask();
-					tsk.execute(u);
-					
+
+						SaveUserAsyncTask tsk = new SaveUserAsyncTask();
+						tsk.execute(u);
+						Intent i = new Intent(Login.this, HomeActivityNew.class);
+						startActivity(i);
+					}
 					//h.hoov="xxx";
 
 					/*SaveAsyncTask tsk = new SaveAsyncTask();
