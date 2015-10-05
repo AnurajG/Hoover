@@ -205,6 +205,7 @@ public class FirstActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 	    // Do Here what ever you want do on back press;
+		finish();
 	}
 	//	private void openBrowser1() 
 	//	{       
