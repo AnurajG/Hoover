@@ -60,7 +60,8 @@
         android:layout_alignRight="@+id/hoov_down_button"
         android:text=""
         android:textColor="#925FAE" />
-<TextView
+
+    <TextView
         android:id="@+id/hoov_comment_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,13 +69,13 @@
         android:text=""
         android:textColor="#925FAE" />
 
-<Button
-    android:id="@+id/hoov_comment_button"
-    android:layout_width="20dp"
-    android:layout_height="20dp"
-    android:layout_alignParentBottom="true"
-    android:layout_marginRight="27dp"
-    android:layout_toLeftOf="@+id/hoov_down_count"
-    android:background="@drawable/comment" />
+    <Button
+        android:id="@+id/hoov_comment_button"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="27dp"
+        android:layout_toLeftOf="@+id/hoov_down_count"
+        android:background="@drawable/comment" />
 
 </RelativeLayout>
