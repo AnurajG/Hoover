@@ -194,33 +194,34 @@ public class HomeActivityNew extends ActionBarActivity{
 			//DELETE PROFILE
 			final String uid=this.userId;
 			new AlertDialog.Builder(this)
-			.setTitle("Delete entry")
-			.setMessage("Are you sure you want to delete this entry?")
-			.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) { 
-					SharedPreferences preferences = getSharedPreferences("user_info", 0);
-					SharedPreferences.Editor editor=preferences.edit();
-					editor.clear();
-					editor.commit();
-					Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
-					myIntent.putExtra("userMongoId",userMongoId);
-					startService(myIntent);
-					finish();
-				}
-			})
-			.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) { 
-					System.out.println("NO");
-					mDrawerList.setItemChecked(0, true);
-					mDrawerList.setSelection(0);
-					mDrawerLayout.closeDrawer(mDrawerList);
-				}
-			})
-			.setIcon(android.R.drawable.ic_dialog_alert)
-			.show();
-
-
-			break;
+.setTitle("Delete entry")
+	        .setMessage("Are you sure you want to delete this entry?")
+	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) { 
+	            	SharedPreferences preferences = getSharedPreferences("user_info", 0);
+	                SharedPreferences.Editor editor=preferences.edit();
+	                editor.clear();
+	        		editor.commit();
+	            	Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
+	                myIntent.putExtra("userMongoId",userMongoId);
+	                startService(myIntent);
+	                Intent finishIntent = new Intent(HomeActivityNew.this, FirstActivity.class);
+	                finishIntent.putExtra("SignIn", true);
+	                startActivity(finishIntent);
+	                
+	            	
+	            }
+	         })
+	        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) { 
+	            	System.out.println("NO");
+	            	mDrawerList.setItemChecked(0, true);
+	    			mDrawerList.setSelection(0);
+	    			mDrawerLayout.closeDrawer(mDrawerList);
+	            }
+	         })
+	        .setIcon(android.R.drawable.ic_dialog_alert)
+	         .show();			break;
 		case 3:
 			//RATE US
 			mDrawerLayout.closeDrawer(mDrawerList);

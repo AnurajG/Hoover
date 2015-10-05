@@ -33,6 +33,7 @@ public class HomeViewAdapter extends RecyclerView
 		TextView date;
 		TextView uplabel;
 		TextView downlabel;
+		TextView commentlabel;
 		Button h_up_button;
 		Button h_down_button;
 		TextView h_comment_count;
@@ -49,10 +50,12 @@ public class HomeViewAdapter extends RecyclerView
 			date = (TextView) itemView.findViewById(R.id.hoov_date);
 			uplabel = (TextView) itemView.findViewById(R.id.hoov_up_count);
 			downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
+			commentlabel=(TextView)itemView.findViewById(R.id.hoov_comment_count);
 			h_up_button=(Button)itemView.findViewById(R.id.hoov_up_button);
 			h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
-			h_comment_count=(TextView)itemView.findViewById(R.id.hoov_comment_count);
+
 			h_comment_button=(Button)itemView.findViewById(R.id.hoov_comment_button);
+
 
 			context = itemView.getContext();
 			//parentHoov=pHoov;
@@ -207,6 +210,7 @@ public class HomeViewAdapter extends RecyclerView
 		holder.date.setText(mDataset.get(position).hoovDate);
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
+		holder.commentlabel.setText(""+mDataset.get(position).commentHoovIds.size());
 		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
 			holder.h_up_button.setTag(1);
