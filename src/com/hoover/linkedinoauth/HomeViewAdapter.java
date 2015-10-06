@@ -211,6 +211,8 @@ public class HomeViewAdapter extends RecyclerView
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
 		holder.commentlabel.setText(""+mDataset.get(position).commentHoovIds.size());
+		holder.h_up_button.setTag(0);
+		holder.h_down_button.setTag(0);
 		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
 			holder.h_up_button.setTag(1);
