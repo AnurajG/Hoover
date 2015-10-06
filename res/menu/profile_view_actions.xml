@@ -1,11 +1,8 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:Hoover_new="http://schemas.android.com/apk/res-auto">>
     <!-- Search, should appear as action button -->
     <item android:id="@+id/action_myprofile"
           android:icon="@drawable/profile_img"
           android:title="@string/action_myprofile_view"
-          android:showAsAction="ifRoom" />
-    <!-- Settings, should always be in the overflow -->
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
-          android:showAsAction="never" />
+          Hoover_new:showAsAction="always" />
 </menu>

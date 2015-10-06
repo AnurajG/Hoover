@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -74,6 +76,9 @@ public class HoovDetailsActivity extends Activity{
 	private RecyclerView.LayoutManager mLayoutManager;
 	ProgressBar mProgressBar;
 	private List<HoovChapter> HoovChapterlist_t = null;
+	ArrayList<Integer> randArray;
+	private HashMap<String, String> imageMap = null;
+	private Integer imageCounter;
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	String userComapny;
 	String userCity;
@@ -90,6 +95,15 @@ public class HoovDetailsActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_hoov_detail);
 		context=this;
+
+		com.hoover.linkedinoauth.Application appState = ((com.hoover.linkedinoauth.Application)getApplicationContext());
+		randArray=appState.getRandArray();
+		Collections.shuffle(randArray);
+		imageCounter=0;
+
+		imageMap=new HashMap<String, String>();
+
+
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
 		hc=(HoovChapter) intent.getSerializableExtra("chapter");
@@ -99,7 +113,7 @@ public class HoovDetailsActivity extends Activity{
 		mRecyclerView.setHasFixedSize(true);
 		mLayoutManager = new LinearLayoutManager(this);
 		mRecyclerView.setLayoutManager(mLayoutManager);
-		mAdapter = new HoovDetailsViewAdapter(getDataSet(),this,userId);
+		mAdapter = new HoovDetailsViewAdapter(getDataSet(),getImageMap(),this,userId);
 		mRecyclerView.setAdapter(mAdapter);
 
 		hoovText = (TextView) findViewById(R.id.hoovtextView);
@@ -335,7 +349,8 @@ public class HoovDetailsActivity extends Activity{
 					else if(curr_epoch-epoch > 60)
 						hc.hoovDate=""+(curr_epoch-epoch)/60+"m";
 					else
-						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";	
+						hc.hoovDate=""+(curr_epoch-epoch+60)+"s";
+					imageMap.put(hc.hoovUserId, "");
 					HoovChapterlist_t.add(hc);
 				}
 
@@ -358,7 +373,11 @@ public class HoovDetailsActivity extends Activity{
 			super.onPostExecute(data);
 
 			results.addAll(HoovChapterlist_t);
-			mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
+			for(String key:imageMap.keySet()){
+				imageMap.put(key, "av_"+randArray.get(imageCounter++));
+			}
+
+			mAdapter = new HoovDetailsViewAdapter(results,imageMap,getApplicationContext(),userId);
 			mRecyclerView.setAdapter(mAdapter);
 			mProgressBar.setVisibility(View.GONE);
 
@@ -383,6 +402,11 @@ public class HoovDetailsActivity extends Activity{
 
 	private ArrayList<HoovChapter> getDataSet() {
 		ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
+		return results;
+	}
+
+	private HashMap<String,String>  getImageMap() {
+		HashMap<String,String> results = new HashMap<String, String>();
 		return results;
 	}
 
@@ -433,7 +457,8 @@ public class HoovDetailsActivity extends Activity{
 		}
 		protected void onPostExecute(Integer data){
 			results.remove(data.intValue());
-			mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
+
+			mAdapter = new HoovDetailsViewAdapter(results,imageMap,getApplicationContext(),userId);
 			mRecyclerView.setAdapter(mAdapter);
 			mRecyclerView.refreshDrawableState();
 			//mRecyclerView.ref
@@ -452,6 +477,8 @@ public class HoovDetailsActivity extends Activity{
 		protected void onPostExecute(String result) {
 			super.onPostExecute(result);
 			if(result!=null){
+				if(!imageMap.keySet().contains(userId))
+					imageMap.put(userId, "av_"+randArray.get(imageCounter++));
 				HoovChapter _hc=new HoovChapter();
 				_hc.hoovText=result;
 				_hc.hoovUserId=userId;
@@ -459,7 +486,7 @@ public class HoovDetailsActivity extends Activity{
 				_hc.hoov_up_ids=new ArrayList<String>();
 				_hc.mongoHoovId=hoovId;
 				results.add(_hc);
-				mAdapter = new HoovDetailsViewAdapter(results,getApplicationContext(),userId);
+				mAdapter = new HoovDetailsViewAdapter(results,imageMap,getApplicationContext(),userId);
 				mRecyclerView.setAdapter(mAdapter);
 
 				HashSet<String> commentUserIds= new HashSet<String>();
@@ -469,7 +496,7 @@ public class HoovDetailsActivity extends Activity{
 				}
 				commentUserIds.remove(userId);
 				JSONArray comments=new JSONArray(commentUserIds);
-				
+
 
 
 

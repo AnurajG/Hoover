@@ -1,11 +1,9 @@
 package com.hoover.linkedinoauth;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -483,6 +481,7 @@ public class HomeFragment extends Fragment{
 			protected void onPostExecute(Void result) {
 				if(e==null){
 					int position = mRecyclerView.getChildCount();
+					results.clear();
 					results.addAll(HoovChapterlist_t);
 					mAdapter = new HomeViewAdapter(results,context,userId);
 					mRecyclerView.setAdapter(mAdapter);

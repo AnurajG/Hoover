@@ -18,11 +18,24 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
 
+            <ImageView
+                android:id="@+id/comment_avatar"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:id="@+id/comment_hoov"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toEndOf="@+id/comment_avatar"
+                android:layout_toRightOf="@+id/comment_avatar"
                 android:textStyle="bold" />
 
             <Button
@@ -44,6 +57,10 @@
                 android:layout_below="@+id/comment_down_count"
                 android:layout_marginEnd="25dp"
                 android:layout_marginRight="25dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/comment_avatar"
+                android:layout_toRightOf="@+id/comment_avatar"
                 android:background="@drawable/down"
                 android:textColor="#925FAE" />
 
@@ -62,6 +79,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignRight="@+id/comment_down_button"
                 android:layout_below="@+id/comment_hoov"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/comment_avatar"
+                android:layout_toRightOf="@+id/comment_avatar"
                 android:text=""
                 android:textColor="#925FAE" />
 
@@ -69,11 +90,10 @@
                 android:id="@+id/delete_comment_button"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                
+                android:layout_alignParentTop="true"
                 android:background="@drawable/purple_delete" />
-
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

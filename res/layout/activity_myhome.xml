@@ -4,24 +4,28 @@
     android:layout_height="wrap_content"
     android:background="#FFFFFF"
     android:orientation="vertical" >
-<uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout
+
+    <!--
+     >android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ptr_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <!-- android.support.v4.widget.SwipeRefreshLayout
+    android:layout_height="match_parent"
+    -->
+
+    <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"-->
+        android:orientation="vertical" >
 
         <ListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
         </ListView>
-    <!-- /android.support.v4.widget.SwipeRefreshLayout-->
-    </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>
+        <!-- /android.support.v4.widget.SwipeRefreshLayout -->
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

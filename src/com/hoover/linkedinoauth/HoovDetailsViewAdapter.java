@@ -1,18 +1,20 @@
 package com.hoover.linkedinoauth;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hoover.linkedinoauth.HoovDetailsActivity.DeleteCommentAsyncTask;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
@@ -21,6 +23,7 @@ public class HoovDetailsViewAdapter extends RecyclerView
 .DataObjectHolder> {
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
 	private ArrayList<HoovChapter> mDataset;
+	private HashMap<String,String> mImageMap;
 	private static MyClickListener myClickListener;
 	private final Context context;
 	private final String currentuserId;
@@ -32,6 +35,7 @@ public class HoovDetailsViewAdapter extends RecyclerView
 		TextView label;
 		TextView uplabel;
 		TextView downlabel;
+		ImageView avatar;
 		Button h_up_button;
 		Button h_down_button;
 		Button del;
@@ -45,6 +49,7 @@ public class HoovDetailsViewAdapter extends RecyclerView
 			label = (TextView) itemView.findViewById(R.id.comment_hoov);
 			uplabel = (TextView) itemView.findViewById(R.id.comment_up_count);
 			downlabel = (TextView) itemView.findViewById(R.id.comment_down_count);
+			avatar = (ImageView) itemView.findViewById(R.id.comment_avatar);
 			h_up_button=(Button)itemView.findViewById(R.id.comment_up_button);
 			h_down_button=(Button)itemView.findViewById(R.id.comment_down_button);
 			del=(Button)itemView.findViewById(R.id.delete_comment_button);
@@ -148,10 +153,11 @@ public class HoovDetailsViewAdapter extends RecyclerView
 		this.myClickListener = myClickListener;
 	}
 
-	public HoovDetailsViewAdapter(ArrayList<HoovChapter> myDataset, Context mContext, String id) {
+	public HoovDetailsViewAdapter(ArrayList<HoovChapter> myDataset, HashMap<String, String> imageMap,Context mContext, String id) {
 		mDataset = myDataset;
 		context=mContext;
 		currentuserId=id;
+		mImageMap=imageMap;
 		//pHoov=parentHoov;
 	}
 
@@ -170,6 +176,10 @@ public class HoovDetailsViewAdapter extends RecyclerView
 		holder.label.setText(mDataset.get(position).hoovText);
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
+		//Drawable drawable = context.getResources().getDrawable();
+		System.out.println("Getting image "+mImageMap.get(mDataset.get(position).hoovUserId));
+		holder.avatar.setImageResource(context.getResources()
+				.getIdentifier(mImageMap.get(mDataset.get(position).hoovUserId), "drawable", context.getPackageName()));
 		if(!mDataset.get(position).hoovUserId.equals(currentuserId)){
 			holder.del.setVisibility(View.GONE);
 		}
