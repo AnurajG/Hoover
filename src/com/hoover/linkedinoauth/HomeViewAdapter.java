@@ -29,7 +29,7 @@ public class HomeViewAdapter extends RecyclerView
 	private final Context mcontext;
 	private final String currentuserId;
 	//private final HoovChapter pHoov;
-		public static class DataObjectHolder extends RecyclerView.ViewHolder
+	public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
 	.OnClickListener {
 		TextView text;
@@ -206,30 +206,30 @@ public class HomeViewAdapter extends RecyclerView
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset,currentuserId);
 		return dataObjectHolder;*/
 		View itemView = LayoutInflater.
-                from(parent.getContext()).
-                inflate(R.layout.activity_cardview, parent, false);
+				from(parent.getContext()).
+				inflate(R.layout.activity_cardview, parent, false);
 
 		return new DataObjectHolder(itemView,mDataset,currentuserId);
 	}
 	//New methods added for SwingFlingAdapterView
 	public View getView(int position, View convertView, ViewGroup parent){
-	 if (convertView == null) {
-         convertView = onCreateViewHolder(parent, getItemViewType(position)).itemView;
-     } else {
-         onViewRecycled(getViewHolder(convertView));
-     }
+		if (convertView == null) {
+			convertView = onCreateViewHolder(parent, getItemViewType(position)).itemView;
+		} else {
+			onViewRecycled(getViewHolder(convertView));
+		}
 
-     onBindViewHolder(getViewHolder(convertView), position);
+		onBindViewHolder(getViewHolder(convertView), position);
 
-     return convertView;
+		return convertView;
 	}
 	private DataObjectHolder getViewHolder(View view) {
-        return (DataObjectHolder) view.getTag();
-    }
-	
+		return (DataObjectHolder) view.getTag();
+	}
+
 	public HoovChapter getItem(int position) {
-        return mDataset == null ? null : mDataset.get(position);
-    }
+		return mDataset == null ? null : mDataset.get(position);
+	}
 	public void registerAdapterDataObserver (AdapterDataObserver observer){
 		super.registerAdapterDataObserver(observer);
 	}
@@ -239,20 +239,22 @@ public class HomeViewAdapter extends RecyclerView
 	//=====================================
 	@Override
 	public void onBindViewHolder(DataObjectHolder holder, int position) {
-		holder.text.setText(mDataset.get(position).hoovText);
-		holder.date.setText(mDataset.get(position).hoovDate);
-		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
-		//holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
-		holder.commentlabel.setText(""+mDataset.get(position).commentHoovIds.size());
-		holder.h_up_button.setTag(0);
-		//holder.h_down_button.setTag(0);
-		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
-			holder.h_up_button.setBackground(mcontext.getResources().getDrawable(R.drawable.greenup));
-			holder.h_up_button.setTag(1);
-		}/*else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
+		if(holder!=null){
+			holder.text.setText(mDataset.get(position).hoovText);
+			holder.date.setText(mDataset.get(position).hoovDate);
+			holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
+			//holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
+			holder.commentlabel.setText(""+mDataset.get(position).commentHoovIds.size());
+			holder.h_up_button.setTag(0);
+			//holder.h_down_button.setTag(0);
+			if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
+				holder.h_up_button.setBackground(mcontext.getResources().getDrawable(R.drawable.greenup));
+				holder.h_up_button.setTag(1);
+			}/*else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
 			holder.h_down_button.setTag(1);
 		}*/
+		}
 	}
 
 	public void addItem(HoovChapter dataObj, int index) {

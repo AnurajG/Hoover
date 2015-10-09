@@ -13,6 +13,17 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hoover.SwipeContainer.SwipeFlingAdapterView;
@@ -21,26 +32,6 @@ import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovFetchParams.eOrder;
 import com.hoover.util.HoovFetchParams.eType;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Rect;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MyrecylerviewActivity extends Activity{
 	String city;
@@ -53,94 +44,102 @@ public class MyrecylerviewActivity extends Activity{
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	private int limit = 8;
 	SwipeFlingAdapterView flingContainer;
-	private ArrayAdapter<HoovChapter> arrayAdapter;
-	 private int i;
+	private ArrayAdapter<String> arrayAdapter;
+	private ArrayList<String> al;
+	private int i;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	      super.onCreate(savedInstanceState);
-	      this.city=getIntent().getStringExtra("city");
-	      this.company=getIntent().getStringExtra("company");
-	      this.userId=getIntent().getStringExtra("userId");
-	      context=this;
-	      setContentView(R.layout.acitvity_recyclerview);
-	      mAdapter = new HomeViewAdapter(getDataSet(),this,userId);
-	      flingContainer=(SwipeFlingAdapterView)findViewById(R.id.frame);
-	      final HoovFetchParams params=new HoovFetchParams();
-	      params.city=city;
-	      params.comapny=company;
-	      params.order=eOrder.NEW;
-	      params.type=eType.HOME;
-	       flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
-	            @Override
-	            public void removeFirstObjectInAdapter() {
-	                // this is the simplest way to delete an object from the Adapter (/AdapterView)
-	               results.remove(0);
-	               mAdapter.notifyDataSetChanged();
-	            }
+		super.onCreate(savedInstanceState);
+		this.city=getIntent().getStringExtra("city");
+		this.company=getIntent().getStringExtra("company");
+		this.userId=getIntent().getStringExtra("userId");
+		context=this;
+		setContentView(R.layout.acitvity_recyclerview);
 
-	            @Override
-	            public void onLeftCardExit(Object dataObject) {
-	                //Do something on the left!
-	                //You also have access to the original object.
-	                //If you want to use it just cast it (String) dataObject
-	                makeToast(MyrecylerviewActivity.this, "Left!");
-	            }
+		mAdapter = new HomeViewAdapter(getDataSet(),this,userId);
+		flingContainer=(SwipeFlingAdapterView)findViewById(R.id.frame);
+		final HoovFetchParams params=new HoovFetchParams();
+		params.city=city;
+		params.comapny=company;
+		params.order=eOrder.NEW;
+		params.type=eType.HOME;
 
-	            @Override
-	            public void onRightCardExit(Object dataObject) {
-	                makeToast(MyrecylerviewActivity.this, "Right!");
-	            }
+		flingContainer.setAdapter(mAdapter);
+		LinearLayoutManager llm = new LinearLayoutManager(this);
+		llm.setOrientation(LinearLayoutManager.VERTICAL);
+		flingContainer.setLayoutManager(llm);
 
-	            @Override
-	            public void onAdapterAboutToEmpty(int itemsInAdapter) {
-	                // Ask for more data here
-	            	new GetHoovsAsyncTask().execute(params);
-	            	mAdapter.notifyDataSetChanged();
-	                
-	            }
+		flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
+			@Override
+			public void removeFirstObjectInAdapter() {
+				// this is the simplest way to delete an object from the Adapter (/AdapterView)
+				results.remove(0);
+				mAdapter.notifyDataSetChanged();
+			}
 
-	            @Override
-	            public void onScroll(float scrollProgressPercent) {
-	                View view = flingContainer.getSelectedView();
-	               // view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
-	               // view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
-	            }
-	        });
-	        flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
-	            @Override
-	            public void onItemClicked(int itemPosition, Object dataObject) {
-	                makeToast(MyrecylerviewActivity.this, "Clicked!");
-	            }
-	        });
-	        flingContainer.setAdapter(mAdapter);
-		    
-	       /*mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
+			@Override
+			public void onLeftCardExit(Object dataObject) {
+				//Do something on the left!
+				//You also have access to the original object.
+				//If you want to use it just cast it (String) dataObject
+				makeToast(MyrecylerviewActivity.this, "Left!");
+			}
+
+			@Override
+			public void onRightCardExit(Object dataObject) {
+				makeToast(MyrecylerviewActivity.this, "Right!");
+			}
+
+			@Override
+			public void onAdapterAboutToEmpty(int itemsInAdapter) {
+				// Ask for more data here
+				//new GetHoovsAsyncTask().execute(params);
+				mAdapter.notifyDataSetChanged();
+
+			}
+
+			@Override
+			public void onScroll(float scrollProgressPercent) {
+				View view = flingContainer.getSelectedView();
+				// view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
+				// view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
+			}
+		});
+		flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClicked(int itemPosition, Object dataObject) {
+				makeToast(MyrecylerviewActivity.this, "Clicked!");
+			}
+		});
+
+
+		/*mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
 	      mRecyclerView.setHasFixedSize(true);
 	      LinearLayoutManager llm = new LinearLayoutManager(this);
 	     llm.setOrientation(LinearLayoutManager.VERTICAL);
 	      mRecyclerView.setLayoutManager(llm);
 	      mAdapter = new HomeViewAdapter(getDataSet(),this,userId);
 	      mRecyclerView.setAdapter(mAdapter);*/
-	     
-	      new GetHoovsAsyncTask().execute(params);
 
-	      
+		new GetHoovsAsyncTask().execute(params);
+
+
 	}
-	 static void makeToast(Context ctx, String s){
-	        Toast.makeText(ctx, s, Toast.LENGTH_SHORT).show();
-	    }
+	static void makeToast(Context ctx, String s){
+		Toast.makeText(ctx, s, Toast.LENGTH_SHORT).show();
+	}
 
 
-	    public void right() {
-	        /**
-	         * Trigger the right event manually.
-	         */
-	        flingContainer.getTopCardListener().selectRight();
-	    }
+	public void right() {
+		/**
+		 * Trigger the right event manually.
+		 */
+		flingContainer.getTopCardListener().selectRight();
+	}
 
-	    public void left() {
-	        flingContainer.getTopCardListener().selectLeft();
-	    }
+	public void left() {
+		flingContainer.getTopCardListener().selectLeft();
+	}
 
 	private ArrayList<HoovChapter> getDataSet() {
 		ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
@@ -173,8 +172,9 @@ public class MyrecylerviewActivity extends Activity{
 				results.addAll(HoovChapterlist_t);
 				mAdapter = new HomeViewAdapter(results,context,userId);
 				flingContainer.setAdapter(mAdapter);
+				flingContainer.refreshDrawableState();
 
-			/*	mRecyclerView.addOnScrollListener(new OnScrollListener() {
+				/*	mRecyclerView.addOnScrollListener(new OnScrollListener() {
 
 					@Override
 					public void onScrollStateChanged(RecyclerView view,

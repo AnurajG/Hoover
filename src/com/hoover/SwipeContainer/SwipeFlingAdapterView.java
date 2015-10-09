@@ -274,6 +274,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 			};
            mAdapter.registerAdapterDataObserver(mDataSetObserver);
         }
+       super.setAdapter(adapter);
     }
 
     public void setFlingListener(onFlingListener onFlingListener) {
