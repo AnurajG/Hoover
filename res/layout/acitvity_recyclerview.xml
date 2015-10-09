@@ -1,0 +1,29 @@
+<!-- <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+     tools:context=".MyrecylerviewActivity">
+      <android.support.v7.widget.RecyclerView
+             android:id="@+id/cardList"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+       />    
+</RelativeLayout> -->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <com.hoover.SwipeContainer.SwipeFlingAdapterView
+        android:id="@+id/frame"
+        android:background="#ffeee9e2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MyrecylerviewActivity" />
+
+    
+
+</merge>
+
+    
+

@@ -45,6 +45,7 @@ public class HomeFollowViewAdapter extends RecyclerView
 			text = (TextView) itemView.findViewById(R.id.hoov_text);
 			date = (TextView) itemView.findViewById(R.id.hoov_date);
 			uplabel = (TextView) itemView.findViewById(R.id.hoov_up_count);
+			
 			downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
 			h_up_button=(Button)itemView.findViewById(R.id.hoov_up_button);
 			h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
