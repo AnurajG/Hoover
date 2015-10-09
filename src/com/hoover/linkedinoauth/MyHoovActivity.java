@@ -30,7 +30,7 @@ import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovQueryBuilder;
 import com.hoover.util.MyHoovFetchParams;
 
-public class MyHomeActivity extends ListActivity{
+public class MyHoovActivity extends ListActivity{
 
 	HoovListAdapter hAdapter;
 	private ProgressDialog pd;
@@ -41,7 +41,7 @@ public class MyHomeActivity extends ListActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_myhome);
+		setContentView(R.layout.activity_myhoov);
 
 
 		hAdapter=new HoovListAdapter();
@@ -66,7 +66,7 @@ public class MyHomeActivity extends ListActivity{
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		HoovChapter selectedHoov = new HoovChapter();
 		selectedHoov = hAdapter.hoovChapterList.get(position);
-		Intent myIntent = new Intent(MyHomeActivity.this, HoovDetailsActivity.class);
+		Intent myIntent = new Intent(MyHoovActivity.this, HoovDetailsActivity.class);
 		myIntent.putExtra("mongodbHoovId",selectedHoov.mongoHoovId);
 		myIntent.putExtra("text",selectedHoov.hoovText);
 		myIntent.putExtra("date",selectedHoov.hoovDate);
@@ -79,7 +79,7 @@ public class MyHomeActivity extends ListActivity{
 	public class PopulateAdapterAsyncTask extends AsyncTask<Void, Void, Boolean>{
 		@Override
 		protected void onPreExecute(){
-			pd = ProgressDialog.show(MyHomeActivity.this, "", "Fetching Profile..",true);
+			pd = ProgressDialog.show(MyHoovActivity.this, "", "Fetching Profile..",true);
 		}
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -109,7 +109,7 @@ public class MyHomeActivity extends ListActivity{
 
 		hoovChaptersList=fetchAllHoovs(params);
 
-		SharedPreferences preferences2 = MyHomeActivity.this.getSharedPreferences("hoov_tmp", 0);
+		SharedPreferences preferences2 = MyHoovActivity.this.getSharedPreferences("hoov_tmp", 0);
 		String hoovArray = preferences2.getString("hoovArray", null);
 		if(hoovArray!=null){
 			try {
@@ -160,7 +160,7 @@ public class MyHomeActivity extends ListActivity{
 		@Override
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			if(arg1==null){
-				LayoutInflater inflater = (LayoutInflater)MyHomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inflater = (LayoutInflater)MyHoovActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				arg1 = inflater.inflate(R.layout.my_hoov_list, arg2,false);
 			}
 			TextView h_text = (TextView)arg1.findViewById(R.id.my_hoov_text);

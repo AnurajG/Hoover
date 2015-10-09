@@ -272,6 +272,7 @@ public class HomeActivityNew extends ActionBarActivity{
 			Intent intent = new Intent(HomeActivityNew.this,MyHomeActivity.class);
 			//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent); 
+			overridePendingTransition(0 , R.anim.slide_up);
 		default:
 			return super.onOptionsItemSelected(item);
 		}

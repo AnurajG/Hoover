@@ -67,6 +67,10 @@
             android:label="@string/title_activity_home" >
         </activity>
         <activity
+            android:name=".MyHoovActivity"
+            android:label="@string/action_myprofile_view" >
+        </activity>
+         <activity
             android:name=".MyHomeActivity"
             android:label="@string/action_myprofile_view" >
         </activity>
