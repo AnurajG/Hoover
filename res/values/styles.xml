@@ -1,16 +1,23 @@
 <resources>
-
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
-
-    <style name="AppBaseTheme" parent="android:Theme.Holo.Light">
-        <!-- API 11 theme customizations can go here. -->
+    <color name="primary">#FF5722</color>
+  <color name="primary_dark">#000000</color>
+  <color name="primary_light">#fbe9e7</color>
+  <color name="accent">#CDDC39</color>
+  <color name="primary_text">#000000</color>
+  <color name="secondary_text">#FFFFFF</color>
+  <color name="icons">#FFFFFF</color>
+  <color name="divider">#B6B6B6</color>
+    
+    <style name="MyTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
 
-    <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:typeface">normal</item>
+    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@color/primary_dark</item>
     </style>
-
+     <style name="SwipeFling">
+        <item name="rotation_degrees">15</item>
+        <item name="min_adapter_stack">6</item>
+        <item name="max_visible">4</item>
+    </style>
 </resources>

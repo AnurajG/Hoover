@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Observable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +15,9 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hoover.linkedinoauth.MyRecyclerAdapter.HoovViewHolder;
 import com.hoover.util.HoovChapter;
+import com.parse.GetCallback;
 //import android.support.v7.widget.RecyclerView;
 
 public class HomeViewAdapter extends RecyclerView
@@ -22,20 +26,19 @@ public class HomeViewAdapter extends RecyclerView
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
 	public ArrayList<HoovChapter> mDataset;
 	private static MyClickListener myClickListener;
-	private final Context context;
+	private final Context mcontext;
 	private final String currentuserId;
 	//private final HoovChapter pHoov;
-
-	public static class DataObjectHolder extends RecyclerView.ViewHolder
+		public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
 	.OnClickListener {
 		TextView text;
 		TextView date;
 		TextView uplabel;
-		TextView downlabel;
+		//TextView downlabel;
 		TextView commentlabel;
 		Button h_up_button;
-		Button h_down_button;
+		//Button h_down_button;
 		TextView h_comment_count;
 		Button h_comment_button;
 
@@ -49,10 +52,10 @@ public class HomeViewAdapter extends RecyclerView
 			text = (TextView) itemView.findViewById(R.id.hoov_text);
 			date = (TextView) itemView.findViewById(R.id.hoov_date);
 			uplabel = (TextView) itemView.findViewById(R.id.hoov_up_count);
-			downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
+			//downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
 			commentlabel=(TextView)itemView.findViewById(R.id.hoov_comment_count);
 			h_up_button=(Button)itemView.findViewById(R.id.hoov_up_button);
-			h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
+			//h_down_button=(Button)itemView.findViewById(R.id.hoov_down_button);
 
 			h_comment_button=(Button)itemView.findViewById(R.id.hoov_comment_button);
 
@@ -77,12 +80,12 @@ public class HomeViewAdapter extends RecyclerView
 					//DataObjectHolder holder=(DataObjectHolder) v.getTag();
 					int position = getPosition();
 
-					int currDownCount=Integer.parseInt((String)downlabel.getText());
+					//int currDownCount=Integer.parseInt((String)downlabel.getText());
 					String curr_up_value=(String)uplabel.getText();
 					int final_up_value=Integer.parseInt(curr_up_value);
 
-					String curr_down_value=(String)downlabel.getText();
-					int final_down_value=Integer.parseInt(curr_down_value);
+					//String curr_down_value=(String)downlabel.getText();
+					//int final_down_value=Integer.parseInt(curr_down_value);
 					if(h_up_button.getTag().equals(1)){
 						//If like button is green
 						final_up_value=Integer.parseInt(curr_up_value) - 1;
@@ -93,17 +96,17 @@ public class HomeViewAdapter extends RecyclerView
 						final_up_value=Integer.parseInt(curr_up_value) + 1;
 						h_up_button.setTag(1);
 						h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
-						if(h_down_button.getTag().equals(1)){
+						/*if(h_down_button.getTag().equals(1)){
 							//if dislike button is red
 							final_down_value= final_down_value- 1;
 							downlabel.setText(String.valueOf(final_down_value));
 							h_down_button.setBackground(context.getResources().getDrawable(R.drawable.down));
 							h_down_button.setTag(0);;
-						}
+						}*/
 					}
 
 					uplabel.setText(String.valueOf(final_up_value));
-					int finalDownCount=final_down_value;
+					//int finalDownCount=final_down_value;
 
 
 					Intent intent = new Intent(context, SaveLikeDislikeService.class);
@@ -111,14 +114,14 @@ public class HomeViewAdapter extends RecyclerView
 					System.out.println(mDataset1.get(position).hoovUserId);
 					intent.putExtra(SaveLikeDislikeService.hoovId,mDataset1.get(position).mongoHoovId);
 					intent.putExtra(SaveLikeDislikeService.insertUp,true);
-					if(finalDownCount<currDownCount)
-						intent.putExtra(SaveLikeDislikeService.deleteDown,true);
+					/*if(finalDownCount<currDownCount)
+						intent.putExtra(SaveLikeDislikeService.deleteDown,true);*/
 					context.startService(intent);
 
 				}
 			};
 
-			View.OnClickListener downHandler = new View.OnClickListener() {
+			/*View.OnClickListener downHandler = new View.OnClickListener() {
 				public void onClick(View v) {
 
 					int position = getPosition();
@@ -158,7 +161,7 @@ public class HomeViewAdapter extends RecyclerView
 						intent.putExtra(SaveLikeDislikeService.deleteUp,true);
 					context.startService(intent);	
 				}
-			};
+			};*/
 			View.OnClickListener commentHandler = new View.OnClickListener() {
 				public void onClick(View v) {
 					HoovChapter selectedHoov = new HoovChapter();
@@ -172,7 +175,7 @@ public class HomeViewAdapter extends RecyclerView
 			};
 			h_comment_button.setOnClickListener(commentHandler);
 			h_up_button.setOnClickListener(upHandler);
-			h_down_button.setOnClickListener(downHandler);
+			//h_down_button.setOnClickListener(downHandler);
 
 
 		}
@@ -189,7 +192,7 @@ public class HomeViewAdapter extends RecyclerView
 
 	public HomeViewAdapter(ArrayList<HoovChapter> myDataset, Context mContext, String id) {
 		mDataset = myDataset;
-		context=mContext;
+		mcontext=mContext;
 		currentuserId=id;
 		//pHoov=parentHoov;
 	}
@@ -197,27 +200,59 @@ public class HomeViewAdapter extends RecyclerView
 	@Override
 	public DataObjectHolder onCreateViewHolder(ViewGroup parent,
 			int viewType) {
-		View view = LayoutInflater.from(parent.getContext())
+		/*View view = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.hoov_list, parent, false);
 
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset,currentuserId);
-		return dataObjectHolder;
-	}
+		return dataObjectHolder;*/
+		View itemView = LayoutInflater.
+                from(parent.getContext()).
+                inflate(R.layout.activity_cardview, parent, false);
 
+		return new DataObjectHolder(itemView,mDataset,currentuserId);
+	}
+	//New methods added for SwingFlingAdapterView
+	public View getView(int position, View convertView, ViewGroup parent){
+	 if (convertView == null) {
+         convertView = onCreateViewHolder(parent, getItemViewType(position)).itemView;
+     } else {
+         onViewRecycled(getViewHolder(convertView));
+     }
+
+     onBindViewHolder(getViewHolder(convertView), position);
+
+     return convertView;
+	}
+	private DataObjectHolder getViewHolder(View view) {
+        return (DataObjectHolder) view.getTag();
+    }
+	
+	public HoovChapter getItem(int position) {
+        return mDataset == null ? null : mDataset.get(position);
+    }
+	public void registerAdapterDataObserver (AdapterDataObserver observer){
+		super.registerAdapterDataObserver(observer);
+	}
+	public void unregisterAdapterDataObserver (AdapterDataObserver observer){
+		super.unregisterAdapterDataObserver(observer);
+	}
+	//=====================================
 	@Override
 	public void onBindViewHolder(DataObjectHolder holder, int position) {
 		holder.text.setText(mDataset.get(position).hoovText);
 		holder.date.setText(mDataset.get(position).hoovDate);
 		holder.uplabel.setText(""+mDataset.get(position).hoov_up_ids.size());
-		holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
+		//holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
 		holder.commentlabel.setText(""+mDataset.get(position).commentHoovIds.size());
+		holder.h_up_button.setTag(0);
+		//holder.h_down_button.setTag(0);
 		if(mDataset.get(position).hoov_up_ids.contains(mDataset.get(position).hoovUserId)){
-			holder.h_up_button.setBackground(context.getResources().getDrawable(R.drawable.greenup));
+			holder.h_up_button.setBackground(mcontext.getResources().getDrawable(R.drawable.greenup));
 			holder.h_up_button.setTag(1);
-		}else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
+		}/*else if(mDataset.get(position).hoov_down_ids.contains(mDataset.get(position).hoovUserId)){
 			holder.h_down_button.setBackground(context.getResources().getDrawable(R.drawable.reddown));
 			holder.h_down_button.setTag(1);
-		}
+		}*/
 	}
 
 	public void addItem(HoovChapter dataObj, int index) {
