@@ -14,12 +14,21 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,8 +53,6 @@ public class MyrecylerviewActivity extends Activity{
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	private int limit = 8;
 	SwipeFlingAdapterView flingContainer;
-	private ArrayAdapter<String> arrayAdapter;
-	private ArrayList<String> al;
 	private int i;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,7 @@ public class MyrecylerviewActivity extends Activity{
 		params.comapny=company;
 		params.order=eOrder.NEW;
 		params.type=eType.HOME;
+		
 
 		flingContainer.setAdapter(mAdapter);
 		LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -73,26 +81,35 @@ public class MyrecylerviewActivity extends Activity{
 			@Override
 			public void removeFirstObjectInAdapter() {
 				// this is the simplest way to delete an object from the Adapter (/AdapterView)
+				System.out.println("b4"+results);
+				System.out.println("b4"+mAdapter.mDataset.size());
 				results.remove(0);
+				
 				mAdapter.notifyDataSetChanged();
+				System.out.println("aftre"+results);
+				System.out.println("aftre"+mAdapter.mDataset.size());
+				
 			}
 
 			@Override
 			public void onLeftCardExit(Object dataObject) {
-				//Do something on the left!
-				//You also have access to the original object.
-				//If you want to use it just cast it (String) dataObject
-				makeToast(MyrecylerviewActivity.this, "Left!");
+				//Consider browsing later
+				makeToast(MyrecylerviewActivity.this, "Browse Later!");
 			}
 
 			@Override
 			public void onRightCardExit(Object dataObject) {
-				makeToast(MyrecylerviewActivity.this, "Right!");
+				//follow the hoovs
+				HoovChapter hc=(HoovChapter) dataObject;
+				SaveFollowHoovInfoAsyncTask tsk= new SaveFollowHoovInfoAsyncTask(hc.mongoHoovId,userId);
+				tsk.execute();
+				makeToast(MyrecylerviewActivity.this, "Followed!");
 			}
 
 			@Override
 			public void onAdapterAboutToEmpty(int itemsInAdapter) {
 				// Ask for more data here
+				
 				//new GetHoovsAsyncTask().execute(params);
 				mAdapter.notifyDataSetChanged();
 
@@ -101,30 +118,28 @@ public class MyrecylerviewActivity extends Activity{
 			@Override
 			public void onScroll(float scrollProgressPercent) {
 				View view = flingContainer.getSelectedView();
-				// view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
-				// view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
+				//view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
+				//view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
 			}
 		});
 		flingContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClicked(int itemPosition, Object dataObject) {
-				makeToast(MyrecylerviewActivity.this, "Clicked!");
-			}
+				}
 		});
 
 
-		/*mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
-	      mRecyclerView.setHasFixedSize(true);
-	      LinearLayoutManager llm = new LinearLayoutManager(this);
-	     llm.setOrientation(LinearLayoutManager.VERTICAL);
-	      mRecyclerView.setLayoutManager(llm);
-	      mAdapter = new HomeViewAdapter(getDataSet(),this,userId);
-	      mRecyclerView.setAdapter(mAdapter);*/
-
+		
 		new GetHoovsAsyncTask().execute(params);
 
 
 	}
+
+	/*@Override
+	protected void onResume() {
+	    super.onResume();
+	    mAdapter.notifyDataSetChanged();
+	}*/
 	static void makeToast(Context ctx, String s){
 		Toast.makeText(ctx, s, Toast.LENGTH_SHORT).show();
 	}
@@ -135,6 +150,7 @@ public class MyrecylerviewActivity extends Activity{
 		 * Trigger the right event manually.
 		 */
 		flingContainer.getTopCardListener().selectRight();
+		
 	}
 
 	public void left() {
@@ -172,7 +188,7 @@ public class MyrecylerviewActivity extends Activity{
 				results.addAll(HoovChapterlist_t);
 				mAdapter = new HomeViewAdapter(results,context,userId);
 				flingContainer.setAdapter(mAdapter);
-				flingContainer.refreshDrawableState();
+				//flingContainer.refreshDrawableState();
 
 				/*	mRecyclerView.addOnScrollListener(new OnScrollListener() {
 

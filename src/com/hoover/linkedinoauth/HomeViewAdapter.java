@@ -29,6 +29,8 @@ public class HomeViewAdapter extends RecyclerView
 	private final Context mcontext;
 	private final String currentuserId;
 	//private final HoovChapter pHoov;
+	private LayoutInflater inflater = null;
+	
 	public static class DataObjectHolder extends RecyclerView.ViewHolder
 	implements View
 	.OnClickListener {
@@ -41,7 +43,6 @@ public class HomeViewAdapter extends RecyclerView
 		//Button h_down_button;
 		TextView h_comment_count;
 		Button h_comment_button;
-
 		private final Context context;
 		//private final HoovChapter parentHoov;
 
@@ -182,11 +183,14 @@ public class HomeViewAdapter extends RecyclerView
 
 		@Override
 		public void onClick(View v) {
+			System.out.println("clicked1======================");
 			myClickListener.onItemClick(getPosition(), v);
 		}
 	}
 
 	public void setOnItemClickListener(MyClickListener myClickListener) {
+		System.out.println("clicked2==================");
+		
 		this.myClickListener = myClickListener;
 	}
 
@@ -194,9 +198,10 @@ public class HomeViewAdapter extends RecyclerView
 		mDataset = myDataset;
 		mcontext=mContext;
 		currentuserId=id;
+		inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		//pHoov=parentHoov;
 	}
-
+	
 	@Override
 	public DataObjectHolder onCreateViewHolder(ViewGroup parent,
 			int viewType) {
@@ -205,21 +210,23 @@ public class HomeViewAdapter extends RecyclerView
 
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view,mDataset,currentuserId);
 		return dataObjectHolder;*/
-		View itemView = LayoutInflater.
-				from(parent.getContext()).
+		View itemView = inflater.
 				inflate(R.layout.activity_cardview, parent, false);
-
-		return new DataObjectHolder(itemView,mDataset,currentuserId);
+		DataObjectHolder viewHolder=new DataObjectHolder(itemView,mDataset,currentuserId);
+		itemView.setTag(viewHolder);
+		return viewHolder ;
 	}
 	//New methods added for SwingFlingAdapterView
 	public View getView(int position, View convertView, ViewGroup parent){
 		if (convertView == null) {
-			convertView = onCreateViewHolder(parent, getItemViewType(position)).itemView;
+			DataObjectHolder dh=onCreateViewHolder(parent, getItemViewType(position));
+			convertView = dh.itemView;
+			
 		} else {
 			onViewRecycled(getViewHolder(convertView));
 		}
-
 		onBindViewHolder(getViewHolder(convertView), position);
+		
 
 		return convertView;
 	}
@@ -255,6 +262,9 @@ public class HomeViewAdapter extends RecyclerView
 			holder.h_down_button.setTag(1);
 		}*/
 		}
+		else{
+			System.out.println("NULllllllll");
+		}
 	}
 
 	public void addItem(HoovChapter dataObj, int index) {
@@ -266,6 +276,7 @@ public class HomeViewAdapter extends RecyclerView
 		mDataset.remove(index);
 		notifyItemRemoved(index);
 	}
+	
 
 	@Override
 	public int getItemCount() {

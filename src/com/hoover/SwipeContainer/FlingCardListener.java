@@ -68,6 +68,7 @@ public class FlingCardListener implements View.OnTouchListener{
     public boolean onTouch(View view, MotionEvent event) {
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
+       
             case MotionEvent.ACTION_DOWN:
 
                 // from http://android-developers.blogspot.com/2010/06/making-sense-of-multitouch.html

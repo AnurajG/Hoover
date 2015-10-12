@@ -21,13 +21,14 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
     private HomeViewAdapter mAdapter;
     private int LAST_OBJECT_IN_STACK = 0;
     private onFlingListener mFlingListener;
-    private AdapterDataObserver  mDataSetObserver;
+    //private AdapterDataSetObserver  mDataSetObserver;
+    private AdapterDataObserver mDataSetObserver ;
     private boolean mInLayout = false;
     private View mActiveCard = null;
     private OnItemClickListener mOnItemClickListener;
     private FlingCardListener flingCardListener;
     private PointF mLastTouchPoint;
-
+   
     public SwipeFlingAdapterView(Context context) {
         this(context, null);
     }
@@ -79,7 +80,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
+        //super.onLayout(changed, left, top, right, bottom);
         // if we don't have an adapter, we don't need to do anything
         if (mAdapter == null) {
             return;
@@ -262,19 +263,27 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 
 
     public void setAdapter(HomeViewAdapter adapter) {
-       if (mAdapter != null && mDataSetObserver != null) {
-            mAdapter.unregisterAdapterDataObserver(mDataSetObserver);
-            mDataSetObserver = null;
-        }
+    	super.setAdapter(adapter);
+    	if (mAdapter != null && mDataSetObserver != null) {
+    		mAdapter.unregisterAdapterDataObserver(mDataSetObserver);
+    		mDataSetObserver = null;
+    	}
 
-        mAdapter = adapter;
+    	mAdapter = adapter;
 
-       if (mAdapter != null  && mDataSetObserver == null) {
-            mDataSetObserver=new AdapterDataObserver() {
-			};
-           mAdapter.registerAdapterDataObserver(mDataSetObserver);
-        }
-       super.setAdapter(adapter);
+    	if (mAdapter != null  && mDataSetObserver == null) {
+    		mDataSetObserver=new AdapterDataObserver() {
+    			 @Override
+    		        public void onChanged() {
+    		        	 refreshDrawableState();
+    		            requestLayout();
+    		           
+    		        }
+
+    		       
+    		};
+    		mAdapter.registerAdapterDataObserver(mDataSetObserver);
+    	}
     }
 
     public void setFlingListener(onFlingListener onFlingListener) {
@@ -294,19 +303,22 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
     }
 
 
-    private class AdapterDataSetObserver extends DataSetObserver {
+   private class AdapterDataSetObserver extends DataSetObserver {
         @Override
         public void onChanged() {
+        	 refreshDrawableState();
             requestLayout();
+           
         }
 
         @Override
         public void onInvalidated() {
+        	 refreshDrawableState();
             requestLayout();
+            
         }
 
     }
-
 
     public interface OnItemClickListener {
         void onItemClicked(int itemPosition, Object dataObject);
