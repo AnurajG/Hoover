@@ -3,7 +3,6 @@ package com.hoover.linkedinoauth;
 import java.util.List;
 import java.util.Locale;
 
-
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

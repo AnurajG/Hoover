@@ -10,10 +10,9 @@ import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.goebl.david.WebbException;
-
-import android.content.Context;
 import android.os.AsyncTask;
+
+import com.goebl.david.WebbException;
 
 public class SaveFollowHoovInfoAsyncTask extends AsyncTask<Void, Void,Void> {
 	private final String mongoHoovId;

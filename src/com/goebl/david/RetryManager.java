@@ -1,7 +1,8 @@
 package com.goebl.david;
 
-import javax.net.ssl.SSLException;
 import java.net.SocketTimeoutException;
+
+import javax.net.ssl.SSLException;
 
 /**
  * Decides whether a request should be retried or not.

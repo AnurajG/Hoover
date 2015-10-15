@@ -1,9 +1,14 @@
 <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res/com.hoover.linkedinoauth"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
+    android:elevation="5dp"
+    android:background="@drawable/card"
     tools:context="com.hoover.linkedinoauth.FirstActivity" >
 
     <TextView
@@ -29,16 +34,6 @@
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <!--
-        >Button
-        android:id="@+id/rehoov"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/rehoov_button_title"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#925FAE"-->
     <Button
         android:id="@+id/hoov_detail_up_button"
         android:layout_width="25dp"
@@ -96,16 +91,6 @@
         android:layout_below="@+id/hoovlinesep"
         android:layout_marginTop="10dp"
         android:scrollbars="vertical" />
-
-    <!-- ImageButton
-        android:id="@+id/delete"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/purple_delete"
-        android:text="@string/delete_my_hoov"
-        android:visibility="invisible" /-->
 
     <EditText
         android:id="@+id/commenttext"

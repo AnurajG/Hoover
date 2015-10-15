@@ -1,27 +1,22 @@
 package com.hoover.linkedinoauth;
 
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.hoover.linkedinoauth.Login.SaveUserAsyncTask;
-import com.hoover.util.User;
-
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.hoover.util.User;
 public class PrefsActivity extends PreferenceActivity{
 	String newCompany=null,newCity=null;
 	private static final String PROFILE_URL = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,location,positions)";

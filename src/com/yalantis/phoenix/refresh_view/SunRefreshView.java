@@ -14,8 +14,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 
-import com.yalantis.phoenix.PullToRefreshView;
 import com.hoover.linkedinoauth.R;
+import com.yalantis.phoenix.PullToRefreshView;
 import com.yalantis.phoenix.util.Utils;
 
 /**

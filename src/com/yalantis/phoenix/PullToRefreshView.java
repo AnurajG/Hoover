@@ -1,5 +1,7 @@
 package com.yalantis.phoenix;
 
+import java.security.InvalidParameterException;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
@@ -21,8 +23,6 @@ import com.hoover.linkedinoauth.R;
 import com.yalantis.phoenix.refresh_view.BaseRefreshView;
 import com.yalantis.phoenix.refresh_view.SunRefreshView;
 import com.yalantis.phoenix.util.Utils;
-
-import java.security.InvalidParameterException;
 
 public class PullToRefreshView extends ViewGroup {
 

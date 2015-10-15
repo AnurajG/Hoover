@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
-public class HoovDetailsViewAdapter extends RecyclerView
-.Adapter<HoovDetailsViewAdapter
+public class HoovDetailsViewParentAdapter extends RecyclerView
+.Adapter<HoovDetailsViewParentAdapter
 .DataObjectHolder> {
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
 	private ArrayList<HoovChapter> mDataset;
@@ -152,7 +152,7 @@ public class HoovDetailsViewAdapter extends RecyclerView
 		this.myClickListener = myClickListener;
 	}
 
-	public HoovDetailsViewAdapter(ArrayList<HoovChapter> myDataset, HashMap<String, String> imageMap,Context mContext, String id) {
+	public HoovDetailsViewParentAdapter(ArrayList<HoovChapter> myDataset, HashMap<String, String> imageMap,Context mContext, String id) {
 		mDataset = myDataset;
 		context=mContext;
 		currentuserId=id;

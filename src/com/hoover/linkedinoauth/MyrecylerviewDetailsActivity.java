@@ -30,7 +30,7 @@ import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovFetchParams.eOrder;
 import com.hoover.util.HoovFetchParams.eType;
 
-public class MyrecylerviewActivity extends Activity{
+public class MyrecylerviewDetailsActivity extends Activity{
 	String city;
 	String company;
 	String userId;
@@ -83,7 +83,7 @@ public class MyrecylerviewActivity extends Activity{
 			@Override
 			public void onLeftCardExit(Object dataObject) {
 				//Consider browsing later
-				makeToast(MyrecylerviewActivity.this, "Browse Later!");
+				makeToast(MyrecylerviewDetailsActivity.this, "Browse Later!");
 			}
 
 			@Override
@@ -92,7 +92,7 @@ public class MyrecylerviewActivity extends Activity{
 				HoovChapter hc=(HoovChapter) dataObject;
 				SaveFollowHoovInfoAsyncTask tsk= new SaveFollowHoovInfoAsyncTask(hc.mongoHoovId,userId);
 				tsk.execute();
-				makeToast(MyrecylerviewActivity.this, "Followed!");
+				makeToast(MyrecylerviewDetailsActivity.this, "Followed!");
 			}
 
 			@Override

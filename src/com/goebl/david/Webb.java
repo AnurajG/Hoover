@@ -1,11 +1,5 @@
 package com.goebl.david;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,6 +11,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Lightweight Java HTTP-Client for calling JSON REST-Services (especially for Android).

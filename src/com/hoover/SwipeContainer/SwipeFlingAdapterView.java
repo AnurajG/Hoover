@@ -1,17 +1,16 @@
 package com.hoover.SwipeContainer;
 
-import com.hoover.linkedinoauth.HomeViewAdapter;
-import com.hoover.linkedinoauth.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.PointF;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import com.hoover.linkedinoauth.HomeViewAdapter;
+import com.hoover.linkedinoauth.R;
 
 public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 	private int MAX_VISIBLE = 4;

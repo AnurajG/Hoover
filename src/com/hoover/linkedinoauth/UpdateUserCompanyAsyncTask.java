@@ -1,34 +1,19 @@
 package com.hoover.linkedinoauth;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Random;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.goebl.david.WebbException;
-import com.hoover.util.HoovChapter;
-import com.hoover.util.User;
-import com.hoover.util.UserQueryBuilder;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+
+import com.hoover.util.User;
+import com.hoover.util.UserQueryBuilder;
 
 public class UpdateUserCompanyAsyncTask extends AsyncTask<Void, Void,Void>{
 	private final Context mContext;

@@ -3,115 +3,80 @@
     android:id="@+id/card_view"
     android:layout_width="250dp"
     android:layout_height="250dp"
+    android:layout_gravity="center"
     android:layout_margin="5dp"
     android:clickable="true"
-    android:layout_gravity="center"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="5dp"
     card_view:contentPadding="20dp" >
-    
 
     <RelativeLayout
+        android:id="@+id/viewFront"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-          <TextView
+
+        <TextView
             android:id="@+id/hoov_text"
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:layout_marginTop="5dp"
             android:textColor="@color/primary_text"
             android:textSize="16sp" />
-         
-		<TextView
-              android:id="@+id/hoov_date"
-              android:layout_width="20dp"
-              android:layout_height="20dp"
-              android:layout_alignParentBottom="true"
-              android:layout_alignParentLeft="true"
-               android:textColor="@color/primary_text"/>
-		
-        <!-- <TextView
+
+        <TextView
             android:id="@+id/hoov_date"
-            android:layout_width="wrap_content"
-            android:layout_height="94dp"
-            android:layout_alignBottom="@+id/hoov_text"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
             android:textColor="@color/primary_text" />
-
-        <TextView
-            android:id="@+id/hoov_text"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="3"
-            android:textColor="@color/primary_text"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/hoov_comment_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/hoov_comment_button"
-            android:textColor="@color/primary_text" />
-
-        <TextView
-            android:id="@+id/hoov_up_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-           android:textColor="@color/primary_text" />
 
         <Button
             android:id="@+id/hoov_up_button"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:background="@drawable/up"
             android:textColor="#925FAE" />
 
         <Button
             android:id="@+id/hoov_comment_button"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="50dp"
-            android:background="@drawable/comment" /> -->
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="15dp"
+            android:layout_toLeftOf="@+id/hoov_up_button"
+            android:background="@drawable/comment" />
 
-		<Button
-		    android:id="@+id/hoov_up_button"
-		    style="?android:attr/buttonStyleSmall"
-		    android:layout_width="30dp"
-		    android:layout_height="30dp"
-		    android:layout_alignParentBottom="true"
-		    android:layout_alignParentRight="true"
-		    android:background="@drawable/up"
-		    android:textColor="#925FAE" />
+        <TextView
+            android:id="@+id/hoov_comment_count"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_above="@+id/hoov_comment_button"
+            android:layout_alignLeft="@+id/hoov_comment_button"
+            android:layout_alignRight="@+id/hoov_comment_button"
+            android:textColor="@color/primary_text" />
 
-		<Button
-		    android:id="@+id/hoov_comment_button"
-		    style="?android:attr/buttonStyleSmall"
-		    android:layout_width="30dp"
-		    android:layout_height="30dp"
-		    android:layout_alignParentBottom="true"
-		    android:layout_marginRight="15dp"
-		    android:layout_toLeftOf="@+id/hoov_up_button"
-		    android:background="@drawable/comment" />
-
-		<TextView
-		    android:id="@+id/hoov_comment_count"
-		    android:layout_width="15dp"
-		    android:layout_height="15dp"
-		    android:layout_above="@+id/hoov_comment_button"
-		    android:layout_alignLeft="@+id/hoov_comment_button"
-		    android:layout_alignRight="@+id/hoov_comment_button"
-		    android:textColor="@color/primary_text" />
-
-		<TextView
-		    android:id="@+id/hoov_up_count"
-		    android:layout_width="15dp"
-		    android:layout_height="15dp"
-		    android:layout_alignBaseline="@+id/hoov_comment_count"
-		    android:layout_alignBottom="@+id/hoov_comment_count"
-		    android:layout_alignLeft="@+id/hoov_up_button"
-		    android:layout_alignParentRight="true"
-		    android:textColor="@color/primary_text" />
-
+        <TextView
+            android:id="@+id/hoov_up_count"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignBaseline="@+id/hoov_comment_count"
+            android:layout_alignBottom="@+id/hoov_comment_count"
+            android:layout_alignLeft="@+id/hoov_up_button"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/primary_text" />
+        <Button
+            android:id="@+id/detail"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="Details" />
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

@@ -1,23 +1,15 @@
 package com.hoover.linkedinoauth;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Random;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.goebl.david.WebbException;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import com.goebl.david.WebbException;
 
 public class DeleteProfileService extends Service{
 	private String userMongoId;

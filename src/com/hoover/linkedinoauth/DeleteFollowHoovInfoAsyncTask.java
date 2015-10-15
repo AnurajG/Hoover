@@ -1,23 +1,18 @@
 package com.hoover.linkedinoauth;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.goebl.david.WebbException;
-import com.hoover.util.HoovChapter;
 
 public class DeleteFollowHoovInfoAsyncTask extends AsyncTask<Void, Void,Void> {
 	private final String mongoHoovId;

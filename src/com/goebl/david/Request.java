@@ -1,12 +1,12 @@
 package com.goebl.david;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Builder for an HTTP request.
