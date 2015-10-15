@@ -90,7 +90,7 @@ public class HomeViewAdapter extends RecyclerView
 					myIntent.putExtra("chapter", selectedHoov);
 					Activity activity = (Activity) context;
 					activity.startActivity(myIntent);
-					activity.overridePendingTransition(0,R.anim.card_flip_right_out);
+					activity.overridePendingTransition(R.anim.from_middle,R.anim.to_middle);
 				}
 			};
 
