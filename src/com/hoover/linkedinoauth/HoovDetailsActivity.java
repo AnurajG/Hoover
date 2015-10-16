@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -35,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,12 +47,15 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.goebl.david.WebbException;
@@ -86,6 +91,7 @@ public class HoovDetailsActivity extends Activity{
 	String path;
 	//String currentUserId;
 	Context context;
+	RelativeLayout layout;
 	HoovChapter hc;
 
 
@@ -95,6 +101,11 @@ public class HoovDetailsActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_hoov_detail);
 		context=this;
+		layout=(RelativeLayout)findViewById(R.id.card_layout);
+		/*ObjectAnimator animation = ObjectAnimator.ofFloat(layout, "ScaleY", 1.0f,1.5f);
+		animation.setDuration(2000);
+		animation.setInterpolator(new AccelerateDecelerateInterpolator());
+		animation.start();*/
 
 		com.hoover.linkedinoauth.Application appState = ((com.hoover.linkedinoauth.Application)getApplicationContext());
 		randArray=appState.getRandArray();
@@ -230,6 +241,7 @@ public class HoovDetailsActivity extends Activity{
 	@Override
 	protected void onPause() {
 		super.onPause();
+		overridePendingTransition(0, 0);
 		context.unregisterReceiver(mMessageReceiver);
 	}
 
@@ -371,6 +383,22 @@ public class HoovDetailsActivity extends Activity{
 		@Override
 		protected void onPostExecute(final Void  data){
 			super.onPostExecute(data);
+			Resources r = getResources();
+			Float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 450, r.getDisplayMetrics());
+			
+			ValueAnimator anim = ValueAnimator.ofInt(layout.getMeasuredHeight(), px.intValue());
+			anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+				@Override
+				public void onAnimationUpdate(ValueAnimator valueAnimator) {
+					int val = (Integer) valueAnimator.getAnimatedValue();
+					ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+					layoutParams.height = val;
+					layout.setLayoutParams(layoutParams);
+				}
+			});
+			anim.setDuration(2000);
+			anim.setInterpolator(new AccelerateDecelerateInterpolator());
+			anim.start(); 
 
 			results.addAll(HoovChapterlist_t);
 			for(String key:imageMap.keySet()){
@@ -629,4 +657,5 @@ public class HoovDetailsActivity extends Activity{
 
 
 	}
+
 }
