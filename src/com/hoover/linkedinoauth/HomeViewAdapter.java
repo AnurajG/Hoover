@@ -3,6 +3,7 @@ package com.hoover.linkedinoauth;
 import java.util.ArrayList;
 
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -94,6 +95,34 @@ public class HomeViewAdapter extends RecyclerView
 
 
 					ObjectAnimator animation = ObjectAnimator.ofFloat(card, "rotationY", 360f, 180.0f);
+					animation.addListener(new AnimatorListener() {
+						
+						@Override
+						public void onAnimationStart(Animator animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationRepeat(Animator animation) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							ObjectAnimator animation2 = ObjectAnimator.ofFloat(card, "rotationY", 180.0f, 360.0f);
+							animation2.setDuration(20);
+							animation2.setInterpolator(new AccelerateDecelerateInterpolator());
+							animation2.start();
+						}
+						
+						@Override
+						public void onAnimationCancel(Animator animation) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
 					animation.setDuration(500);
 					//animation.setRepeatCount(ObjectAnimator.INFINITE);
 					animation.setInterpolator(new AccelerateDecelerateInterpolator());
