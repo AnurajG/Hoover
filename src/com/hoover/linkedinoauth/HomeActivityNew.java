@@ -172,14 +172,14 @@ public class HomeActivityNew extends ActionBarActivity{
 		switch (position) {
 		case 0:
 			//HOME
-			/*getSupportFragmentManager()
+			getSupportFragmentManager()
 			.beginTransaction()
 			.replace(R.id.frame_container, TabbedActivity.newInstance(userComapny,userCity,userId), TabbedActivity.TAG).commit();
 			mDrawerList.setItemChecked(position, true);
 			mDrawerList.setSelection(position);
 			setTitle(navMenuTitles[position]);
-			mDrawerLayout.closeDrawer(mDrawerList);*/
-			Intent intent0 = new Intent(this,MyrecylerviewActivity.class);
+			mDrawerLayout.closeDrawer(mDrawerList);
+			/*Intent intent0 = new Intent(this,MyrecylerviewActivity.class);
 			intent0.putExtra("city", userCity);
 			intent0.putExtra("company", userComapny);
 			intent0.putExtra("userId", userId);
@@ -187,7 +187,7 @@ public class HomeActivityNew extends ActionBarActivity{
 			mDrawerList.setItemChecked(0, true);
 			mDrawerList.setSelection(0);
 			setTitle(navMenuTitles[0]);
-			mDrawerLayout.closeDrawer(mDrawerList);
+			mDrawerLayout.closeDrawer(mDrawerList);*/
 			break;
 		case 1:
 			//SETTINGS

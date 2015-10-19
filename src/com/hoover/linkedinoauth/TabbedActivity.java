@@ -27,7 +27,7 @@ public class TabbedActivity extends Fragment {
 	String userId;
 	Button hoov_in;
 	Switch toggle;
-	private HomeFragment homeF;
+	private MyRecyclerViewFragment homeF;
 	private HomeFollowFragment followF;
 
 	public static TabbedActivity newInstance(String userComapny,String userCity,String userId) {
@@ -45,7 +45,7 @@ public class TabbedActivity extends Fragment {
 	}
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
-		homeF=HomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId,eType.HOME);
+		homeF=MyRecyclerViewFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId);
 		followF=HomeFollowFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW);
 		fList.add(homeF);
 		fList.add(followF);
@@ -77,10 +77,10 @@ public class TabbedActivity extends Fragment {
 					boolean isChecked) {
 
 				if(isChecked){
-					homeF.refresh(true);
+					//homeF.refresh(true);
 					toggle.setText("Hottest");
 				}else{
-					homeF.refresh(false);
+					//homeF.refresh(false);
 					toggle.setText("Newest");
 				}
 
