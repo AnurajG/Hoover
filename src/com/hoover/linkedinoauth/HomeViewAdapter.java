@@ -2,22 +2,26 @@ package com.hoover.linkedinoauth;
 
 import java.util.ArrayList;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
-import com.hoover.util.AnimationFactory;
-import com.hoover.util.AnimationFactory.FlipDirection;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
@@ -29,6 +33,7 @@ public class HomeViewAdapter extends RecyclerView
 	private static MyClickListener myClickListener;
 	private final Context mcontext;
 	private final String currentuserId;
+	private Interpolator mInterpolator=new LinearInterpolator();
 	//private final HoovChapter pHoov;
 	private LayoutInflater inflater = null;
 
@@ -40,6 +45,8 @@ public class HomeViewAdapter extends RecyclerView
 		TextView fCommenLabel;
 		Button fUpButton;
 		Button fDetails;
+		Animator anim;
+		CardView card;
 
 
 
@@ -55,6 +62,7 @@ public class HomeViewAdapter extends RecyclerView
 			//flipper=(ViewFlipper)itemView.findViewById(R.id.viewFlipper);
 			//flipper.setDisplayedChild(0);
 			fText = (TextView) itemView.findViewById(R.id.hoov_text);
+			card = (CardView) itemView.findViewById(R.id.card_view);
 			fDate = (TextView) itemView.findViewById(R.id.hoov_date);
 			fUpLabel = (TextView) itemView.findViewById(R.id.hoov_up_count);
 			//downlabel = (TextView) itemView.findViewById(R.id.hoov_down_count);
@@ -83,14 +91,41 @@ public class HomeViewAdapter extends RecyclerView
 
 			View.OnClickListener detailsHandler = new View.OnClickListener() {
 				public void onClick(View v) {
+
+
+					ObjectAnimator animation = ObjectAnimator.ofFloat(card, "rotationY", 360f, 180.0f);
+					animation.setDuration(500);
+					//animation.setRepeatCount(ObjectAnimator.INFINITE);
+					animation.setInterpolator(new AccelerateDecelerateInterpolator());
+					animation.start();
 					int position = (Integer) v.getTag();
-					HoovChapter selectedHoov = new HoovChapter();
-					selectedHoov = mDataset1.get(position);
-					Intent myIntent = new Intent(context, HoovDetailsActivity.class);
-					myIntent.putExtra("chapter", selectedHoov);
-					Activity activity = (Activity) context;
-					activity.startActivity(myIntent);
-					activity.overridePendingTransition(R.anim.from_middle,R.anim.to_middle);
+					final class delayer implements Runnable{
+						final int pos;
+						public delayer(int p){
+							pos=p;
+						}
+						@Override
+						public void run() {
+							
+							HoovChapter selectedHoov = new HoovChapter();
+							selectedHoov = mDataset1.get(pos);
+							Intent myIntent = new Intent(context, HoovDetailsActivity.class);
+							myIntent.putExtra("chapter", selectedHoov);
+							Activity activity = (Activity) context;
+
+							activity.startActivity(myIntent);
+							
+						}
+						
+					}
+
+					new Handler().postDelayed(new delayer(position), 100);
+					
+					
+
+
+
+					//activity.overridePendingTransition(R.anim.from_middle,R.anim.to_middle);
 				}
 			};
 
@@ -222,6 +257,7 @@ public class HomeViewAdapter extends RecyclerView
 		if(holder!=null){
 			//holder.flipper.setDisplayedChild(0);
 			holder.fText.setText(mDataset.get(position).hoovText);
+			//holder.anim= new Animator[] { ObjectAnimator.ofFloat(view, "alpha", mFrom, 1f) };
 			holder.fDate.setText(mDataset.get(position).hoovDate);
 			holder.fUpLabel.setText(""+mDataset.get(position).hoov_up_ids.size());
 			//holder.downlabel.setText(""+mDataset.get(position).hoov_down_ids.size());
@@ -238,7 +274,7 @@ public class HomeViewAdapter extends RecyclerView
 		}*/
 
 
-			
+
 			//holder.flipper.setFlipInterval(1000);
 			//holder.flipper.startFlipping();
 		}
