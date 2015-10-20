@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <android.support.v4.view.ViewPager
+    <com.hoover.util.VerticalViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <android.support.v4.view.PagerTabStrip
+        <!-- >android.support.v4.view.PagerTabStrip
             android:id="@+id/pager_title_strip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,8 +19,8 @@
             android:paddingBottom="4dp"
             android:paddingTop="4dp"
             android:textColor="#fff" >
-        </android.support.v4.view.PagerTabStrip>
-    </android.support.v4.view.ViewPager>
+        </android.support.v4.view.PagerTabStrip-->
+    </com.hoover.util.VerticalViewPager>
 
     <Button
         android:id="@+id/hoov_in"

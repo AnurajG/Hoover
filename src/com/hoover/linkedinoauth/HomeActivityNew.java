@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -38,11 +37,12 @@ public class HomeActivityNew extends ActionBarActivity{
 	String userCity;
 	String userId;
 	String userMongoId;
-	HomePageAdapter pageAdapter;
-	SlidingTabLayout tabs;
+	//HomePageAdapter pageAdapter;
+	//SlidingTabLayout tabs;
 	//CharSequence Titles[]={"Home","Following"};
-	ViewPager pager;
+	//ViewPager pager;
 	//ProgressDialog mProgressDialog;
+	TabbedActivity taber;
 	AppRate appRate;
 
 	private DrawerLayout mDrawerLayout;
@@ -79,7 +79,7 @@ public class HomeActivityNew extends ActionBarActivity{
 		userMongoId= preferences.getString("userMongoId", null);
 		setContentView(R.layout.activity_home_new);
 
-
+		taber=TabbedActivity.newInstance(userComapny,userCity,userId);
 		mTitle = mDrawerTitle = getTitle();
 
 		// load slide menu items
@@ -174,7 +174,7 @@ public class HomeActivityNew extends ActionBarActivity{
 			//HOME
 			getSupportFragmentManager()
 			.beginTransaction()
-			.replace(R.id.frame_container, TabbedActivity.newInstance(userComapny,userCity,userId), TabbedActivity.TAG).commit();
+			.replace(R.id.frame_container, taber, TabbedActivity.TAG).commit();
 			mDrawerList.setItemChecked(position, true);
 			mDrawerList.setSelection(position);
 			setTitle(navMenuTitles[position]);
@@ -202,34 +202,34 @@ public class HomeActivityNew extends ActionBarActivity{
 			//DELETE PROFILE
 			final String uid=this.userId;
 			new AlertDialog.Builder(this)
-.setTitle("Delete entry")
-	        .setMessage("Are you sure you want to delete this entry?")
-	        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int which) { 
-	            	SharedPreferences preferences = getSharedPreferences("user_info", 0);
-	                SharedPreferences.Editor editor=preferences.edit();
-	                editor.clear();
-	        		editor.commit();
-	            	Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
-	                myIntent.putExtra("userMongoId",userMongoId);
-	                startService(myIntent);
-	                Intent finishIntent = new Intent(HomeActivityNew.this, FirstActivity.class);
-	                finishIntent.putExtra("SignIn", true);
-	                startActivity(finishIntent);
-	                
-	            	
-	            }
-	         })
-	        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int which) { 
-	            	System.out.println("NO");
-	            	mDrawerList.setItemChecked(0, true);
-	    			mDrawerList.setSelection(0);
-	    			mDrawerLayout.closeDrawer(mDrawerList);
-	            }
-	         })
-	        .setIcon(android.R.drawable.ic_dialog_alert)
-	         .show();			break;
+			.setTitle("Delete entry")
+			.setMessage("Are you sure you want to delete this entry?")
+			.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) { 
+					SharedPreferences preferences = getSharedPreferences("user_info", 0);
+					SharedPreferences.Editor editor=preferences.edit();
+					editor.clear();
+					editor.commit();
+					Intent myIntent = new Intent(HomeActivityNew.this, DeleteProfileService.class);
+					myIntent.putExtra("userMongoId",userMongoId);
+					startService(myIntent);
+					Intent finishIntent = new Intent(HomeActivityNew.this, FirstActivity.class);
+					finishIntent.putExtra("SignIn", true);
+					startActivity(finishIntent);
+
+
+				}
+			})
+			.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) { 
+					System.out.println("NO");
+					mDrawerList.setItemChecked(0, true);
+					mDrawerList.setSelection(0);
+					mDrawerLayout.closeDrawer(mDrawerList);
+				}
+			})
+			.setIcon(android.R.drawable.ic_dialog_alert)
+			.show();			break;
 		case 3:
 			//RATE US
 			mDrawerLayout.closeDrawer(mDrawerList);
@@ -277,10 +277,20 @@ public class HomeActivityNew extends ActionBarActivity{
 		case R.id.action_settings:
 			return true;
 		case R.id.action_myprofile:
-			Intent intent = new Intent(HomeActivityNew.this,MyHomeActivity.class);
+			//Intent intent = new Intent(HomeActivityNew.this,MyHomeFragment.class);
 			//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			startActivity(intent); 
-			overridePendingTransition(0 , R.anim.slide_up);
+			//startActivity(intent); 
+			/*Fragment mFragment = new MyHomeFragment(this); 
+			android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
+			FragmentTransaction transaction = fm.beginTransaction();
+			transaction.replace(R.id.frame_container, mFragment);
+			transaction.setTransition(R.anim.slide_up);
+			transaction.addToBackStack(null);
+			transaction.commit();*/
+
+			taber.mViewPager.setCurrentItem(0);
+
+			//overridePendingTransition(0 , R.anim.slide_up);
 		default:
 			return super.onOptionsItemSelected(item);
 		}
