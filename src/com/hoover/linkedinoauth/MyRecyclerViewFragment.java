@@ -7,31 +7,41 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.app.ActionBar.LayoutParams;
+import android.app.Dialog;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hoover.SwipeContainer.CardLayoutManager;
 import com.hoover.SwipeContainer.SwipeFlingAdapterView;
-import com.hoover.linkedinoauth.MyrecylerviewActivity.GetHoovsAsyncTask;
 import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovFetchParams.eOrder;
 import com.hoover.util.HoovFetchParams.eType;
-
-import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class MyRecyclerViewFragment extends Fragment {
 
@@ -41,11 +51,15 @@ public class MyRecyclerViewFragment extends Fragment {
 	private Context context;
 	private List<HoovChapter> HoovChapterlist_t = null;
 	private HomeViewAdapter mAdapter;
+	private HashSet<String> oldHoovsId;
+	private TransparentProgressDialog pd;
 	//private RecyclerView mRecyclerView;
-	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
-	private int limit = 8;
+	ArrayList<HoovChapter> results=new ArrayList<HoovChapter>();
+	ImageView emptyMsg;
+	private int limit = 5;
 	SwipeFlingAdapterView flingContainer;
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
+	boolean filled=false;
 	private int i;
 	public static final MyRecyclerViewFragment newInstance(String message,Context context, String comp, String cit,String id) {
 		MyRecyclerViewFragment f = new MyRecyclerViewFragment(context,comp,cit,id);
@@ -60,47 +74,45 @@ public class MyRecyclerViewFragment extends Fragment {
 		this.company = comp;
 		this.city=cit;
 		this.userId=uid;
-		
+
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		View view;
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.acitvity_recyclerview, container, false);
-		
+
 		mAdapter = new HomeViewAdapter(getDataSet(),context,userId);
 		flingContainer=(SwipeFlingAdapterView)view.findViewById(R.id.frame);
+		emptyMsg =(ImageView)view.findViewById(R.id.emptytxt);
 		final HoovFetchParams params=new HoovFetchParams();
 		params.city=city;
 		params.comapny=company;
 		params.order=eOrder.NEW;
 		params.type=eType.HOME;
 
-
 		flingContainer.setAdapter(mAdapter);
 		CardLayoutManager llm = new CardLayoutManager();
 		//LinearLayoutManager llm = new LinearLayoutManager(context);
 		//llm.setOrientation(CardLayoutManager.VERTICAL);
 		flingContainer.setLayoutManager(llm);
-
+		oldHoovsId = new HashSet<String>();
 		flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
 			@Override
 			public void removeFirstObjectInAdapter() {
 				// this is the simplest way to delete an object from the Adapter (/AdapterView)
-				System.out.println("b4"+results);
-				System.out.println("b4"+mAdapter.mDataset.size());
+				oldHoovsId.add(results.get(0).mongoHoovId);
 				results.remove(0);
-
 				mAdapter.notifyDataSetChanged();
-				System.out.println("aftre"+results);
-				System.out.println("aftre"+mAdapter.mDataset.size());
-
 			}
 
 			@Override
 			public void onLeftCardExit(Object dataObject) {
 				//Consider browsing later
 				makeToast(context, "Browse Later!");
+				System.out.println("-1-----"+results.size());
+				System.out.println("-2-----"+mAdapter.getItemCount());
+				System.out.println("-3-----"+mAdapter.mDataset.size());
 			}
 
 			@Override
@@ -115,8 +127,13 @@ public class MyRecyclerViewFragment extends Fragment {
 			@Override
 			public void onAdapterAboutToEmpty(int itemsInAdapter) {
 				// Ask for more data here
+				System.out.println("results"+results);
 
-				//new GetHoovsAsyncTask().execute(params);
+				if(filled==true){
+					LoadMoreDataTask tsk = new LoadMoreDataTask();
+					tsk.execute(params);
+				}
+				//
 				mAdapter.notifyDataSetChanged();
 
 			}
@@ -166,6 +183,7 @@ public class MyRecyclerViewFragment extends Fragment {
 
 	private ArrayList<HoovChapter> getDataSet() {
 		ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
+		
 		return results;
 	}
 	public class GetHoovsAsyncTask extends AsyncTask<HoovFetchParams, Integer,HoovFetchParams> {
@@ -194,6 +212,7 @@ public class MyRecyclerViewFragment extends Fragment {
 				results.clear();
 				results.addAll(HoovChapterlist_t);
 				mAdapter = new HomeViewAdapter(results,context,userId);
+				filled=true;
 				flingContainer.setAdapter(mAdapter);
 				//flingContainer.refreshDrawableState();
 
@@ -240,56 +259,58 @@ public class MyRecyclerViewFragment extends Fragment {
 			}
 
 		}
-		/*private class LoadMoreDataTask extends AsyncTask<HoovFetchParams, Void, Void> {
-			private Exception e=null;
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-			}
+	
 
-			@Override
-			protected Void doInBackground(HoovFetchParams... params) {
-				// Create the array
-				HoovChapterlist_t=new ArrayList<HoovChapter>();
-				try {
-					getHoovs(params[0],true);
-				} catch (Exception e) {
-					this.e=e;
-					e.printStackTrace();
+	}
+	
+	
+	private class LoadMoreDataTask extends AsyncTask<HoovFetchParams, Void, Void> {
+		private Exception e=null;
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			pd = new TransparentProgressDialog(context, R.drawable.progress);
+			pd.show();
+		}
+
+		@Override
+		protected Void doInBackground(HoovFetchParams... params) {
+			// Create the array
+			HoovChapterlist_t=new ArrayList<HoovChapter>();
+			try {
+				getHoovs(params[0],true);
+			} catch (Exception e) {
+				this.e=e;
+				e.printStackTrace();
+			}
+			return null;	
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			pd.dismiss();
+			if(e==null){
+				for(int i=0;i<HoovChapterlist_t.size();i++){
+					if(!oldHoovsId.contains(HoovChapterlist_t.get(i).mongoHoovId)){
+						results.add(HoovChapterlist_t.get(i));
+					}
+						
 				}
-				return null;	
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				if(e==null){
-					int position = mRecyclerView.getChildCount();
-					results.clear();
-					results.addAll(HoovChapterlist_t);
-					mAdapter = new HomeViewAdapter(results,context,userId);
-					mRecyclerView.setAdapter(mAdapter);
-					registerForContextMenu(mRecyclerView);
-					mLayoutManager.scrollToPositionWithOffset(position, 0);
-				}else{
-					TextView text = (TextView) toast_layout.findViewById(R.id.text);
-					text.setText("No internet. Check network connection.");
-
-					Toast toast = new Toast(context);
-					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-					toast.setDuration(TOAST_DELAY);
-					toast.setView(toast_layout);
-					toast.show();
+				mAdapter.notifyDataSetChanged();
+				if(results.size()==0){
+					emptyMsg.setVisibility(View.VISIBLE);
+				
+					flingContainer.setVisibility(View.GONE);
 				}
 			}
-		}*/
-
+		}
 	}
 	public void getHoovs(HoovFetchParams hp,boolean increaseLimit) throws Exception{
 		HoovFetchParams u = hp;
 		JSONArray array;
 		URL url = null;
 		if(increaseLimit)
-			limit=limit+8;
+			limit=limit+5;
 		switch(u.type){
 		case HOME:
 			switch(u.order){
@@ -409,6 +430,38 @@ public class MyRecyclerViewFragment extends Fragment {
 		}
 
 
+	}
+	private class TransparentProgressDialog extends Dialog {
+		
+		private ImageView iv;
+			
+		public TransparentProgressDialog(Context context, int resourceIdOfImage) {
+			super(context, R.style.TransparentProgressDialog);
+	        	WindowManager.LayoutParams wlmp = getWindow().getAttributes();
+	        	wlmp.gravity = Gravity.CENTER_HORIZONTAL;
+	        	getWindow().setAttributes(wlmp);
+			setTitle(null);
+			setCancelable(false);
+			setOnCancelListener(null);
+			LinearLayout layout = new LinearLayout(context);
+			layout.setOrientation(LinearLayout.VERTICAL);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			iv = new ImageView(context);
+			iv.setImageResource(resourceIdOfImage);
+			layout.addView(iv, params);
+			addContentView(layout, params);
+		}
+			
+		@Override
+		public void show() {
+			super.show();
+			RotateAnimation anim = new RotateAnimation(0.0f, 360.0f , Animation.RELATIVE_TO_SELF, .5f, Animation.RELATIVE_TO_SELF, .5f);
+			anim.setInterpolator(new LinearInterpolator());
+			anim.setRepeatCount(Animation.INFINITE);
+			anim.setDuration(3000);
+			iv.setAnimation(anim);
+			iv.startAnimation(anim);
+		}
 	}
 
 }
