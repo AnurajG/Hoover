@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,11 +15,11 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 
-import com.hoover.util.HoovFetchParams.eType;
+import com.hoover.util.VerticalViewPager;
 
 public class TabbedActivity extends Fragment {
 	public static final String TAG = TabbedActivity.class.getSimpleName();
-	ViewPager mViewPager;
+	VerticalViewPager mViewPager;
 	HomePageAdapter pageAdapter;
 	String userComapny;
 	String userCity;
@@ -29,6 +28,7 @@ public class TabbedActivity extends Fragment {
 	Switch toggle;
 	private MyRecyclerViewFragment homeF;
 	private HomeFollowFragment followF;
+	private MyHomeFragment myhomeF;
 
 	public static TabbedActivity newInstance(String userComapny,String userCity,String userId) {
 		TabbedActivity tabact=new TabbedActivity();
@@ -46,11 +46,13 @@ public class TabbedActivity extends Fragment {
 	private List<Fragment> getFragments(){
 		List<Fragment> fList = new ArrayList<Fragment>();
 		homeF=MyRecyclerViewFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId);
-		followF=HomeFollowFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW);
-		fList.add(homeF);
-		fList.add(followF);
+		myhomeF=MyHomeFragment.newInstance("Fragment 1",this.getActivity(),userComapny,userCity,userId);
+		//followF=HomeFollowFragment.newInstance("Fragment 2",this.getActivity(),userComapny,userCity,userId,eType.FOLLOW);
 
-		
+		fList.add(myhomeF);
+		fList.add(homeF);
+
+
 		return fList;
 
 	}
@@ -94,8 +96,9 @@ public class TabbedActivity extends Fragment {
 		}
 		List<Fragment> fragments = getFragments();
 		pageAdapter = new HomePageAdapter(getChildFragmentManager(), fragments,this.getActivity());
-		mViewPager = (ViewPager) v.findViewById(R.id.pager);
+		mViewPager = (VerticalViewPager) v.findViewById(R.id.pager);
 		mViewPager.setAdapter(pageAdapter);
+		mViewPager.setCurrentItem(1);
 		return v;
 	}
 }

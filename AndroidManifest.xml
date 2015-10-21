@@ -72,7 +72,7 @@
             android:label="@string/action_myprofile_view" >
         </activity>
          <activity
-            android:name=".MyHomeActivity"
+            android:name=".MyHomeFragment"
             android:label="@string/action_myprofile_view" >
         </activity>
         <activity
