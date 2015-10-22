@@ -15,17 +15,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" 
     android:layout_width="match_parent"
-             android:layout_height="match_parent"> 
-    
+             android:layout_height="match_parent">
+
+   
 
     <com.hoover.SwipeContainer.SwipeFlingAdapterView
         android:id="@+id/frame"
         android:background="#ffeee9e2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MyrecylerviewActivity" />
-
-    
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:context=".MyrecylerviewActivity" >
+          </com.hoover.SwipeContainer.SwipeFlingAdapterView>
+           <ImageView
+        android:id="@+id/emptytxt"
+        android:layout_width="176dp"
+        android:layout_height="176dp"
+        android:src="@drawable/nohoovs" 
+        android:layout_gravity="center"
+        
+        />
 
 </LinearLayout>
 

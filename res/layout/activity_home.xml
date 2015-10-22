@@ -21,6 +21,7 @@
     </com.yalantis.phoenix.PullToRefreshView>
 
     <FrameLayout
+        android:id="@+id/fragment_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
