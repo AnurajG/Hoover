@@ -116,10 +116,11 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 
 
     private void layoutChildren(int startingIndex, int adapterCount){
+    	int i=0;
         while (startingIndex < Math.min(adapterCount, MAX_VISIBLE) ) {
             View newUnderChild = mAdapter.getView(startingIndex, null, this);
             if (newUnderChild.getVisibility() != GONE) {
-                makeAndAddView(newUnderChild);
+                makeAndAddView(newUnderChild,i++);
                 LAST_OBJECT_IN_STACK = startingIndex;
             }
             startingIndex++;
@@ -127,7 +128,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
     }
 
 
-   private void makeAndAddView(View child) {
+   private void makeAndAddView(View child, int count) {
 
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
         addViewInLayout(child, 0, lp, true);
@@ -165,6 +166,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_HORIZONTAL:
                 childLeft = (getWidth() + getPaddingLeft() - getPaddingRight()  - w) / 2 +
                         lp.leftMargin - lp.rightMargin;
+                childLeft+=(count*5);
                 break;
             case Gravity.END:
                 childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;
@@ -178,6 +180,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_VERTICAL:
                 childTop = (getHeight() + getPaddingTop() - getPaddingBottom()  - h) / 2 +
                         lp.topMargin - lp.bottomMargin;
+                childTop+=(count*5);
                 break;
             case Gravity.BOTTOM:
                 childTop = getHeight() - getPaddingBottom() - h - lp.bottomMargin;
