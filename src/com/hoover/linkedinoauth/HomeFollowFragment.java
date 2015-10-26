@@ -21,6 +21,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
@@ -31,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
@@ -39,6 +42,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hoover.floating.FloatingActionButton;
+import com.hoover.floating.ScrollDirectionListener;
 import com.hoover.linkedinoauth.HomeFollowViewAdapter.MyClickListener;
 import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovActionOptions;
@@ -113,7 +118,21 @@ public class HomeFollowFragment extends Fragment{
 		this.userId=id;
 		this.type=t;
 	}
+	public class HoovScrollDirectionListener implements ScrollDirectionListener{
 
+		@Override
+		public void onScrollDown() {
+			ActionBar ac = ((AppCompatActivity)getActivity()).getSupportActionBar();
+			ac.show();
+		}
+
+		@Override
+		public void onScrollUp() {
+			ActionBar ac = ((AppCompatActivity)getActivity()).getSupportActionBar();
+			ac.hide();
+		}
+		
+	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -121,6 +140,19 @@ public class HomeFollowFragment extends Fragment{
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.activity_home, container, false);
 		mRecyclerView = (RecyclerView)view.findViewById(R.id.hoov_recycler_view);
+		FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+		fab.attachToRecyclerView(mRecyclerView,new HoovScrollDirectionListener());
+		fab.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(getActivity(),HoovActivity.class);
+				startActivity(intent); 
+
+			} 
+
+		});
+
 
 		mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.swipe_container);
 		mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {

@@ -14,12 +14,12 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +31,7 @@ import com.hoover.util.NavigationDrawerItem;
 import com.hoover.util.NavigationDrawerListAdapter;
 import com.tjeannin.apprate.AppRate;
 
-public class HomeActivityNew extends ActionBarActivity{
+public class HomeActivityNew extends AppCompatActivity {
 	FragmentManager fm;
 	String userComapny;
 	String userCity;
@@ -66,10 +66,10 @@ public class HomeActivityNew extends ActionBarActivity{
 	protected void onCreate(Bundle savedInstanceState) {  
 		//getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		super.onCreate(savedInstanceState);  
-		final ActionBar actionBar = getSupportActionBar();
+		//final ActionBar actionBar = getSupportActionBar();
 
 		ColorDrawable colorDrawable = new ColorDrawable(Color.WHITE);
-		actionBar.setStackedBackgroundDrawable(colorDrawable);
+		//actionBar.setStackedBackgroundDrawable(colorDrawable);
 
 
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
@@ -78,6 +78,9 @@ public class HomeActivityNew extends ActionBarActivity{
 		userId = preferences.getString("userId", null);
 		userMongoId= preferences.getString("userMongoId", null);
 		setContentView(R.layout.activity_home_new);
+		
+		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
 
 		taber=TabbedActivity.newInstance(userComapny,userCity,userId);
 		mTitle = mDrawerTitle = getTitle();
@@ -107,6 +110,12 @@ public class HomeActivityNew extends ActionBarActivity{
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
 		// Invite
 		navDrawerItems.add(new NavigationDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+		
+		//Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,  mDrawerLayout, mToolbar,
+				R.string.drawer_open, R.string.drawer_close
+				);
 
 
 		// Recycle the typed array
@@ -120,9 +129,16 @@ public class HomeActivityNew extends ActionBarActivity{
 				navDrawerItems);
 		mDrawerList.setAdapter(adapter);
 		//enabling action bar app icon and behaving it as toggle button
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+		//actionBar.setDisplayHomeAsUpEnabled(true);
+		//actionBar.setHomeButtonEnabled(true);
+		
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		mDrawerToggle.syncState();
+
+
+		/*mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, //nav menu toggle icon
 				R.string.app_name, // nav drawer open - description for accessibility
 				R.string.app_name // nav drawer close - description for accessibility
@@ -143,7 +159,7 @@ public class HomeActivityNew extends ActionBarActivity{
 			}
 
 
-		};
+		};*/
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 		if (savedInstanceState == null) {
 			// on first time display view for first nav item
@@ -263,11 +279,11 @@ public class HomeActivityNew extends ActionBarActivity{
 		}
 
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
-	    super.onNewIntent(intent);
-	    overridePendingTransition(0 , R.anim.slide_down);
+		super.onNewIntent(intent);
+		overridePendingTransition(0 , R.anim.slide_down);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -282,9 +298,9 @@ public class HomeActivityNew extends ActionBarActivity{
 		case R.id.action_settings:
 			return true;
 		case R.id.action_myprofile:
-			//Intent intent = new Intent(HomeActivityNew.this,MyHomeFragment.class);
+			Intent intent = new Intent(HomeActivityNew.this,MyHomeActivity.class);
 			//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			//startActivity(intent); 
+			startActivity(intent); 
 			/*Fragment mFragment = new MyHomeFragment(this); 
 			android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
 			FragmentTransaction transaction = fm.beginTransaction();
@@ -293,9 +309,9 @@ public class HomeActivityNew extends ActionBarActivity{
 			transaction.addToBackStack(null);
 			transaction.commit();*/
 
-			taber.mViewPager.setCurrentItem(0);
+			//taber.mViewPager.setCurrentItem(0);
 
-			//overridePendingTransition(0 , R.anim.slide_up);
+			overridePendingTransition(0 , R.anim.slide_up);
 		default:
 			return super.onOptionsItemSelected(item);
 		}

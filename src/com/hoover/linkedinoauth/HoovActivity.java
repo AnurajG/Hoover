@@ -39,7 +39,7 @@ public class HoovActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {       
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_hoov); 
-		getActionBar().hide();
+		//getActionBar().hide();
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 		SharedPreferences preferences = this.getSharedPreferences("user_info", 0);
