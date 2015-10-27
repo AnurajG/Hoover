@@ -115,29 +115,28 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 
 
     private void layoutChildren(int startingIndex, int adapterCount){
+    	int i=0;
         while (startingIndex < Math.min(adapterCount, MAX_VISIBLE) ) {
             View newUnderChild = mAdapter.getView(startingIndex, null, this);
             if (newUnderChild.getVisibility() != GONE) {
             	if(mAdapter.reload)
             		animate(newUnderChild,startingIndex);
-               makeAndAddView(newUnderChild);
-           	
-                LAST_OBJECT_IN_STACK = startingIndex;
+               makeAndAddView(newUnderChild,i++);
+               LAST_OBJECT_IN_STACK = startingIndex;
             }
             startingIndex++;
         }
     }
 
-    private void animate(View view, final int pos) {
+private void animate(View view, final int pos) {
     	view.animate().cancel();
     	view.setTranslationY(100.0f);//100
     	view.setAlpha(0);
     	view.animate().alpha(1.0f).translationY(0f).setDuration(2000).setStartDelay(pos * 100);
        
     }
-   private void makeAndAddView(View child) {
-
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
+   private void makeAndAddView(View child, int count) {
+	   FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
         addViewInLayout(child, 0, lp, true);
 
         final boolean needToMeasure = child.isLayoutRequested();
@@ -173,6 +172,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_HORIZONTAL:
                 childLeft = (getWidth() + getPaddingLeft() - getPaddingRight()  - w) / 2 +
                         lp.leftMargin - lp.rightMargin;
+                childLeft+=(count*5);
                 break;
             case Gravity.END:
                 childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;
@@ -186,6 +186,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_VERTICAL:
                 childTop = (getHeight() + getPaddingTop() - getPaddingBottom()  - h) / 2 +
                         lp.topMargin - lp.bottomMargin;
+                childTop+=(count*5);
                 break;
             case Gravity.BOTTOM:
                 childTop = getHeight() - getPaddingBottom() - h - lp.bottomMargin;
