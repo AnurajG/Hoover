@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res/com.hoover.linkedinoauth"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_layout"
     android:layout_width="350dp"

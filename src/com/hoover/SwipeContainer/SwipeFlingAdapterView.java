@@ -173,7 +173,7 @@ private void animate(View view, final int pos) {
             case Gravity.CENTER_HORIZONTAL:
                 childLeft = (getWidth() + getPaddingLeft() - getPaddingRight()  - w) / 2 +
                         lp.leftMargin - lp.rightMargin;
-                childLeft+=dpToPx(count*5);
+                //childLeft+=dpToPx(count*5);
                 break;
             case Gravity.END:
                 childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;

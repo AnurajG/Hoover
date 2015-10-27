@@ -5,9 +5,9 @@
 
     <stroke
         android:width="1dp"
-        android:color="#000000" />
+        android:color="#FF8F0F" />
 
-    <corners android:radius="20dp" >
+    <corners android:radius="4dp" >
     </corners>
 
     <padding
