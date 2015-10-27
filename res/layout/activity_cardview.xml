@@ -8,8 +8,11 @@
     android:clickable="true"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="5dp"
+    card_view:cardPreventCornerOverlap="true"
+    card_view:cardUseCompatPadding="true"
     card_view:contentPadding="20dp"
-    android:stateListAnimator="@anim/lift_up" >
+    card_view:contentPaddingBottom="40dp"
+    card_view:contentPaddingRight="40dp" >
 
     <RelativeLayout
         android:id="@+id/viewFront"
@@ -70,7 +73,8 @@
             android:layout_alignLeft="@+id/hoov_up_button"
             android:layout_alignParentRight="true"
             android:textColor="@color/primary_text" />
-        <Button
+
+        <Button
             android:id="@+id/detail"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"

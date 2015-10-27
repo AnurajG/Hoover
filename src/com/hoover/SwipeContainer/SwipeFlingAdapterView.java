@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -166,7 +167,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_HORIZONTAL:
                 childLeft = (getWidth() + getPaddingLeft() - getPaddingRight()  - w) / 2 +
                         lp.leftMargin - lp.rightMargin;
-                childLeft+=(count*5);
+                childLeft+=dpToPx(count*5);
                 break;
             case Gravity.END:
                 childLeft = getWidth() + getPaddingRight() - w - lp.rightMargin;
@@ -180,7 +181,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
             case Gravity.CENTER_VERTICAL:
                 childTop = (getHeight() + getPaddingTop() - getPaddingBottom()  - h) / 2 +
                         lp.topMargin - lp.bottomMargin;
-                childTop+=(count*5);
+                childTop+=dpToPx(count*5);
                 break;
             case Gravity.BOTTOM:
                 childTop = getHeight() - getPaddingBottom() - h - lp.bottomMargin;
@@ -193,6 +194,11 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 
         child.layout(childLeft, childTop, childLeft + w, childTop + h);
     }
+   public int dpToPx(int dp) {
+	    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+	    int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));       
+	    return px;
+	}
 
 
 
