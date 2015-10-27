@@ -37,6 +37,7 @@ public class HomeViewAdapter extends RecyclerView
 	private Interpolator mInterpolator=new LinearInterpolator();
 	//private final HoovChapter pHoov;
 	private LayoutInflater inflater = null;
+	public boolean reload=false;
 
 	public static class DataObjectHolder extends RecyclerView.ViewHolder{
 		//ViewFlipper flipper;
