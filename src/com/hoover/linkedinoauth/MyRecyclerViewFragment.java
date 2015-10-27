@@ -90,7 +90,6 @@ public class MyRecyclerViewFragment extends Fragment {
 		params.comapny=company;
 		params.order=eOrder.NEW;
 		params.type=eType.HOME;
-
 		flingContainer.setAdapter(mAdapter);
 		CardLayoutManager llm = new CardLayoutManager();
 		//LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -103,6 +102,7 @@ public class MyRecyclerViewFragment extends Fragment {
 				// this is the simplest way to delete an object from the Adapter (/AdapterView)
 				oldHoovsId.add(results.get(0).mongoHoovId);
 				results.remove(0);
+				mAdapter.reload=false;
 				mAdapter.notifyDataSetChanged();
 			}
 
@@ -213,6 +213,7 @@ public class MyRecyclerViewFragment extends Fragment {
 				results.addAll(HoovChapterlist_t);
 				mAdapter = new HomeViewAdapter(results,context,userId);
 				filled=true;
+				mAdapter.reload=true;
 				flingContainer.setAdapter(mAdapter);
 				//flingContainer.refreshDrawableState();
 
@@ -296,6 +297,7 @@ public class MyRecyclerViewFragment extends Fragment {
 					}
 						
 				}
+				mAdapter.reload=true;
 				mAdapter.notifyDataSetChanged();
 				if(results.size()==0){
 					emptyMsg.setVisibility(View.VISIBLE);

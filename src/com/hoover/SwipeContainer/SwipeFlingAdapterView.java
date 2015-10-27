@@ -17,8 +17,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
 	private int MAX_VISIBLE = 4;
     private int MIN_ADAPTER_STACK = 0;
     private float ROTATION_DEGREES = 15.f;
-
-    private HomeViewAdapter mAdapter;
+  private HomeViewAdapter mAdapter;
     private int LAST_OBJECT_IN_STACK = 0;
     private onFlingListener mFlingListener;
     //private AdapterDataSetObserver  mDataSetObserver;
@@ -121,17 +120,24 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
         while (startingIndex < Math.min(adapterCount, MAX_VISIBLE) ) {
             View newUnderChild = mAdapter.getView(startingIndex, null, this);
             if (newUnderChild.getVisibility() != GONE) {
-                makeAndAddView(newUnderChild,i++);
-                LAST_OBJECT_IN_STACK = startingIndex;
+            	if(mAdapter.reload)
+            		animate(newUnderChild,startingIndex);
+               makeAndAddView(newUnderChild,i++);
+               LAST_OBJECT_IN_STACK = startingIndex;
             }
             startingIndex++;
         }
     }
 
-
+private void animate(View view, final int pos) {
+    	view.animate().cancel();
+    	view.setTranslationY(100.0f);//100
+    	view.setAlpha(0);
+    	view.animate().alpha(1.0f).translationY(0f).setDuration(2000).setStartDelay(pos * 100);
+       
+    }
    private void makeAndAddView(View child, int count) {
-
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
+	   FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) child.getLayoutParams();
         addViewInLayout(child, 0, lp, true);
 
         final boolean needToMeasure = child.isLayoutRequested();
@@ -315,14 +321,14 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
         @Override
         public void onChanged() {
         	 refreshDrawableState();
-            requestLayout();
+           // requestLayout();
            
         }
 
         @Override
         public void onInvalidated() {
         	 refreshDrawableState();
-            requestLayout();
+            //requestLayout();
             
         }
 

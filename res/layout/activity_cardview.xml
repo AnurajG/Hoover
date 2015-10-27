@@ -13,7 +13,6 @@
     card_view:contentPadding="20dp"
     card_view:contentPaddingBottom="40dp"
     card_view:contentPaddingRight="40dp" >
-
     <RelativeLayout
         android:id="@+id/viewFront"
         android:layout_width="match_parent"
