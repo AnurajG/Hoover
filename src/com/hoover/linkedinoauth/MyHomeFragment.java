@@ -1,6 +1,7 @@
 package com.hoover.linkedinoauth;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -8,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class MyHomeFragment extends Fragment {
 	TextView myhoov;
 	TextView mycomments;
 	TextView mynotifications;
+	ImageButton buttonUp;
 	Context context;
 	public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 
@@ -38,6 +41,7 @@ public class MyHomeFragment extends Fragment {
 		myhoov = (TextView) view.findViewById(R.id.myhoov);
 		mycomments = (TextView) view.findViewById(R.id.mycomment);
 		mynotifications = (TextView) view.findViewById(R.id.mynotification);
+		buttonUp = (ImageButton) view.findViewById(R.id.buttonUp);
 		myhoov.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -45,6 +49,20 @@ public class MyHomeFragment extends Fragment {
 				vp.setCurrentItem(1,true);
 			}
 		});
+
+		buttonUp.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(context,HomeActivityNew.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				startActivity(intent); 
+				//context.overridePendingTransition(0 , R.anim.slide_down);
+			}
+		});
+
+
 		return view;
 
 

@@ -283,7 +283,7 @@ public class HomeActivityNew extends AppCompatActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		overridePendingTransition(0 , R.anim.slide_down);
+		//overridePendingTransition(0 , R.anim.slide_down);
 	}
 
 	@SuppressWarnings("deprecation")

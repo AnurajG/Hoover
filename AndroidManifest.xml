@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hoover.linkedinoauth"
     android:versionCode="1"
-
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="17"
@@ -40,73 +40,63 @@
         </activity>
         <activity
             android:name=".Login"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
-            android:name=".PrefsActivity"
-            android:theme="@android:style/Theme.Light"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".PrefsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light" >
+        </activity>
+        <activity
             android:name=".MainActivity"
-
             android:label="@string/title_activity_first"
-	android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".HomeFragment"
-
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".HoovActivity"
-
-            android:label="@string/title_activity_home" 
-            android:screenOrientation="portrait">
+            android:label="@string/title_activity_home"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".HoovDetailsActivity"
             android:label="@string/title_activity_home"
-
-            android:theme="@style/Theme.Transparent" 
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent" >
         </activity>
         <activity
             android:name=".HoovDetailsByIdActivity"
-
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".MyHoovActivity"
             android:label="@string/action_myprofile_view"
-            android:theme="@style/Theme.Transparent" 
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent" >
         </activity>
         <activity
             android:name=".MyHomeActivity"
-
             android:label="@string/action_myprofile_view"
             android:screenOrientation="portrait" >
         </activity>
-
-         <activity
+        <activity
             android:name=".ProfileHomeActivity"
-
-            android:label="@string/action_myprofile_view" 
-            android:screenOrientation="portrait">
+            android:label="@string/action_myprofile_view"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".HomeActivityNew"
-
             android:label="@string/action_myprofile_view"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".MyrecylerviewActivity"
-
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
@@ -119,7 +109,7 @@
         </service>
         <service android:name=".SaveLikeDislikeService" >
         </service>
-.
+.        
         <service
             android:name=".SaveOfflineHoovService"
             android:label="@string/title_activity_home" >
