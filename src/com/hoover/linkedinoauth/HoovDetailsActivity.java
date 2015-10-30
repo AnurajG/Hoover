@@ -28,7 +28,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -45,12 +48,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,6 +64,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.goebl.david.WebbException;
 import com.hoover.util.EmojiMapUtil;
@@ -66,8 +73,10 @@ import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
 import com.hoover.util.HoovInsertParams;
 import com.hoover.util.HoovQueryBuilder;
+import com.hoover.util.SimpleGestureFilter;
+import com.hoover.util.SimpleGestureFilter.SimpleGestureListener;
 
-public class HoovDetailsActivity extends Activity{
+public class HoovDetailsActivity extends Activity implements SimpleGestureListener{
 	private TextView hoovText;
 	private TextView hoovDate;
 
@@ -95,7 +104,7 @@ public class HoovDetailsActivity extends Activity{
 	RelativeLayout layout;
 	HoovChapter hc;
 
-
+	private SimpleGestureFilter detector;
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -151,7 +160,17 @@ public class HoovDetailsActivity extends Activity{
 			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
 		}
-
+		// Detect touched area 
+        detector = new SimpleGestureFilter(this,this);
+		/*gestureDetector = new GestureDetector(new SwipeGestureDetector());
+	    gestureListener = new View.OnTouchListener() {
+	        @Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				return gestureDetector.onTouchEvent(event);
+			}
+	    };
+	    hoovText.setOnTouchListener(gestureListener);*/
 		rehoov_in=(Button) findViewById(R.id.submit);
 		rehoov_in.setOnClickListener(new OnClickListener() {
 
@@ -238,6 +257,67 @@ public class HoovDetailsActivity extends Activity{
 		tsk.execute(p);
 
 	}
+	 @Override
+	    public boolean dispatchTouchEvent(MotionEvent me){
+	        // Call onTouchEvent of SimpleGestureFilter class
+	         this.detector.onTouchEvent(me);
+	       return super.dispatchTouchEvent(me);
+	    }
+	    @Override
+	     public void onSwipe(int direction) {
+	      String str = "";
+	      
+	      switch (direction) {
+	      
+	      case SimpleGestureFilter.SWIPE_LEFTRIGHT : str = "Swipeeddddddd";
+
+			ObjectAnimator animation = ObjectAnimator.ofFloat(layout, "rotationY", 0.0f, 150.0f);
+			animation.addListener(new AnimatorListener() {
+				
+				@Override
+				public void onAnimationStart(Animator animation) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onAnimationRepeat(Animator animation) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					finish();
+				}
+				
+				@Override
+				public void onAnimationCancel(Animator animation) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			animation.setDuration(250);
+			//animation.setRepeatCount(ObjectAnimator.INFINITE);
+			animation.setInterpolator(new AccelerateInterpolator());
+			animation.start();
+			//finish();
+	                                               break;
+	     
+	      case SimpleGestureFilter.SWIPE_DOWN :  str = "Swipe Down";
+	                                                     break;
+	      case SimpleGestureFilter.SWIPE_UP :    str = "Swipe Up";
+	                                                     break;
+	      
+	      }
+	       Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+	     }
+	      
+	     @Override
+	     public void onDoubleTap() {
+	        Toast.makeText(this, "Double Tap", Toast.LENGTH_LONG).show();
+	     }
+	
 
 	//Must unregister onPause()
 	@Override
