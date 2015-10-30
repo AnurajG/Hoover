@@ -47,6 +47,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -102,6 +103,7 @@ public class HoovDetailsActivity extends Activity{
 		setContentView(R.layout.activity_hoov_detail);
 		context=this;
 		layout=(RelativeLayout)findViewById(R.id.card_layout);
+		layout.setGravity(Gravity.CENTER_HORIZONTAL);
 		/*ObjectAnimator animation = ObjectAnimator.ofFloat(layout, "ScaleY", 1.0f,1.5f);
 		animation.setDuration(2000);
 		animation.setInterpolator(new AccelerateDecelerateInterpolator());

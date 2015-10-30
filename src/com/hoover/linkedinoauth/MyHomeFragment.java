@@ -1,9 +1,9 @@
 package com.hoover.linkedinoauth;
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,8 +41,8 @@ public class MyHomeFragment extends Fragment {
 		myhoov.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(context,MyHoovActivity.class);
-				startActivity(intent); 
+				ViewPager vp=(ViewPager) getActivity().findViewById(R.id.profile_pager);
+				vp.setCurrentItem(1,true);
 			}
 		});
 		return view;

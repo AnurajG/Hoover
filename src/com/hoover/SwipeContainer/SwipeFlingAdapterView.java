@@ -195,6 +195,7 @@ private void animate(View view, final int pos) {
             case Gravity.TOP:
             default:
                 childTop = getPaddingTop() + lp.topMargin;
+                childTop+=dpToPx(count*5);
                 break;
         }
 
