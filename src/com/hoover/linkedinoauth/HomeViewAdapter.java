@@ -17,12 +17,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.hoover.util.CardFlipListener;
 import com.hoover.util.HoovChapter;
 //import android.support.v7.widget.RecyclerView;
 
@@ -95,66 +97,15 @@ public class HomeViewAdapter extends RecyclerView
 				public void onClick(View v) {
 
 
-					ObjectAnimator animation = ObjectAnimator.ofFloat(card, "rotationY", 360f, 180.0f);
-					animation.addListener(new AnimatorListener() {
-						
-						@Override
-						public void onAnimationStart(Animator animation) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void onAnimationRepeat(Animator animation) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							ObjectAnimator animation2 = ObjectAnimator.ofFloat(card, "rotationY", 180.0f, 360.0f);
-							animation2.setDuration(20);
-							animation2.setInterpolator(new AccelerateDecelerateInterpolator());
-							animation2.start();
-						}
-						
-						@Override
-						public void onAnimationCancel(Animator animation) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
-					animation.setDuration(500);
-					//animation.setRepeatCount(ObjectAnimator.INFINITE);
-					animation.setInterpolator(new AccelerateDecelerateInterpolator());
-					animation.start();
+					ObjectAnimator animation = ObjectAnimator.ofFloat(card, "rotationY", 360.0f, 180.0f);
 					int position = (Integer) v.getTag();
-					final class delayer implements Runnable{
-						final int pos;
-						public delayer(int p){
-							pos=p;
-						}
-						@Override
-						public void run() {
-							
-							HoovChapter selectedHoov = new HoovChapter();
-							selectedHoov = mDataset1.get(pos);
-							Intent myIntent = new Intent(context, HoovDetailsActivity.class);
-							myIntent.putExtra("chapter", selectedHoov);
-							Activity activity = (Activity) context;
+					HoovChapter selectedHoov = mDataset1.get(position);
 
-							activity.startActivity(myIntent);
-							
-						}
-						
-					}
-
-					new Handler().postDelayed(new delayer(position), 100);
-					
-					
-
-
-
+					animation.addListener(new CardFlipListener(v, card,selectedHoov,context));
+					animation.setDuration(250);
+					//animation.setRepeatCount(ObjectAnimator.INFINITE);
+					animation.setInterpolator(new AccelerateInterpolator());
+					animation.start();
 					//activity.overridePendingTransition(R.anim.from_middle,R.anim.to_middle);
 				}
 			};

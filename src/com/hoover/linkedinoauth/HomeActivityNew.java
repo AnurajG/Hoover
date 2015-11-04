@@ -283,7 +283,7 @@ public class HomeActivityNew extends AppCompatActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		overridePendingTransition(0 , R.anim.slide_down);
+		//overridePendingTransition(0 , R.anim.slide_down);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -298,7 +298,7 @@ public class HomeActivityNew extends AppCompatActivity {
 		case R.id.action_settings:
 			return true;
 		case R.id.action_myprofile:
-			Intent intent = new Intent(HomeActivityNew.this,MyHomeActivity.class);
+			Intent intent = new Intent(HomeActivityNew.this,ProfileHomeActivity.class);
 			//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent); 
 			/*Fragment mFragment = new MyHomeFragment(this); 
