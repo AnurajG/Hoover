@@ -46,9 +46,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,7 +84,7 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 
 	private String mongoHoovId;
 	Button rehoov_in;
-	EditText myEditText;
+	MyEditText mEditText;
 
 	ImageButton deleteHoov;
 
@@ -94,6 +96,7 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 	ArrayList<Integer> randArray;
 	private HashMap<String, String> imageMap = null;
 	private Integer imageCounter;
+	private int origHeight;
 	ArrayList<HoovChapter> results = new ArrayList<HoovChapter>();
 	String userComapny;
 	String userCity;
@@ -105,7 +108,7 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 	HoovChapter hc;
 
 	private SimpleGestureFilter detector;
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -151,15 +154,59 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 		hoovDate.setText(hc.hoovDate);
 
 		mongoHoovId=hc.mongoHoovId;
-
-		myEditText = (EditText) findViewById(R.id.commenttext);
-
-		// Check if no view has focus:
-		View view = this.getCurrentFocus();
+		mEditText = (MyEditText) findViewById(R.id.commenttext);
+		/*mEditText.setOnKeyListener(new View.OnKeyListener() {
+			
+			@Override
+			public boolean onKey(View arg0, int keycode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				 if (keycode == KeyEvent.KEYCODE_BACK) {
+					 	System.out.println("laaaaaaaaaaaaaaaaaaaalaaaaaaaaaaaaa");
+			    	            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+			    				inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+			    				
+			    				Resources r = getResources();
+			        			Float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 450, r.getDisplayMetrics());
+			                	ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+			    				layoutParams.height =px.intValue();
+			    				layout.setLayoutParams(layoutParams);
+			    				mRecyclerView.setVisibility(View.VISIBLE);
+			    				
+			    	            return true;
+			    	    }
+				return false;
+			}
+		});*/
+		mEditText.setOnTouchListener(new View.OnTouchListener()
+	        {
+	            public boolean onTouch(View arg0, MotionEvent arg1)
+	            {
+	            	if(arg1.getAction()==MotionEvent.ACTION_UP)
+	                {Resources r = getResources();
+	    			Float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 250, r.getDisplayMetrics());
+	            	ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+					layoutParams.height =px.intValue();
+					layout.setLayoutParams(layoutParams);
+					mRecyclerView.setVisibility(View.INVISIBLE);
+					View view = getCurrentFocus();
+					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+	            	
+	            	return true;
+	                }
+	            	return false;
+	            	
+	            }
+	          
+	        });
+		
+        // Check if no view has focus:
+		/*View view = this.getCurrentFocus();
 		if (view != null) {  
 			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-		}
+			imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+			
+		}*/
 		// Detect touched area 
         detector = new SimpleGestureFilter(this,this);
 		/*gestureDetector = new GestureDetector(new SwipeGestureDetector());
@@ -176,10 +223,20 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 
 			@Override
 			public void onClick(View arg0) {
+				String toPost=mEditText.getText().toString();
+				mEditText.getText().clear();
 				InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
 				inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-				String toPost=myEditText.getText().toString();
-				myEditText.getText().clear();
+				
+				Resources r = getResources();
+    			Float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 450, r.getDisplayMetrics());
+            	ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+				layoutParams.height =px.intValue();
+				layout.setLayoutParams(layoutParams);
+				mRecyclerView.setVisibility(View.VISIBLE);
+				
+				
+				
 
 				SubmitHoovAsyncTask s_tsk= new SubmitHoovAsyncTask();
 				HoovInsertParams p = new HoovInsertParams();
@@ -207,13 +264,12 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 		if(currentUserId.equals(hc.hoovUserId)){
 			deleteHoov.setVisibility(Button.VISIBLE);
 		}*/
-
 		rehoov_in=(Button) findViewById(R.id.submit);
-		if(myEditText.length() == 0) rehoov_in.setEnabled(false);
-		myEditText.addTextChangedListener(new TextWatcher() {
+		if(mEditText.length() == 0) rehoov_in.setEnabled(false);
+		mEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable arg0) {
-				Integer l= 320 - myEditText.length();
+				Integer l= 320 - mEditText.length();
 				if(l<0 || l==320) 
 					rehoov_in.setEnabled(false);
 				else
@@ -222,7 +278,7 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+					}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -257,6 +313,26 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 		tsk.execute(p);
 
 	}
+	
+	public void hidekeyboard(){
+		InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+		inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+		
+		Resources r = getResources();
+		Float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 450, r.getDisplayMetrics());
+    	ViewGroup.LayoutParams layoutParams = layout.getLayoutParams();
+		layoutParams.height =px.intValue();
+		layout.setLayoutParams(layoutParams);
+		mRecyclerView.setVisibility(View.VISIBLE);
+	}
+		/*public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK && 
+	        event.getAction() == KeyEvent.ACTION_UP) {
+	            System.out.println("backkkkkkkkkkkkkkkk pressessssssssss");
+	            return false;
+	    }
+	    return super.dispatchKeyEvent(event);
+	}*/
 	 @Override
 	    public boolean dispatchTouchEvent(MotionEvent me){
 	        // Call onTouchEvent of SimpleGestureFilter class
@@ -304,10 +380,8 @@ public class HoovDetailsActivity extends Activity implements SimpleGestureListen
 			//finish();
 	                                               break;
 	     
-	      case SimpleGestureFilter.SWIPE_DOWN :  str = "Swipe Down";
-	                                                     break;
-	      case SimpleGestureFilter.SWIPE_UP :    str = "Swipe Up";
-	                                                     break;
+	      case SimpleGestureFilter.SWIPE_DOWN :  break;
+	      case SimpleGestureFilter.SWIPE_UP :   break;
 	      
 	      }
 	       Toast.makeText(this, str, Toast.LENGTH_LONG).show();
