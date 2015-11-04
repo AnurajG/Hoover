@@ -91,9 +91,10 @@
         android:layout_above="@+id/submit"
         android:layout_below="@+id/hoovlinesep"
         android:layout_marginTop="10dp"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+         />
 
-    <EditText
+    <com.hoover.linkedinoauth.MyEditText
         android:id="@+id/commenttext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,7 +111,7 @@
         android:inputType="textMultiLine" >
 
         <requestFocus />
-    </EditText>
+    </com.hoover.linkedinoauth.MyEditText>
 
     <Button
         android:id="@+id/submit"

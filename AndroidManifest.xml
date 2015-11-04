@@ -68,6 +68,7 @@
             android:name=".HoovDetailsActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.Transparent" 
+            android:windowSoftInputMode="adjustPan|adjustNothing"
             android:screenOrientation="portrait">
         </activity>
         <activity
