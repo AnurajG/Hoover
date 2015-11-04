@@ -49,6 +49,15 @@ public class MyHomeFragment extends Fragment {
 				vp.setCurrentItem(1,true);
 			}
 		});
+		
+		mynotifications.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ViewPager vp=(ViewPager) getActivity().findViewById(R.id.profile_pager);
+				vp.setCurrentItem(2,true);
+			}
+		});
+		
 
 		buttonUp.setOnClickListener(new OnClickListener() {
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    card_view:cardCornerRadius="5dp"
+    card_view:cardElevation="2dp"
+    card_view:contentPadding="10dp" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:background="@color/primary_light"
+        android:descendantFocusability="blocksDescendants" >
+
+        <TextView
+            android:id="@+id/notify_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/primary_text" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="#f0ada5"
+        android:descendantFocusability="blocksDescendants" >
+
+        <TextView
+            android:id="@+id/notify_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

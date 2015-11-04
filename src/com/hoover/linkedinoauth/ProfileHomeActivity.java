@@ -54,6 +54,7 @@ public class ProfileHomeActivity extends FragmentActivity {
 		List<Fragment> fragments = new Vector<Fragment>();
 		fragments.add(MyHomeFragment.newInstance(TAG+"1",context,userComapny,userCity,userId ));
 		fragments.add(MyHoovFragment.newInstance(TAG+"1",context,userComapny,userCity,userId ));
+		fragments.add(NotifyListFragment.newInstance(TAG+"1",context,userComapny,userCity,userId ));
 		this.mPagerAdapter  = new ScreenSlidePagerAdapter(super.getSupportFragmentManager(), fragments);
 		//
 		ViewPager pager = (ViewPager)super.findViewById(R.id.profile_pager);
