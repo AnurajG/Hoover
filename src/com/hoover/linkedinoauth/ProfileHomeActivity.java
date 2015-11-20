@@ -4,6 +4,8 @@ package com.hoover.linkedinoauth;
 import java.util.List;
 import java.util.Vector;
 
+import com.hoover.util.NonSwipeableViewPager;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,7 +18,7 @@ import android.support.v4.view.ViewPager;
 
 public class ProfileHomeActivity extends FragmentActivity {
 	public static final String TAG = TabbedActivity.class.getSimpleName();
-	ViewPager mViewPager;
+	NonSwipeableViewPager mViewPager;
 	FragmentManager fm;
 	private String userComapny;
 	private String userCity;
@@ -57,7 +59,8 @@ public class ProfileHomeActivity extends FragmentActivity {
 		fragments.add(NotifyListFragment.newInstance(TAG+"1",context,userComapny,userCity,userId ));
 		this.mPagerAdapter  = new ScreenSlidePagerAdapter(super.getSupportFragmentManager(), fragments);
 		//
-		ViewPager pager = (ViewPager)super.findViewById(R.id.profile_pager);
+		NonSwipeableViewPager pager = (NonSwipeableViewPager)super.findViewById(R.id.profile_pager);
+		pager.setPagingEnabled(false);
 		pager.setAdapter(this.mPagerAdapter);
 	}
 

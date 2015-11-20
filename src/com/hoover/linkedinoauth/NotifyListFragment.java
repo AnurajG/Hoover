@@ -35,6 +35,7 @@ import com.hoover.floating.ScrollDirectionListener;
 import com.hoover.linkedinoauth.HomeFollowViewAdapter.MyClickListener;
 import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
+import com.hoover.util.NonSwipeableViewPager;
 import com.yalantis.phoenix.PullToRefreshView;
 
 public class NotifyListFragment extends Fragment{
@@ -99,6 +100,8 @@ public class NotifyListFragment extends Fragment{
 		View view;
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.activity_notify_list, container, false);
+		//NonSwipeableViewPager vp=(NonSwipeableViewPager) getActivity().findViewById(R.id.profile_pager);
+		//vp.setPagingEnabled(true);
 		mRecyclerView = (RecyclerView)view.findViewById(R.id.notify_recycler_view);
 		HoovChapterlist_t=new ArrayList<HoovChapter>();
 

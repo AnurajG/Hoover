@@ -1,0 +1,21 @@
+<com.hoover.util.MySlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Left side pane. (Master) -->
+
+    <FrameLayout
+        android:id="@+id/pane1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF" />
+
+    <FrameLayout
+        android:id="@+id/pane2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFF" />
+
+</com.hoover.util.MySlidingPaneLayout>

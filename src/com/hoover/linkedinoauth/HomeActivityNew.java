@@ -298,7 +298,7 @@ public class HomeActivityNew extends AppCompatActivity {
 		case R.id.action_settings:
 			return true;
 		case R.id.action_myprofile:
-			Intent intent = new Intent(HomeActivityNew.this,ProfileHomeActivity.class);
+			Intent intent = new Intent(HomeActivityNew.this,SlidingHomeActivity.class);
 			//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			startActivity(intent); 
 			/*Fragment mFragment = new MyHomeFragment(this); 

@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary">#CDA4EA</color>
-    <color name="primary_dark">#B88BCC</color>
-    <!--#925FAE-->
+    <color name="primary">#FF8F0F</color>
+    <color name="primary_dark">#FF5722</color>
+    <color name="white">#FFFFFF</color>
+    <!-- #925FAE -->
     <color name="accent">#B88BCC</color>
-     <color name="list_item_title">#fff</color>
+    <color name="list_item_title">#fff</color>
     <color name="list_background">#303030</color>
     <color name="list_background_pressed">#992416</color>
     <color name="list_divider">#272727</color>
     <color name="counter_text_bg">#626262</color>
     <color name="counter_text_color">#c5c4c4</color>
     <color name="material_blue_500">#5677fc</color>
+    <color name="purple_light">#a276eb</color>
+    <color name="purple_middle">#8658ce</color>
+    <color name="purple_dark">#6a3ab2</color>
 
 </resources>

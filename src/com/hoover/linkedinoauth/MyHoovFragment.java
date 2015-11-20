@@ -49,6 +49,7 @@ import com.hoover.util.EmojiMapUtil;
 import com.hoover.util.HoovActionOptions;
 import com.hoover.util.HoovChapter;
 import com.hoover.util.HoovFetchParams;
+import com.hoover.util.NonSwipeableViewPager;
 import com.hoover.util.HoovFetchParams.eOrder;
 import com.yalantis.phoenix.PullToRefreshView;
 
@@ -138,6 +139,8 @@ public class MyHoovFragment extends Fragment{
 		View view;
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.activity_myhoov, container, false);
+		//NonSwipeableViewPager vp=(NonSwipeableViewPager) getActivity().findViewById(R.id.profile_pager);
+		//vp.setPagingEnabled(true);
 		mRecyclerView = (RecyclerView)view.findViewById(R.id.hoov_recycler_view);
 		//FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
 		//fab.attachToRecyclerView(mRecyclerView,new HoovScrollDirectionListener());
@@ -190,7 +193,7 @@ public class MyHoovFragment extends Fragment{
 		params.comapny=company;
 		params.order=eOrder.NEW;
 		//params.type=type;
-		
+
 		new GetHoovsAsyncTask().execute(params);
 		return view;
 	}
