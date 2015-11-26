@@ -24,10 +24,23 @@ public class MySlidingPaneLayout extends SlidingPaneLayout{
 	}
 
 	@Override
-	public boolean onInterceptTouchEvent(MotionEvent arg0) {
-		if(isOpen()) return false;
-		return super.onInterceptTouchEvent(arg0);
-	}  
+	  public boolean onInterceptTouchEvent(MotionEvent ev) {
+		if(isOpen()){
+			System.out.println("is open");
+			return false;
+		}
+		System.out.println("return true");
+		return super.onInterceptTouchEvent(ev);
+	}
 
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		if(isOpen()){
+			System.out.println("is open");
+			return false;
+		}
+		System.out.println("return true");
+		return super.onTouchEvent(ev);
+	}
 
 }
